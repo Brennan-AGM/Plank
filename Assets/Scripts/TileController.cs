@@ -2,21 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Tile
-{
-	private int tilevalue;
-	public Tile(int value)
-	{
-		tilevalue = value;
-	}
-	public int GetTileValue()
-	{
-		return tilevalue;
-	}
-}
-
 public class TileController : MonoBehaviour {
 
+	public static TileController tileController { get; private set; }
 	//private int[] TileL = {1,1,1,};
 	//private Tile 
 	private List<Tile> TileList = new List<Tile>();
@@ -31,35 +19,50 @@ public class TileController : MonoBehaviour {
 	private List<Tile> Player4KnownTiles = new List<Tile>();
 	private int distribNum;
 
-	void Start()
+	void Awake()
 	{
+		if (tileController != null && tileController != this)
+		{
+			Destroy(gameObject);
+		}
+		
+		tileController = this;
+		
+		DontDestroyOnLoad(gameObject);
+		Begin();
+	}
 
+	void Begin()
+	{
 		for(int i=1; i<=7; i++)
 			for(int y=7-i; y<7; y++)
-			TileList.Add (new Tile(i)); 
-
+				TileList.Add (new Tile(i)); 
+		
 		//TileList.
 		distribNum = 0;
 		int count = 0;
 		while(TileList.Count > 0)
 		{
 			int randomnum = Random.Range(0, TileList.Count);
-
+			
 			if(count < 4)
 				distribNum = -2;
 			else if(count < 8)
 				distribNum = -1;
 			else if(count == 8)
 				distribNum = 0;
-
+			
 			DistributeTiles(TileList[randomnum].GetTileValue());
 			TileList.RemoveAt(randomnum);
-
+			
 			distribNum = (distribNum > 2) ? 0 : ++distribNum;
-
+			
 			count++;
 		}
+	}
 
+	void Start()
+	{
 		foreach(Tile T in Player1)
 		{
 			Debug.Log("P1 Tiles:"+T.GetTileValue());
@@ -174,6 +177,9 @@ public class TileController : MonoBehaviour {
 		case 7:
 			return Player4KnownTiles;
 			break;
+		case 8:
+			return HiddenTile;
+			break;
 		default:
 			return null;
 			break;
@@ -212,5 +218,23 @@ public class TileController : MonoBehaviour {
 
 			break;
 		}
+	}
+
+	public bool CheckList(int value, int List)
+	{
+		List<Tile> TempList = GetList(List);
+		int counter = 0;
+		foreach(Tile T in TempList)
+		{
+			if(T.Getvalue == value)
+			{
+				TempList.RemoveAt(counter);
+				SetList(TempList, List);
+				ShownTile.Add(T);
+				return true;
+			}
+			counter++;
+		}
+		return false;
 	}
 }
