@@ -226,7 +226,7 @@ public class TileController : MonoBehaviour {
 		int counter = 0;
 		foreach(Tile T in TempList)
 		{
-			if(T.Getvalue == value)
+			if(T.GetTileValue() == value)
 			{
 				TempList.RemoveAt(counter);
 				SetList(TempList, List);

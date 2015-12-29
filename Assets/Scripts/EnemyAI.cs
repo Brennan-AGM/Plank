@@ -37,20 +37,48 @@ public class EnemyAI : MonoBehaviour {
 			}
 			float num = (float)((float)((i + 1) - number[i])/(float)unknownNumber) * 100;
 			AddChoice(i, num);
-			Debug.Log("Number " + (i + 1).ToString() + " has " + num +"%");
+
+			//Debug.Log("Number " + (i + 1).ToString() + " has " + num +"%");
 		}
+		ShowChoices();
 	}
-
-
 
 	void AddChoice(int num, float chance)
 	{
+		Debug.Log("ADDED");
 		Choice.Add(new KeyValuePair<int,float>(num, chance));
-
 	}
 
 	void RemoveChoice(int num)
 	{
+		float chance = 0.0f;
+		foreach(KeyValuePair<int,float> tile in Choice)
+		{
+			if(tile.Key == num)
+			{
+				chance = tile.Value;
+			}
+		}
+		Choice.Remove(new KeyValuePair<int,float>(num, chance));
+	}
 
+	void SortChoices()
+	{
+		Choice.Sort(delegate(KeyValuePair<int,float> firstPair, KeyValuePair<int,float> nextPair)
+		{
+			return nextPair.Value.CompareTo(firstPair.Value);
+		}
+		);
+	}
+
+	void ShowChoices()
+	{
+		Debug.Log("COUNT: " + Choice.Count);
+		int number;
+		foreach(KeyValuePair<int,float> tile in Choice)
+		{
+			number = System.Convert.ToInt32(tile.Key);
+			Debug.Log("Tile: " + (number + 1) + " has " + tile.Value + "%");
+		}
 	}
 }
