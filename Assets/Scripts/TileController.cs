@@ -5,8 +5,6 @@ using System.Collections.Generic;
 public class TileController : MonoBehaviour {
 
 	public static TileController tileController { get; private set; }
-	//private int[] TileL = {1,1,1,};
-	//private Tile 
 	private List<Tile> TileList = new List<Tile>();
 	private List<Tile> Player1 = new List<Tile>();
 	private List<Tile> Player2 = new List<Tile>();
@@ -17,7 +15,12 @@ public class TileController : MonoBehaviour {
 	private List<Tile> Player2KnownTiles = new List<Tile>();
 	private List<Tile> Player3KnownTiles = new List<Tile>();
 	private List<Tile> Player4KnownTiles = new List<Tile>();
+	private List<KeyValuePair<int,GameObject>> Player1TilesReference = new List<KeyValuePair<int,GameObject>>();
+	private List<KeyValuePair<int,GameObject>> Player2TilesReference = new List<KeyValuePair<int,GameObject>>();
+	private List<KeyValuePair<int,GameObject>> Player3TilesReference = new List<KeyValuePair<int,GameObject>>();
+	private List<KeyValuePair<int,GameObject>> Player4TilesReference = new List<KeyValuePair<int,GameObject>>();
 	private int distribNum;
+
 
 	void Awake()
 	{
@@ -29,6 +32,27 @@ public class TileController : MonoBehaviour {
 		tileController = this;
 		
 		DontDestroyOnLoad(gameObject);
+		Begin();
+	}
+
+	public void Reset()
+	{
+		TileList.Clear();
+		Player1.Clear();
+		Player2.Clear();
+		Player3.Clear();
+		Player4.Clear();
+		ShownTile.Clear();
+		HiddenTile.Clear();
+		Player2KnownTiles.Clear();
+		Player3KnownTiles.Clear();
+		Player4KnownTiles.Clear();
+		Player1TilesReference.Clear();
+		Player2TilesReference.Clear();
+		Player3TilesReference.Clear();
+		Player4TilesReference.Clear();
+		distribNum = 0;
+		gameObject.GetComponent<game_UIController>().Reset();
 		Begin();
 	}
 
@@ -63,39 +87,39 @@ public class TileController : MonoBehaviour {
 
 	void Start()
 	{
-		foreach(Tile T in Player1)
-		{
-			Debug.Log("P1 Tiles:"+T.GetTileValue());
-		}
-		foreach(Tile T in Player2)
-		{
-			Debug.Log("P2 Tiles:"+T.GetTileValue());
-		}
-		foreach(Tile T in Player3)
-		{
-			Debug.Log("P3 Tiles:"+T.GetTileValue());
-		}
-		foreach(Tile T in Player4)
-		{
-			Debug.Log("P4 Tiles:"+T.GetTileValue());
-		}
-		foreach(Tile T in HiddenTile)
-		{
-			Debug.Log("Hidden Tiles:"+T.GetTileValue());
-		}
-		foreach(Tile T in ShownTile)
-		{
-			Debug.Log("Shown Tiles:"+T.GetTileValue());
-		}
-		foreach(Tile T in Player2KnownTiles)
-		{
-			Debug.Log("P2 Known:"+T.GetTileValue());
-		}
+//		foreach(Tile T in Player1)
+//		{
+//			Debug.Log("P1 Tiles:"+T.GetTileValue());
+//		}
+//		foreach(Tile T in Player2)
+//		{
+//			Debug.Log("P2 Tiles:"+T.GetTileValue());
+//		}
+//		foreach(Tile T in Player3)
+//		{
+//			Debug.Log("P3 Tiles:"+T.GetTileValue());
+//		}
+//		foreach(Tile T in Player4)
+//		{
+//			Debug.Log("P4 Tiles:"+T.GetTileValue());
+//		}
+//		foreach(Tile T in HiddenTile)
+//		{
+//			Debug.Log("Hidden Tiles:"+T.GetTileValue());
+//		}
+//		foreach(Tile T in ShownTile)
+//		{
+//			Debug.Log("Shown Tiles:"+T.GetTileValue());
+//		}
+//		foreach(Tile T in Player2KnownTiles)
+//		{
+//			Debug.Log("P2 Known:"+T.GetTileValue());
+//		}
 	}
 
 	void DistributeTiles(int value)
 	{
-		Debug.Log(distribNum);
+		InstantiateTiles(value, distribNum);
 		switch(distribNum)
 		{
 		case -2:
@@ -147,6 +171,18 @@ public class TileController : MonoBehaviour {
 			Player2KnownTiles.Add(new Tile(value));
 			Player3KnownTiles.Add(new Tile(value));
 		}
+		else if(id == 4)
+		{
+			Player2KnownTiles.Add(new Tile(value));
+		}
+		else if(id == 5)
+		{
+			Player3KnownTiles.Add(new Tile(value));
+		}
+		else if(id == 6)
+		{
+			Player4KnownTiles.Add(new Tile(value));
+		}
 	}
 
 	public List<Tile> GetList(int value = 0)
@@ -186,7 +222,7 @@ public class TileController : MonoBehaviour {
 		}
 	}
 
-	public void SetList(List<Tile> TileList_new,int value = -1)
+	public void SetList(List<Tile> TileList_new, int value = -1)
 	{
 		switch(value)
 		{
@@ -222,7 +258,9 @@ public class TileController : MonoBehaviour {
 
 	public bool CheckList(int value, int List)
 	{
+		List++;
 		List<Tile> TempList = GetList(List);
+		//Debug.Log(GetList(List).Count);
 		int counter = 0;
 		foreach(Tile T in TempList)
 		{
@@ -236,5 +274,158 @@ public class TileController : MonoBehaviour {
 			counter++;
 		}
 		return false;
+	}
+	#region SendResponse
+	public void SendResponse(int value)
+	{
+		if(CheckList(value, 0))
+		{
+			InstantiateTiles(value, -1);
+			ReduceTile(GetTileReference(value, 0));
+			//Debug.Log("Correct");
+			gameObject.GetComponent<game_UIController>().DetermineResult(true);
+		}
+		else
+		{
+			//Debug.Log("Wrong");
+			gameObject.GetComponent<game_UIController>().DetermineResult(false);
+		}
+	}
+
+	public bool SendResponse(int value, int ai)
+	{
+		if(CheckList(value, ai))
+		{
+			InstantiateTiles(value, -1);
+			ReduceTile(GetTileReference(value, ai));
+			AddKnownTiles(value, ai + 3);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public void SendResponse(int value, int ai, int cheat)
+	{
+		if(CheckList(value, ai))
+		{
+			InstantiateTiles(value, -1);
+			ReduceTile(GetTileReference(value, ai));
+			AddKnownTiles(value, ai + 3);
+		}
+	}
+	#endregion
+
+	void InstantiateTiles(int value, int type)
+	{
+		GameObject target;
+		if(type == -2 || type == 0)
+		{
+			target = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/TileHidden"));
+		}
+		else
+		{
+			target = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"));
+			target.GetComponentInChildren<game_TileAsset>().LoadAsset(value);
+		}
+
+		if(type >= 0 && type <=3)
+		{
+			SetTileReference(target, value, type);
+			//AllPlayerTiles[type] = target;
+		}
+		target.transform.SetParent(Getholder(value, type), false);
+	}
+
+	Transform Getholder(int value, int type)
+	{
+		switch(type)
+		{
+		case -2:
+			return gameObject.GetComponent<game_UIController>().GetTileHolder(0, 2).transform;
+			break;
+		case -1:
+			return gameObject.GetComponent<game_UIController>().GetTileHolder(value - 1, 0).transform;
+			break;
+		default:
+			return gameObject.GetComponent<game_UIController>().GetTileHolder(type, 1).transform;
+			break;
+		}
+	}
+
+	void ReduceTile(GameObject target)
+	{
+		Destroy(target);
+	}
+
+	public int GetTile(List<Tile> TileList_new)
+	{
+		int TileValue= 0, counter = 0, 
+		randomN = Random.Range(0, TileList_new.Count - 1);
+		foreach(Tile T in TileList_new)
+		{
+			if(randomN ==counter)
+				return T.GetTileValue();
+			counter++;
+		}
+		return 0;
+	}
+
+	void SetTileReference(GameObject target, int value, int type)
+	{
+		switch(type)
+		{
+		case 0:
+			Player1TilesReference.Add(new KeyValuePair<int,GameObject>(value, target));
+			break;
+		case 1:
+			//Player2KnownTiles.Add(new Tile(value));
+			Player2TilesReference.Add(new KeyValuePair<int,GameObject>(value, target));
+			break;
+		case 2:
+			//Player3KnownTiles.Add(new Tile(value));
+			Player3TilesReference.Add(new KeyValuePair<int,GameObject>(value, target));
+			break;
+		case 3:
+			//Player4KnownTiles.Add(new Tile(value));
+			Player4TilesReference.Add(new KeyValuePair<int,GameObject>(value, target));
+			break;
+		}
+	}
+
+	GameObject GetTileReference(int value, int type)
+	{
+		List<KeyValuePair<int,GameObject>> TempList = new List<KeyValuePair<int,GameObject>>();
+		GameObject Temp_gmobj = null;
+		if(type == 0)
+			TempList = Player1TilesReference;
+		else if(type == 1)
+			TempList = Player2TilesReference;
+		else if(type == 2)
+			TempList = Player3TilesReference;
+		else if(type == 3)
+			TempList = Player4TilesReference;
+
+		foreach(KeyValuePair<int,GameObject> tile in TempList)
+		{
+			if(tile.Key == value)
+			{
+				Temp_gmobj = tile.Value;
+			}
+		}
+		TempList.Remove(new KeyValuePair<int,GameObject>(value, Temp_gmobj));
+
+		if(type == 0)
+			Player1TilesReference = TempList;
+		else if(type == 1)
+			Player2TilesReference = TempList;
+		else if(type == 2)
+			Player3TilesReference = TempList;
+		else if(type == 3)
+			Player4TilesReference = TempList;
+
+		return Temp_gmobj;
 	}
 }
