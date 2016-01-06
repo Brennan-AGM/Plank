@@ -5,12 +5,14 @@ public class game_Logic : MonoBehaviour {
 
 	public game_EnemyAI[] AIList;
 	private int[] RemovedTiles = new int[3];
-	private bool Win;
+    private bool CurrentAITurn;
+    private bool Win;
 	private bool AIAnswer;
 
 	void Start()
 	{
-		for(int i = 0; i < 3; i++)
+        CurrentAITurn = true;
+        for (int i = 0; i < 3; i++)
 		{
 			RemovedTiles[i] = 0;
 		}
@@ -18,7 +20,8 @@ public class game_Logic : MonoBehaviour {
 
 	void Reset()
 	{
-		for(int i = 0; i < 3 && !Win; i++)
+        CurrentAITurn = true;
+        for (int i = 0; i < 3 && !Win; i++)
 		{
 			AIList[i].Reset();
 		}
@@ -28,9 +31,10 @@ public class game_Logic : MonoBehaviour {
 	public void PlayAI()
 	{
 		CheckForWinner();
-		for(int i = 0; i < 3 && !Win; i++)
+		for(int i = 0; i < 3 && !Win && CurrentAITurn; i++)
 		{
-			if(AIList[i].GetAiType() == 0)
+            CurrentAITurn = false;
+            if (AIList[i].GetAiType() == 0)
 				AIAnswer = EasyAI(i);
 			else if(AIList[i].GetAiType() == 1)
 				AIAnswer = MidAI(i);
@@ -39,7 +43,8 @@ public class game_Logic : MonoBehaviour {
 			else if(AIList[i].GetAiType() == 3)
 				AIAnswer = CheatingAI(i);
 
-			TurnOnHighlight(AIAnswer, AIList[i].GetAiID());
+            
+            TurnOnHighlight(AIAnswer, AIList[i].GetAiID());
 			EndAITurn(AIList[i].GetAiID());
 
 			CheckForWinner();
@@ -128,17 +133,20 @@ public class game_Logic : MonoBehaviour {
 	{
 		if(response)
 		{
-			Camera.main.GetComponent<game_UIController>().SetPlayerTurn(2, AiID);
+            Debug.Log("AI2!!!");
+            Camera.main.GetComponent<game_UIController>().SetPlayerTurn(2, AiID);
 		}
 		else
 		{
-			Camera.main.GetComponent<game_UIController>().SetPlayerTurn(1, AiID);
+            Debug.Log("AI3!!!");
+            Camera.main.GetComponent<game_UIController>().SetPlayerTurn(1, AiID);
 		}
 	}
 
 	#region AIResponse
 	void PlayAIDelay(int value, int AiID)
 	{
+        Debug.Log("AI!!!");
 		StartCoroutine(DelayAI(value, AiID));
 	}
 
@@ -151,16 +159,19 @@ public class game_Logic : MonoBehaviour {
 	{
 		Camera.main.GetComponent<game_UIController>().GetPlayerTurn(AiID).SetActive(true);
 		Camera.main.GetComponent<game_UIController>().SetPlayerTurn(0, AiID);
-		yield return new WaitForSeconds (5.0f);
-		Camera.main.GetComponent<game_UIController>().GetPlayerAnswer(value, AiID);
+		yield return new WaitForSeconds (3.0f);
+        Debug.Log("AIDONE!!!");
+        Camera.main.GetComponent<game_UIController>().GetPlayerAnswer(value, AiID);
 		yield return new WaitForSeconds (1.5f);
 	}
 
 	IEnumerator DelayAIEnd(int AiID)
 	{
-		yield return new WaitForSeconds (1.5f);
+        Debug.Log("AIDONE2!!!");
+        yield return new WaitForSeconds (1.5f);
 		Camera.main.GetComponent<game_UIController>().GetPlayerTurn(AiID).SetActive(false);
 		Camera.main.GetComponent<game_UIController>().RemovePlayerAnswer(AiID);
-	}
+        CurrentAITurn = true;
+    }
 	#endregion
 }
