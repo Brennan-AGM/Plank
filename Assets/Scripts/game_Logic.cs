@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class game_Logic : MonoBehaviour {
 
@@ -35,71 +36,73 @@ public class game_Logic : MonoBehaviour {
 		{
             CurrentAITurn = false;
             if (AIList[i].GetAiType() == 0)
-				AIAnswer = EasyAI(i);
+                StartCoroutine(EasyAI(i));
 			else if(AIList[i].GetAiType() == 1)
-				AIAnswer = MidAI(i);
+                StartCoroutine(MidAI(i));
 			else if(AIList[i].GetAiType() == 2)
-				AIAnswer = HardAI(i);
+                StartCoroutine(HardAI(i));
 			else if(AIList[i].GetAiType() == 3)
-				AIAnswer = CheatingAI(i);
-
-            
-            TurnOnHighlight(AIAnswer, AIList[i].GetAiID());
-			EndAITurn(AIList[i].GetAiID());
-
-			CheckForWinner();
+                StartCoroutine(CheatingAI(i));
 		}
 	}
-	#region AIList
-	bool EasyAI(int value)
+    #region AIList
+    IEnumerator EasyAI(int value)
 	{
 		PlayAIDelay(AIList[value].GetBestChoice(), AIList[value].GetAiID());
 		if(TileController.tileController.SendResponse(AIList[value].GetBestChoice(), AIList[value].GetAiID()))
 		{
 			AIList[value].GetChoices();
-			return true;
+            AIAnswer = true;
 		}
 		else{
 			AIList[value].RemoveChoice(AIList[value].GetBestChoice());
-		}
-		return false;
-	}
+            AIAnswer = true;
+        }
+        TurnOnHighlight(AIAnswer, AIList[value].GetAiID(), EndAITurn);
+        yield return new WaitForEndOfFrame();
+    }
 
-	bool MidAI(int value)
+    IEnumerator MidAI(int value)
 	{
 		PlayAIDelay(AIList[value].GetBestChoice(), AIList[value].GetAiID());
 		if(TileController.tileController.SendResponse(AIList[value].GetBestChoice(), AIList[value].GetAiID()))
 		{
-			return true;
-		}
+            AIAnswer = true;
+        }
 		else{
 			AIList[value].RemoveChoice(AIList[value].GetBestChoice());
-		}
-		return false;
-	}
+            AIAnswer = true;
+        }
+        TurnOnHighlight(AIAnswer, AIList[value].GetAiID(), EndAITurn);
+        yield return new WaitForEndOfFrame();
+    }
 
-	bool HardAI(int value)
+    IEnumerator HardAI(int value)
 	{
 		PlayAIDelay(AIList[value].GetBestChoice(1), AIList[value].GetAiID());
 		if(TileController.tileController.SendResponse(AIList[value].GetBestChoice(1), AIList[value].GetAiID()))
 		{
 			AIList[value].GetChoices();
-			return true;
-		}
+            AIAnswer = true;
+        }
 		else{
 			AIList[value].RemoveChoice(AIList[value].GetBestChoice(value), RemovedTiles[value]);
 			RemovedTiles[value]++;
-		}
-		return false;
-	}
+            AIAnswer = false;
+        }
+        TurnOnHighlight(AIAnswer, AIList[value].GetAiID(), EndAITurn);
+        yield return new WaitForEndOfFrame();
+    }
 
-	bool CheatingAI(int value)
+	IEnumerator CheatingAI(int value)
 	{
 		int answer = TileController.tileController.GetTile(TileController.tileController.GetList(AIList[value].GetAiID() + 1));
 		PlayAIDelay(answer, AIList[value].GetAiID());
 		TileController.tileController.SendResponse(answer, AIList[value].GetAiID(), 0);
-		return true;
-	}
+        AIAnswer = true;
+        TurnOnHighlight(AIAnswer, AIList[value].GetAiID(), EndAITurn);
+        yield return new WaitForEndOfFrame();
+    }
 	#endregion
 
 	#region Winner
@@ -129,7 +132,7 @@ public class game_Logic : MonoBehaviour {
 	}
 	#endregion
 
-	void TurnOnHighlight(bool response, int AiID)
+	void TurnOnHighlight(bool response, int AiID, Action<int> callback = null)
 	{
 		if(response)
 		{
@@ -141,6 +144,10 @@ public class game_Logic : MonoBehaviour {
             Debug.Log("AI3!!!");
             Camera.main.GetComponent<game_UIController>().SetPlayerTurn(1, AiID);
 		}
+        if(callback != null)
+        {
+            callback(AiID);
+        }
 	}
 
 	#region AIResponse
@@ -172,6 +179,7 @@ public class game_Logic : MonoBehaviour {
 		Camera.main.GetComponent<game_UIController>().GetPlayerTurn(AiID).SetActive(false);
 		Camera.main.GetComponent<game_UIController>().RemovePlayerAnswer(AiID);
         CurrentAITurn = true;
+        CheckForWinner();
     }
 	#endregion
 }
