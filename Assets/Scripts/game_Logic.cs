@@ -5,7 +5,8 @@ using System;
 public class game_Logic : MonoBehaviour {
 
 	public game_EnemyAI[] AIList;
-	private int[] RemovedTiles = new int[3];
+    private int AIcount;
+    private int[] RemovedTiles = new int[3];
     private bool CurrentAITurn;
     private bool Win;
 	private bool AIAnswer;
@@ -32,17 +33,18 @@ public class game_Logic : MonoBehaviour {
 	public void PlayAI()
 	{
 		CheckForWinner();
-		for(int i = 0; i < 3 && !Win && CurrentAITurn; i++)
+        AIcount = 0;
+        while (AIcount < 3 && !Win && CurrentAITurn)
 		{
             CurrentAITurn = false;
-            if (AIList[i].GetAiType() == 0)
-                StartCoroutine(EasyAI(i));
-			else if(AIList[i].GetAiType() == 1)
-                StartCoroutine(MidAI(i));
-			else if(AIList[i].GetAiType() == 2)
-                StartCoroutine(HardAI(i));
-			else if(AIList[i].GetAiType() == 3)
-                StartCoroutine(CheatingAI(i));
+            if (AIList[AIcount].GetAiType() == 0)
+                StartCoroutine(EasyAI(AIcount));
+			else if(AIList[AIcount].GetAiType() == 1)
+                StartCoroutine(MidAI(AIcount));
+			else if(AIList[AIcount].GetAiType() == 2)
+                StartCoroutine(HardAI(AIcount));
+			else if(AIList[AIcount].GetAiType() == 3)
+                StartCoroutine(CheatingAI(AIcount));
 		}
 	}
     #region AIList
@@ -180,6 +182,8 @@ public class game_Logic : MonoBehaviour {
 		Camera.main.GetComponent<game_UIController>().RemovePlayerAnswer(AiID);
         CurrentAITurn = true;
         CheckForWinner();
+        AIcount++;
+        Debug.Log("DASDASDASDA");
     }
 	#endregion
 }
