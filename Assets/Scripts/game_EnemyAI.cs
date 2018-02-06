@@ -2,19 +2,26 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum eEnemyDifficulty
+{
+    INVALID = 0,
+    EASY,
+    MEDIUM,
+    HARD,
+    INSANE,
+}
+
 public class game_EnemyAI : MonoBehaviour {
 
-	public int[] number = new int[7];
-	public int unknownNumber = 0;
-	/// <summary>
-	/// 0 = Easy AI
-	/// 1 = Mid AI
-	/// 2 = Hard AI
-	/// 3 = Cheating AI
-	/// </summary>
-	[Range(0,3)]
-	public int AiType;
-	public int AiID;
+    [SerializeField]
+    private int[] number = new int[7];
+    [SerializeField]
+    private int unknownNumber = 0;
+
+    [SerializeField]
+	private eEnemyDifficulty AiType;
+    [SerializeField]
+    private int AiID;
 
 	private List<Tile> TileHolder = new List<Tile>();
 	private List<KeyValuePair<int,float>> Choice = new List<KeyValuePair<int,float>>();
@@ -39,7 +46,7 @@ public class game_EnemyAI : MonoBehaviour {
 		return AiID;
 	}
 
-	public int GetAiType()
+	public eEnemyDifficulty GetAiType()
 	{
 		return AiType;
 	}
@@ -47,8 +54,8 @@ public class game_EnemyAI : MonoBehaviour {
 	public void GetChoices()
 	{
 		Choice.Clear();
-		TileHolder = TileController.tileController.GetList(AiID + 4);
-		unknownNumber = TileController.tileController.GetList(8).Count;
+		TileHolder = TileController.instance.GetList(AiID + 4);
+		unknownNumber = TileController.instance.GetList(8).Count;
 		for(int i = 0; i < 7; i++)
 		{
 			number[i] = 0;
@@ -73,7 +80,6 @@ public class game_EnemyAI : MonoBehaviour {
 
 	void AddChoice(int num, float chance)
 	{
-		//Debug.Log("ADDED");
 		Choice.Add(new KeyValuePair<int,float>(num, chance));
 	}
 
@@ -118,7 +124,9 @@ public class game_EnemyAI : MonoBehaviour {
 				counter++;
 			}
 			if(found)
-				Choice.RemoveAt(index);
+            {
+                Choice.RemoveAt(index);
+            }
 		}
 	}
 
@@ -133,16 +141,14 @@ public class game_EnemyAI : MonoBehaviour {
 
 	void ShowChoices()
 	{
-		//Debug.Log("COUNT: " + Choice.Count);
 		int number;
 		foreach(KeyValuePair<int,float> tile in Choice)
 		{
 			number = System.Convert.ToInt32(tile.Key);
-			Debug.Log("Tile: " + (number) + " has " + tile.Value + "%");
 		}
 	}
 
-	public int GetBestChoice()
+	public int GetBestChoiceForEasyMed()
 	{
 		foreach(KeyValuePair<int,float> tile in Choice)
 		{
@@ -151,7 +157,7 @@ public class game_EnemyAI : MonoBehaviour {
 		return 0;
 	}
 
-	public int GetBestChoice(int ai)
+	public int GetBestChoiceHard()
 	{
 		int counter = 0, index = 0;
 		foreach(KeyValuePair<int,float> tile in Choice)

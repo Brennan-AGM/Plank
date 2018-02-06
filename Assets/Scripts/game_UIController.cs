@@ -5,20 +5,37 @@ using System.Collections;
 public class game_UIController : MonoBehaviour {
 
 	[Header("TILEREFERENCE")]
-	public GameObject[]  ShownTileHolder;
-	public GameObject[]  PlayerTileHolder;
-	public GameObject  HiddenTileHolder;
+    [SerializeField]
+    private GameObject[]  ShownTileHolder;
+    [SerializeField]
+    private GameObject[]  PlayerTileHolder;
+    [SerializeField]
+    private GameObject  HiddenTileHolder;
 
 	[Header("RESPONSE")]
 	public GameObject[]  PlayerAnswer;
 	public GameObject[]  PlayerTurn;
 
 	[Header("RESULTS")]
-	public GameObject  Correct_gmobj;
-	public GameObject  Wrong_gmobj;
-	public GameObject  Winner_gmobj;
+    [SerializeField]
+    private GameObject  Correct_gmobj;
+    [SerializeField]
+    private GameObject  Wrong_gmobj;
+    [SerializeField]
+    private GameObject  Winner_gmobj;
 
-	public void Reset()
+    public static game_UIController instance = null;
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+        }
+
+        instance = this;
+    }
+
+    public void Reset()
 	{
 		ClearChildren(ShownTileHolder);
 		ClearChildren(PlayerTileHolder);
@@ -64,22 +81,21 @@ public class game_UIController : MonoBehaviour {
 		return PlayerTurn[value];
 	}
 
-	public void SetPlayerTurn(int value, int result)
+	public void SetPlayerTurn(int value, eTURNRESULT result)
 	{
 		Image target = PlayerTurn[value].GetComponent<Image>();
-		if(result == 1)
-		{
-			target.color = Color.green;
-		}
-		else if(result == 2)
-		{
-			target.color = Color.red;
-		}
-		else if(result == 0)
-		{
-			target.color = Color.white;
-		}
-
+        switch(result)
+        {
+            case eTURNRESULT.CORRECT:
+                target.color = Color.green;
+                break;
+            case eTURNRESULT.WRONG:
+                target.color = Color.red;
+                break;
+            case eTURNRESULT.TURN:
+                target.color = Color.white;
+                break;
+        }
 	}
 
 	public void GetPlayerAnswer(int value, int AiID)
@@ -111,4 +127,9 @@ public class game_UIController : MonoBehaviour {
 			Destroy(List.transform.GetChild(i).gameObject);
 		}
 	}
+
+    public void ShowTiles(int value)
+    {
+        TileController.instance.InstantiateTiles(value, -1);
+    }
 }

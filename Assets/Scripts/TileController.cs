@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class TileController : MonoBehaviour {
 
-	public static TileController tileController { get; private set; }
+	public static TileController instance { get; private set; }
 	private List<Tile> TileList = new List<Tile>();
 	private List<Tile> Player1 = new List<Tile>();
 	private List<Tile> Player2 = new List<Tile>();
@@ -24,12 +24,12 @@ public class TileController : MonoBehaviour {
 
 	void Awake()
 	{
-		if (tileController != null && tileController != this)
+		if (instance != null && instance != this)
 		{
 			Destroy(gameObject);
 		}
 		
-		tileController = this;
+		instance = this;
 		
 		DontDestroyOnLoad(gameObject);
 		Begin();
@@ -191,34 +191,24 @@ public class TileController : MonoBehaviour {
 		{
 		case 0:
 			return ShownTile;
-			break;
 		case 1:
 			return Player1;
-			break;
 		case 2:
 			return Player2;
-			break;
 		case 3:
 			return Player3;
-			break;
 		case 4:
 			return Player4;
-			break;
 		case 5:
 			return Player2KnownTiles;
-			break;
 		case 6:
 			return Player3KnownTiles;
-			break;
 		case 7:
 			return Player4KnownTiles;
-			break;
 		case 8:
 			return HiddenTile;
-			break;
 		default:
 			return null;
-			break;
 		}
 	}
 
@@ -260,7 +250,6 @@ public class TileController : MonoBehaviour {
 	{
 		List++;
 		List<Tile> TempList = GetList(List);
-		//Debug.Log(GetList(List).Count);
 		int counter = 0;
 		foreach(Tile T in TempList)
 		{
@@ -296,7 +285,6 @@ public class TileController : MonoBehaviour {
 	{
 		if(CheckList(value, ai))
 		{
-			InstantiateTiles(value, -1);
 			ReduceTile(GetTileReference(value, ai));
 			AddKnownTiles(value, ai + 3);
 			return true;
@@ -307,18 +295,17 @@ public class TileController : MonoBehaviour {
 		}
 	}
 
-	public void SendResponse(int value, int ai, int cheat)
+	public void SendResponseInsaneAI(int value, int ai)
 	{
 		if(CheckList(value, ai))
 		{
-			InstantiateTiles(value, -1);
 			ReduceTile(GetTileReference(value, ai));
 			AddKnownTiles(value, ai + 3);
 		}
 	}
 	#endregion
 
-	void InstantiateTiles(int value, int type)
+	public void InstantiateTiles(int value, int type)
 	{
 		GameObject target;
 		if(type == -2 || type == 0)
