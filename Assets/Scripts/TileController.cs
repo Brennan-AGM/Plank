@@ -52,7 +52,7 @@ public class TileController : MonoBehaviour {
 		Player3TilesReference.Clear();
 		Player4TilesReference.Clear();
 		distribNum = 0;
-		gameObject.GetComponent<game_UIController>().Reset();
+        game_UIController.instance.Reset();
 		Begin();
 	}
 
@@ -272,12 +272,12 @@ public class TileController : MonoBehaviour {
 			InstantiateTiles(value, -1);
 			ReduceTile(GetTileReference(value, 0));
 			//Debug.Log("Correct");
-			gameObject.GetComponent<game_UIController>().DetermineResult(true);
+			game_UIController.instance.DetermineResult(true);
 		}
 		else
 		{
 			//Debug.Log("Wrong");
-			gameObject.GetComponent<game_UIController>().DetermineResult(false);
+			game_UIController.instance.DetermineResult(false);
 		}
 	}
 
@@ -331,13 +331,13 @@ public class TileController : MonoBehaviour {
 		switch(type)
 		{
 		case -2:
-			return gameObject.GetComponent<game_UIController>().GetTileHolder(0, 2).transform;
+			return game_UIController.instance.GetTileHolder(0, 2).transform;
 			break;
 		case -1:
-			return gameObject.GetComponent<game_UIController>().GetTileHolder(value - 1, 0).transform;
+			return game_UIController.instance.GetTileHolder(value - 1, 0).transform;
 			break;
 		default:
-			return gameObject.GetComponent<game_UIController>().GetTileHolder(type, 1).transform;
+			return game_UIController.instance.GetTileHolder(type, 1).transform;
 			break;
 		}
 	}
