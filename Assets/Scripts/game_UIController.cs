@@ -24,6 +24,10 @@ public class game_UIController : MonoBehaviour {
     [SerializeField]
     private GameObject  Winner_gmobj;
 
+
+    [Header("Button")]
+    public Button pick_btn;
+
     public static game_UIController instance = null;
     private void Awake()
     {
@@ -49,25 +53,26 @@ public class game_UIController : MonoBehaviour {
 		case 0:
 			//id = (id > 6) ? id : 0;
 			return ShownTileHolder[id];
-			break;
 		case 1:
 			//id = (id > 3) ? id : 0;
 			return PlayerTileHolder[id];
-			break;
 		case 2:
 			return HiddenTileHolder;
-			break;
 		default:
 			return ShownTileHolder[0];
 		}
 	}
 
-	public void DetermineResult(bool value)
+	public void DetermineResult(eTURNRESULT result)
 	{
-		if(value)
-			Correct_gmobj.SetActive(true);
-		else
-			Wrong_gmobj.SetActive(true);
+		if(result == eTURNRESULT.CORRECT)
+        {
+            Correct_gmobj.SetActive(true);
+        }
+		else if (result == eTURNRESULT.WRONG)
+        {
+            Wrong_gmobj.SetActive(true);
+        }
 	}
 
 	public void GetWinner(string value)

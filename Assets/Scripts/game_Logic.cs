@@ -40,6 +40,7 @@ public class game_Logic : MonoBehaviour {
 	{
 		if(!HasWinner())
         {
+            game_UIController.instance.pick_btn.interactable = false;
             currentAITurn = 0;
             ContinueAI();
         }
@@ -47,6 +48,7 @@ public class game_Logic : MonoBehaviour {
 
     void ContinueAI()
     {
+        Debug.Log(currentAITurn);
         if(currentAITurn < 3)
         {
             switch (AIList[currentAITurn].GetAiType())
@@ -67,15 +69,13 @@ public class game_Logic : MonoBehaviour {
         }
         else
         {
-            //Player Turn
-            Debug.Log("PLAYER TURN");
+            game_UIController.instance.pick_btn.interactable = true;
         }
     }
 
     #region AIList
     IEnumerator EasyAI(int value)
 	{
-        Debug.Log("START");
         int bestChoice = AIList[value].GetBestChoiceForEasyMed();
         int aiID = AIList[value].GetAiID();
         if (TileController.instance.SendResponse(bestChoice, aiID))
@@ -208,11 +208,16 @@ public class game_Logic : MonoBehaviour {
         Debug.Log("DELAY START");
         game_UIController.instance.GetPlayerTurn(aiID).SetActive(true);
         game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.TURN);
-        yield return new WaitForSeconds (3.0f);
+        yield return new WaitForSeconds(1.5f);
         game_UIController.instance.GetPlayerAnswer(value, aiID);
-        game_UIController.instance.ShowTiles(value);
-        TurnOnHighlight(AIAnswer, aiID);
         yield return new WaitForSeconds (1.5f);
+        if(AIAnswer)
+        {
+            TileController.instance.RemoveTile(value, aiID);
+            game_UIController.instance.ShowTiles(value);
+        }
+        TurnOnHighlight(AIAnswer, aiID);
+        yield return new WaitForSeconds (1.0f);
         Debug.Log("DELAY END");
         StartCoroutine(DelayAIEnd(aiID));
     }
@@ -220,7 +225,7 @@ public class game_Logic : MonoBehaviour {
 	IEnumerator DelayAIEnd(int AiID)
     {
         Debug.Log("END START");
-        yield return new WaitForSeconds (1.5f);
+        yield return new WaitForSeconds (1.0f);
 		game_UIController.instance.GetPlayerTurn(AiID).SetActive(false);
 		game_UIController.instance.RemovePlayerAnswer(AiID);
         CurrentAITurn = true;

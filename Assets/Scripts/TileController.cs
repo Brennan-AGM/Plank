@@ -32,8 +32,12 @@ public class TileController : MonoBehaviour {
 		instance = this;
 		
 		DontDestroyOnLoad(gameObject);
-		Begin();
 	}
+
+    void Start()
+    {
+        Begin();
+    }
 
 	public void Reset()
 	{
@@ -83,38 +87,6 @@ public class TileController : MonoBehaviour {
 			
 			count++;
 		}
-	}
-
-	void Start()
-	{
-//		foreach(Tile T in Player1)
-//		{
-//			Debug.Log("P1 Tiles:"+T.GetTileValue());
-//		}
-//		foreach(Tile T in Player2)
-//		{
-//			Debug.Log("P2 Tiles:"+T.GetTileValue());
-//		}
-//		foreach(Tile T in Player3)
-//		{
-//			Debug.Log("P3 Tiles:"+T.GetTileValue());
-//		}
-//		foreach(Tile T in Player4)
-//		{
-//			Debug.Log("P4 Tiles:"+T.GetTileValue());
-//		}
-//		foreach(Tile T in HiddenTile)
-//		{
-//			Debug.Log("Hidden Tiles:"+T.GetTileValue());
-//		}
-//		foreach(Tile T in ShownTile)
-//		{
-//			Debug.Log("Shown Tiles:"+T.GetTileValue());
-//		}
-//		foreach(Tile T in Player2KnownTiles)
-//		{
-//			Debug.Log("P2 Known:"+T.GetTileValue());
-//		}
 	}
 
 	void DistributeTiles(int value)
@@ -272,12 +244,12 @@ public class TileController : MonoBehaviour {
 			InstantiateTiles(value, -1);
 			ReduceTile(GetTileReference(value, 0));
 			//Debug.Log("Correct");
-			game_UIController.instance.DetermineResult(true);
+			game_UIController.instance.DetermineResult(eTURNRESULT.CORRECT);
 		}
 		else
 		{
 			//Debug.Log("Wrong");
-			game_UIController.instance.DetermineResult(false);
+			game_UIController.instance.DetermineResult(eTURNRESULT.WRONG);
 		}
 	}
 
@@ -285,7 +257,6 @@ public class TileController : MonoBehaviour {
 	{
 		if(CheckList(value, ai))
 		{
-			ReduceTile(GetTileReference(value, ai));
 			AddKnownTiles(value, ai + 3);
 			return true;
 		}
@@ -332,13 +303,10 @@ public class TileController : MonoBehaviour {
 		{
 		case -2:
 			return game_UIController.instance.GetTileHolder(0, 2).transform;
-			break;
 		case -1:
 			return game_UIController.instance.GetTileHolder(value - 1, 0).transform;
-			break;
 		default:
 			return game_UIController.instance.GetTileHolder(type, 1).transform;
-			break;
 		}
 	}
 
@@ -349,7 +317,7 @@ public class TileController : MonoBehaviour {
 
 	public int GetTile(List<Tile> TileList_new)
 	{
-		int TileValue= 0, counter = 0, 
+		int counter = 0, 
 		randomN = Random.Range(0, TileList_new.Count - 1);
 		foreach(Tile T in TileList_new)
 		{
@@ -415,4 +383,9 @@ public class TileController : MonoBehaviour {
 
 		return Temp_gmobj;
 	}
+
+    public void RemoveTile(int value, int aiID)
+    {
+        ReduceTile(GetTileReference(value, aiID));
+    }
 }

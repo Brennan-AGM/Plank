@@ -75,7 +75,7 @@ public class game_EnemyAI : MonoBehaviour {
 		}
 		//RemoveZeroes();
 		SortChoices();
-		ShowChoices();
+		//ShowChoices();
 	}
 
 	void AddChoice(int num, float chance)
