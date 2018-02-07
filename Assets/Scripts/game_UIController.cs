@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using DG.Tweening;
 
 public class game_UIController : MonoBehaviour {
 
@@ -13,8 +14,10 @@ public class game_UIController : MonoBehaviour {
     private GameObject  HiddenTileHolder;
 
 	[Header("RESPONSE")]
-	public GameObject[]  PlayerAnswer;
-	public GameObject[]  PlayerTurn;
+    [SerializeField]
+	private TileNumber[]  PlayerAnswer;
+    [SerializeField]
+    private GameObject[]  PlayerTurn;
 
 	[Header("RESULTS")]
     [SerializeField]
@@ -92,26 +95,26 @@ public class game_UIController : MonoBehaviour {
         switch(result)
         {
             case eTURNRESULT.CORRECT:
-                target.color = Color.green;
+                target.DOColor(Color.green, 0.5f);
                 break;
             case eTURNRESULT.WRONG:
-                target.color = Color.red;
+                target.DOColor(Color.red, 0.5f);
                 break;
             case eTURNRESULT.TURN:
-                target.color = Color.white;
+                target.DOColor(Color.white, 0.0f);
                 break;
         }
 	}
 
 	public void GetPlayerAnswer(int value, int AiID)
 	{
-		PlayerAnswer[AiID].SetActive(true);
-		PlayerAnswer[AiID].GetComponent<Image>().sprite = (Sprite)Resources.Load("Number/Number" + value, typeof(Sprite)); 
+		PlayerAnswer[AiID].gameObject.SetActive(true);
+        PlayerAnswer[AiID].SetNumber(value);
 	}
 
 	public void RemovePlayerAnswer(int AiID)
 	{
-		PlayerAnswer[AiID].SetActive(false);
+		PlayerAnswer[AiID].gameObject.SetActive(false);
 	}
 
 	void ClearChildren(GameObject[] List)

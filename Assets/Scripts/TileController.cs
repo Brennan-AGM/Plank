@@ -286,7 +286,7 @@ public class TileController : MonoBehaviour {
 		else
 		{
 			target = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"));
-			target.GetComponentInChildren<game_TileAsset>().LoadAsset(value);
+			target.GetComponentInChildren<TileNumber>().SetNumber(value);
 		}
 
 		if(type >= 0 && type <=3)
@@ -355,13 +355,21 @@ public class TileController : MonoBehaviour {
 		List<KeyValuePair<int,GameObject>> TempList = new List<KeyValuePair<int,GameObject>>();
 		GameObject Temp_gmobj = null;
 		if(type == 0)
-			TempList = Player1TilesReference;
+        {
+            TempList = Player1TilesReference;
+        }
 		else if(type == 1)
-			TempList = Player2TilesReference;
+        {
+            TempList = Player2TilesReference;
+        }
 		else if(type == 2)
-			TempList = Player3TilesReference;
+        {
+            TempList = Player3TilesReference;
+        }
 		else if(type == 3)
-			TempList = Player4TilesReference;
+        {
+            TempList = Player4TilesReference;
+        }
 
 		foreach(KeyValuePair<int,GameObject> tile in TempList)
 		{
@@ -373,13 +381,21 @@ public class TileController : MonoBehaviour {
 		TempList.Remove(new KeyValuePair<int,GameObject>(value, Temp_gmobj));
 
 		if(type == 0)
-			Player1TilesReference = TempList;
+        {
+            Player1TilesReference = TempList;
+        }
 		else if(type == 1)
-			Player2TilesReference = TempList;
+        {
+            Player2TilesReference = TempList;
+        }
 		else if(type == 2)
-			Player3TilesReference = TempList;
+        {
+            Player3TilesReference = TempList;
+        }
 		else if(type == 3)
-			Player4TilesReference = TempList;
+        {
+            Player4TilesReference = TempList;
+        }
 
 		return Temp_gmobj;
 	}
