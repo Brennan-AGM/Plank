@@ -1,0 +1,16 @@
+Princess, Duchess, King, Prince, Handmaid, Baron, Priest, Guard
+
+Easy
+Princess, Random
+
+Medium
+Princess, Duchess, Prince, King, Handmaid, Guard, Baron, Priest
+
+Hard
+Princess, Duchess, Handmaid, King, Prince, Guard, Baron, Priest
+
+Cheater
+Princess, Prince, Guard, Baron, Priest
+
+
+also need a guide/reminder

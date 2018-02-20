@@ -2,17 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum eEnemyDifficulty
+{
+    INVALID = 0,
+    EASY,
+    MEDIUM,
+    HARD,
+    INSANE,
+}
+
 namespace BBSL_DOMEMO
 {
-    public enum eEnemyDifficulty
-    {
-        INVALID = 0,
-        EASY,
-        MEDIUM,
-        HARD,
-        INSANE,
-    }
-
     public class game_EnemyAI : MonoBehaviour
     {
 

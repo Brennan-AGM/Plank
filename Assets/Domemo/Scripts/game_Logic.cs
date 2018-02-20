@@ -14,7 +14,6 @@ namespace BBSL_DOMEMO
 
     public class game_Logic : MonoBehaviour
     {
-
         public game_EnemyAI[] AIList;
         private int currentAITurn;
         private int[] RemovedTiles = new int[3];

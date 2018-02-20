@@ -61,6 +61,11 @@
      <Compile Include="Assets\Domemo\Scripts\TileController.cs" />
      <Compile Include="Assets\Domemo\Scripts\TileNumber.cs" />
      <Compile Include="Assets\Domemo\Sprites\Simple Vector Icons\Sample\IconPreview.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\Card.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\CardController.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\CardNumber.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\game_EnemyAI.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\game_Logic.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
@@ -96,6 +101,7 @@
      <None Include="Assets\Demigiant\DOTween\readme.txt" />
      <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
+     <None Include="Assets\LoveLetter\AI.txt" />
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
