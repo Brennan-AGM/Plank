@@ -53,14 +53,14 @@
   <ItemGroup>
      <Compile Include="Assets\Demigiant\DOTween\Examples\Basics.cs" />
      <Compile Include="Assets\Demigiant\DOTween\Examples\Sequences.cs" />
-     <Compile Include="Assets\Scripts\game_EnemyAI.cs" />
-     <Compile Include="Assets\Scripts\game_Logic.cs" />
-     <Compile Include="Assets\Scripts\game_UIController.cs" />
-     <Compile Include="Assets\Scripts\GameController.cs" />
-     <Compile Include="Assets\Scripts\Tile.cs" />
-     <Compile Include="Assets\Scripts\TileController.cs" />
-     <Compile Include="Assets\Scripts\TileNumber.cs" />
-     <Compile Include="Assets\Sprites\Simple Vector Icons\Sample\IconPreview.cs" />
+     <Compile Include="Assets\Domemo\Scripts\game_EnemyAI.cs" />
+     <Compile Include="Assets\Domemo\Scripts\game_Logic.cs" />
+     <Compile Include="Assets\Domemo\Scripts\game_UIController.cs" />
+     <Compile Include="Assets\Domemo\Scripts\GameController.cs" />
+     <Compile Include="Assets\Domemo\Scripts\Tile.cs" />
+     <Compile Include="Assets\Domemo\Scripts\TileController.cs" />
+     <Compile Include="Assets\Domemo\Scripts\TileNumber.cs" />
+     <Compile Include="Assets\Domemo\Sprites\Simple Vector Icons\Sample\IconPreview.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
