@@ -190,5 +190,25 @@ namespace BBSL_LOVELETTER
                     break;
             }
         }
+
+        public List<game_EnemyAI> GetValidAIPlayers()
+        {
+            List<game_EnemyAI> enemyAIs = new List<game_EnemyAI>();
+            for (int i = 0; i < AIList.Length; i++)
+            {
+                if(AIList[i].IsTargetable())
+                {
+                    enemyAIs.Add(AIList[i]);
+                }
+            }
+            return enemyAIs;
+        }
+
+        public bool IsPlayerValidPlayer()
+        {
+            //IF player is valid numberOfValidPlayers++;
+            //IF player is only valid target numberOfValidPlayers = -1
+            return true;
+        }
     }
 }
