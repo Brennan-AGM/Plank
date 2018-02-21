@@ -25,7 +25,7 @@ namespace BBSL_LOVELETTER
         private List<Card> MaxCardsList = new List<Card>();
         private List<Card> GameCardsList = new List<Card>();
         private List<Card> CurrentDrawPileList = new List<Card>();
-        private Card player1Card = new Card(eCARDVALUES.INVALID);
+        public Card player1Card = new Card(eCARDVALUES.INVALID);
         private Card missingCard = new Card(eCARDVALUES.INVALID);
 
         [SerializeField]
@@ -101,7 +101,7 @@ namespace BBSL_LOVELETTER
             CurrentDrawPileList.RemoveAt(value);
         }
 
-        void DrawMissingCard(eTargetPlayer player)
+        public void DrawMissingCard(eTargetPlayer player)
         {
             if (player >= eTargetPlayer.AI1)
             {
@@ -113,21 +113,21 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        void AddKnownCard(eCARDVALUES value, int id = 0)
+        public void AddKnownCard(eCARDVALUES value, eTargetPlayer AIIndex = eTargetPlayer.INVALID)
         {
-            if (id == 0)
+            if (AIIndex == eTargetPlayer.INVALID)
             {
                 ShownCard.Add(new Card(value));
             }
-            else if (id == 1)
+            else if (AIIndex == eTargetPlayer.AI1)
             {
                 Player2AddKhownCards.Add(new Card(value));
             }
-            else if (id == 2)
+            else if (AIIndex == eTargetPlayer.AI2)
             {
                 Player3AddKhownCards.Add(new Card(value));
             }
-            else if (id == 3)
+            else if (AIIndex == eTargetPlayer.AI3)
             {
                 Player4AddKhownCards.Add(new Card(value));
             }
@@ -158,40 +158,12 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        void PlayerUseCard(eCARDVALUES card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        public void PlayerUseCard(eCARDVALUES card)
         {
             ShownCard.Add(new Card(card));
-            switch (card)
-            {
-                case eCARDVALUES.GUARD:
-                    break;
-                case eCARDVALUES.PRIEST:
-                    break;
-                case eCARDVALUES.BARON:
-                    break;
-                case eCARDVALUES.HANDMAID:
-                    break;
-                case eCARDVALUES.PRINCE:
-                    if (!CheckIfDrawPileEmpty())
-                    {
-                        DrawCard(targetPlayer);
-                    }
-                    else
-                    {
-                        DrawMissingCard(targetPlayer);
-                    }
-                    break;
-                case eCARDVALUES.KING:
-                    break;
-                case eCARDVALUES.DUCHESS:
-                    break;
-                case eCARDVALUES.PRINCESS:
-                    //lose
-                    break;
-            }
         }
 
-        void AIUseCard(eCARDVALUES card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        public void AIUseCard(eCARDVALUES card, eTargetPlayer AIIndex)
         {
             ShownCard.Add(new Card(card));
             if(AIIndex == eTargetPlayer.AI1)
@@ -206,37 +178,9 @@ namespace BBSL_LOVELETTER
             {
                 Player4AddKhownCards.Remove(new Card(card));
             }
-            switch (card)
-            {
-                case eCARDVALUES.GUARD:
-                    break;
-                case eCARDVALUES.PRIEST:
-                    break;
-                case eCARDVALUES.BARON:
-                    break;
-                case eCARDVALUES.HANDMAID:
-                    break;
-                case eCARDVALUES.PRINCE:
-                    if(!CheckIfDrawPileEmpty())
-                    {
-                        DrawCard(targetPlayer);
-                    }
-                    else
-                    {
-                        DrawMissingCard(targetPlayer);
-                    }
-                    break;
-                case eCARDVALUES.KING:
-                    break;
-                case eCARDVALUES.DUCHESS:
-                    break;
-                case eCARDVALUES.PRINCESS:
-                    //lose
-                    break;
-            }
         }
 
-        bool CheckIfDrawPileEmpty()
+        public bool CheckIfDrawPileEmpty()
         {
             if(CurrentDrawPileList.Count == 0)
             {

@@ -17,14 +17,20 @@ namespace BBSL_LOVELETTER
         //CARD TO USE
         private Card Card2nd = new Card(eCARDVALUES.INVALID);
 
-        public void DrawNewCard2()
-        {
+        private bool targetable = true;
 
+        public bool IsTargetable()
+        {
+            return targetable;
+        }
+
+        public void SetTargetable(bool isTargetable)
+        {
+            targetable = isTargetable;
         }
         
         public void DrawNewCard(eCARDVALUES cardValue)
         {
-            
             if (Card1st.GetCardValue() == eCARDVALUES.INVALID)
             {
                 Card1st.SetCardValue(cardValue);
@@ -49,6 +55,11 @@ namespace BBSL_LOVELETTER
                     }
                 }
             }
+        }
+
+        public void SetNewCard(eCARDVALUES cardValue)
+        {
+            Card1st.SetCardValue(cardValue);
         }
 
         bool CheckWithAICardValue(eCARDVALUES cardValue)
@@ -113,6 +124,11 @@ namespace BBSL_LOVELETTER
         {
             Card1st = new Card(eCARDVALUES.INVALID);
             Card2nd = new Card(eCARDVALUES.INVALID);
+        }
+
+        public eCARDVALUES Get1stCardValue()
+        {
+            return Card1st.GetCardValue();
         }
     }
 }
