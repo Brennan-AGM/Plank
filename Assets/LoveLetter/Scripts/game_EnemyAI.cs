@@ -106,17 +106,122 @@ namespace BBSL_LOVELETTER
 
         bool CheckCardMediumAI(eCARDVALUES cardValue)
         {
-            //CardController.
-            return true;
+            //Duchess, Prince, King, Handmaid, Guard, Baron, Priest
+
+            if(CardController.instance.CardsLeftInDrawPile() > 3)
+            {
+                if (cardValue == eCARDVALUES.DUCHESS || cardValue == eCARDVALUES.PRINCE)
+                {
+                    //Change current card
+                    return true;
+                }
+                else if (cardValue == eCARDVALUES.KING)
+                {
+                    if(Card1st.GetCardValue() == eCARDVALUES.PRINCE)
+                    {
+                        //Play King card
+                        return false;
+                    }
+                    //Change current card
+                    return true;
+                }
+                else if (cardValue == eCARDVALUES.HANDMAID)
+                {
+                    if (Card1st.GetCardValue() >= eCARDVALUES.HANDMAID)
+                    {
+                        //Play Handmaid card
+                        return false;
+                    }
+                    //Change current card
+                    return true;
+                }
+                else if (cardValue == eCARDVALUES.GUARD)
+                {
+                    if (Card1st.GetCardValue() != eCARDVALUES.BARON || Card1st.GetCardValue() != eCARDVALUES.PRIEST)
+                    {
+                        //Play Guard card
+                        return false;
+                    }
+                    //Change current card
+                    return true;
+                }
+                //Play obtained card
+                return false;
+            }
+            else
+            {
+                //Last Card maybe
+                if (Card1st.GetCardValue() >= cardValue)
+                {
+                    //Play Obtained card
+                    return false;
+                }
+                //Change current card
+                return true;
+            }
         }
 
         bool CheckCardHardAI(eCARDVALUES cardValue)
         {
-            return true;
+            //BETTER HARD AI
+            //Duchess, Handmaid, King, Prince, Guard, Baron, Priest
+
+            if (CardController.instance.CardsLeftInDrawPile() > 2)
+            {
+                if (cardValue == eCARDVALUES.DUCHESS || cardValue == eCARDVALUES.HANDMAID)
+                {
+                    //Change current card
+                    return true;
+                }
+                else if (cardValue == eCARDVALUES.KING)
+                {
+                    if (Card1st.GetCardValue() == eCARDVALUES.HANDMAID)
+                    {
+                        //Play King card
+                        return false;
+                    }
+                    //Change current card
+                    return true;
+                }
+                else if (cardValue == eCARDVALUES.HANDMAID)
+                {
+                    if (Card1st.GetCardValue() >= eCARDVALUES.HANDMAID)
+                    {
+                        //Play Handmaid card
+                        return false;
+                    }
+                    //Change current card
+                    return true;
+                }
+                else if (cardValue == eCARDVALUES.GUARD)
+                {
+                    if (Card1st.GetCardValue() != eCARDVALUES.BARON || Card1st.GetCardValue() != eCARDVALUES.PRIEST)
+                    {
+                        //Play Guard card
+                        return false;
+                    }
+                    //Change current card
+                    return true;
+                }
+                //Play obtained card
+                return false;
+            }
+            else
+            {
+                //Last Card maybe
+                if (Card1st.GetCardValue() >= cardValue)
+                {
+                    //Play Obtained card
+                    return false;
+                }
+                //Change current card
+                return true;
+            }
         }
 
         bool CheckCardInsaneAI(eCARDVALUES cardValue)
         {
+            //BETTER INSANE AI
             return true;
         }
 
@@ -129,6 +234,13 @@ namespace BBSL_LOVELETTER
         public eCARDVALUES Get1stCardValue()
         {
             return Card1st.GetCardValue();
+        }
+
+        public eCARDVALUES UseGet2ndCardValue()
+        {
+            eCARDVALUES value = Card2nd.GetCardValue();
+            Card2nd.SetCardValue(eCARDVALUES.INVALID);
+            return value;
         }
     }
 }

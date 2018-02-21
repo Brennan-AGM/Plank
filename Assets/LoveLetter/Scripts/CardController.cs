@@ -188,5 +188,10 @@ namespace BBSL_LOVELETTER
             }
             return false;
         }
+
+        public int CardsLeftInDrawPile()
+        {
+            return CurrentDrawPileList.Count;
+        }
     }
 }
