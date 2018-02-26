@@ -138,18 +138,19 @@ namespace BBSL_LOVELETTER
             switch (index)
             {
                 case eTargetPlayer.PLAYER:
-                    player1Card.SetCardValue(card);
+
+                    //game_Logic.instance.GetPlayer().SetCardValue(card);
                     break;
                 case eTargetPlayer.AI1:
-                    game_logic.GetAIList(eTargetPlayer.AI1).DrawNewCard(card);
+                    game_Logic.instance.GetAIList(eTargetPlayer.AI1).DrawNewCard(card);
                     Player2AddKhownCards.Add(new Card(card));
                     break;
                 case eTargetPlayer.AI2:
-                    game_logic.GetAIList(eTargetPlayer.AI2).DrawNewCard(card);
+                    game_Logic.instance.GetAIList(eTargetPlayer.AI2).DrawNewCard(card);
                     Player3AddKhownCards.Add(new Card(card));
                     break;
                 case eTargetPlayer.AI3:
-                    game_logic.GetAIList(eTargetPlayer.AI3).DrawNewCard(card);
+                    game_Logic.instance.GetAIList(eTargetPlayer.AI3).DrawNewCard(card);
                     Player4AddKhownCards.Add(new Card(card));
                     break;
                 case eTargetPlayer.INVALID:

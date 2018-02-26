@@ -557,6 +557,11 @@ namespace BBSL_LOVELETTER
             return null;
         }
 
+        public game_Player GetPlayer()
+        {
+            return Player;
+        }
+
         void KillPLayer(eTargetPlayer targetPlayer)
         {
             if (targetPlayer == eTargetPlayer.PLAYER)
