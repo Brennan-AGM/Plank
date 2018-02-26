@@ -30,30 +30,54 @@ namespace BBSL_LOVELETTER
             instance = this;
         }
 
+        void GetNextPLayer()
+        {
+
+        }
+
         void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
         {
             CardController.instance.PlayerUseCard(card);
             switch (card)
             {
                 case eCardValues.GUARD:
+                    if (GuardCardUsed(card, targetPlayer) == eResult.WIN)
+                    {
+                        KillPLayer(targetPlayer);
+                    }
                     break;
                 case eCardValues.PRIEST:
                     PriestCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
                 case eCardValues.BARON:
-                    BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                    eResult result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                    if (result == eResult.WIN)
+                    {
+                        KillPLayer(targetPlayer);
+                    }
+                    else if (result == eResult.LOSE)
+                    {
+                        KillPLayer(eTargetPlayer.PLAYER);
+                    }
                     break;
                 case eCardValues.HANDMAID:
                     HandMaidCardUsed(eTargetPlayer.PLAYER);
                     break;
                 case eCardValues.PRINCE:
-                    if (!CardController.instance.CheckIfDrawPileEmpty())
+                    if (PrinceCardUsed(targetPlayer) == eResult.DRAW)
                     {
-                        CardController.instance.DrawCard(targetPlayer);
+                        if (!CardController.instance.CheckIfDrawPileEmpty())
+                        {
+                            CardController.instance.DrawCard(targetPlayer);
+                        }
+                        else
+                        {
+                            CardController.instance.DrawMissingCard(targetPlayer);
+                        }
                     }
                     else
                     {
-                        CardController.instance.DrawMissingCard(targetPlayer);
+                        KillPLayer(targetPlayer);
                     }
                     break;
                 case eCardValues.KING:
@@ -63,9 +87,11 @@ namespace BBSL_LOVELETTER
                     //do nothing
                     break;
                 case eCardValues.PRINCESS:
-                    //lose
+                    KillPLayer(eTargetPlayer.PLAYER);
                     break;
             }
+            //Show card used
+            //Get Next player
         }
 
         public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
@@ -74,8 +100,10 @@ namespace BBSL_LOVELETTER
             switch (card)
             {
                 case eCardValues.GUARD:
-
-                    KillPLayer(targetPlayer);
+                    if(GuardCardUsed(card, targetPlayer) == eResult.WIN)
+                    {
+                        KillPLayer(targetPlayer);
+                    }
                     break;
                 case eCardValues.PRIEST:
                     PriestCardUsed(AIIndex, targetPlayer);
@@ -120,79 +148,25 @@ namespace BBSL_LOVELETTER
                 case eCardValues.PRINCESS:
                     //lose
                     KillPLayer(AIIndex);
-                    PostResult(eResult.LOSE, AIIndex);
                     break;
             }
             //Show card used
             //Get Next player
         }
 
-        //void PostResult(eResult result, eTargetPlayer initialPlayer, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
-        //{
-        //    switch(result)
-        //    {
-        //        case eResult.WIN:
-        //            if(GetAIList(targetPlayer) != null)
-        //            {
-        //                GetAIList(targetPlayer).SetPlay(false);
-        //            }
-        //            else
-        //            {
-        //                Player.SetPlay(false);
-        //            }
-        //            break;
-        //        case eResult.LOSE:
-        //            if (GetAIList(initialPlayer) != null)
-        //            {
-        //                GetAIList(initialPlayer).SetPlay(false);
-        //            }
-        //            else
-        //            {
-        //                Player.SetPlay(false);
-        //            }
-        //            break;
-        //    }
-        //}
-
-        /// <summary>
-        /// Handmaid protects player from getting targetted till the next draw
-        /// </summary>
-        /// <param name="player"></param>
-        void HandMaidCardUsed(eTargetPlayer player)
-        {
-            switch(player)
-            {
-                case eTargetPlayer.PLAYER:
-                    Player.SetTargetable(false);
-                    break;
-                case eTargetPlayer.AI1:
-                    AIList[0].SetTargetable(false);
-                    break;
-                case eTargetPlayer.AI2:
-                    AIList[1].SetTargetable(false);
-                    break;
-                case eTargetPlayer.AI3:
-                    AIList[2].SetTargetable(false);
-                    break;
-            }
-        }
-
+        #region Card Used
         /// <summary>
         /// Baron card let's AI compare card with a target player; the player with the higher value wins otherwise nothing happens
         /// </summary>
-        /// <param name="initialPlayer"></param>
+        /// <param name="targetCard"></param>
         /// <param name="targetPlayer"></param>
         /// <returns></returns>
-        eResult BaronCardUsed(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
+        eResult GuardCardUsed(eCardValues targetCard, eTargetPlayer targetPlayer)
         {
             eResult result = eResult.DRAW;
-            if(GetCard(initialPlayer) > GetCard(targetPlayer))
+            if (targetCard == GetCard(targetPlayer) && targetCard != eCardValues.INVALID)
             {
                 result = eResult.WIN;
-            }
-            else if (GetCard(initialPlayer) > GetCard(targetPlayer))
-            {
-                result = eResult.LOSE;
             }
             return result;
         }
@@ -209,7 +183,56 @@ namespace BBSL_LOVELETTER
             {
                 CardController.instance.AddKnownCard(card, AIIndex);
             }
-            //show card
+            else
+            {
+                //show card
+            }
+        }
+
+        /// <summary>
+        /// Baron card let's AI compare card with a target player; the player with the higher value wins otherwise nothing happens
+        /// </summary>
+        /// <param name="initialPlayer"></param>
+        /// <param name="targetPlayer"></param>
+        /// <returns></returns>
+        eResult BaronCardUsed(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
+        {
+            eResult result = eResult.DRAW;
+            if(targetPlayer != eTargetPlayer.INVALID)
+            {
+                if (GetCard(initialPlayer) > GetCard(targetPlayer))
+                {
+                    result = eResult.WIN;
+                }
+                else if (GetCard(initialPlayer) > GetCard(targetPlayer))
+                {
+                    result = eResult.LOSE;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Handmaid protects player from getting targetted till the next draw
+        /// </summary>
+        /// <param name="player"></param>
+        void HandMaidCardUsed(eTargetPlayer player)
+        {
+            switch (player)
+            {
+                case eTargetPlayer.PLAYER:
+                    Player.SetTargetable(false);
+                    break;
+                case eTargetPlayer.AI1:
+                    AIList[0].SetTargetable(false);
+                    break;
+                case eTargetPlayer.AI2:
+                    AIList[1].SetTargetable(false);
+                    break;
+                case eTargetPlayer.AI3:
+                    AIList[2].SetTargetable(false);
+                    break;
+            }
         }
 
         /// <summary>
@@ -260,7 +283,9 @@ namespace BBSL_LOVELETTER
                 CardController.instance.AddKnownCard(card, targetPlayer);
             }
         }
+        #endregion
 
+        #region Player related
         eCardValues GetCard(eTargetPlayer player)
         {
             eCardValues card = eCardValues.INVALID;
@@ -346,4 +371,5 @@ namespace BBSL_LOVELETTER
             }
         }
     }
+    #endregion
 }
