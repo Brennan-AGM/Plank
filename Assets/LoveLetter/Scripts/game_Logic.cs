@@ -15,25 +15,39 @@ namespace BBSL_LOVELETTER
     public class game_Logic : MonoBehaviour
     {
         private bool playerTargetable = true;
-        public game_EnemyAI[] AIList;
+        [SerializeField]
+        private game_EnemyAI[] AIList;
+        [SerializeField]
+        private game_Player Player;
 
-        void PlayerUseCard(eCARDVALUES card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        public static game_Logic instance = null;
+        private void Awake()
+        {
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+            }
+
+            instance = this;
+        }
+
+        void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
         {
             CardController.instance.PlayerUseCard(card);
             switch (card)
             {
-                case eCARDVALUES.GUARD:
+                case eCardValues.GUARD:
                     break;
-                case eCARDVALUES.PRIEST:
+                case eCardValues.PRIEST:
                     PriestCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
-                case eCARDVALUES.BARON:
+                case eCardValues.BARON:
                     BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
-                case eCARDVALUES.HANDMAID:
+                case eCardValues.HANDMAID:
                     playerTargetable = false;
                     break;
-                case eCARDVALUES.PRINCE:
+                case eCardValues.PRINCE:
                     if (!CardController.instance.CheckIfDrawPileEmpty())
                     {
                         CardController.instance.DrawCard(targetPlayer);
@@ -43,35 +57,35 @@ namespace BBSL_LOVELETTER
                         CardController.instance.DrawMissingCard(targetPlayer);
                     }
                     break;
-                case eCARDVALUES.KING:
+                case eCardValues.KING:
                     KingCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
-                case eCARDVALUES.COUNTESS:
+                case eCardValues.COUNTESS:
                     //do nothing
                     break;
-                case eCARDVALUES.PRINCESS:
+                case eCardValues.PRINCESS:
                     //lose
                     break;
             }
         }
 
-        void AIUseCard(eCARDVALUES card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
         {
             CardController.instance.AIUseCard(card, AIIndex);
             switch (card)
             {
-                case eCARDVALUES.GUARD:
+                case eCardValues.GUARD:
                     break;
-                case eCARDVALUES.PRIEST:
+                case eCardValues.PRIEST:
                     PriestCardUsed(AIIndex, targetPlayer);
                     break;
-                case eCARDVALUES.BARON:
+                case eCardValues.BARON:
                     BaronCardUsed(AIIndex, targetPlayer);
                     break;
-                case eCARDVALUES.HANDMAID:
+                case eCardValues.HANDMAID:
                     AIUsedHandMaid(AIIndex);
                     break;
-                case eCARDVALUES.PRINCE:
+                case eCardValues.PRINCE:
                     if (!CardController.instance.CheckIfDrawPileEmpty())
                     {
                         CardController.instance.DrawCard(targetPlayer);
@@ -81,13 +95,13 @@ namespace BBSL_LOVELETTER
                         CardController.instance.DrawMissingCard(targetPlayer);
                     }
                     break;
-                case eCARDVALUES.KING:
+                case eCardValues.KING:
                     KingCardUsed(AIIndex, targetPlayer);
                     break;
-                case eCARDVALUES.COUNTESS:
+                case eCardValues.COUNTESS:
                     //do nothing
                     break;
-                case eCARDVALUES.PRINCESS:
+                case eCardValues.PRINCESS:
                     //lose
                     break;
             }
@@ -125,7 +139,7 @@ namespace BBSL_LOVELETTER
 
         void PriestCardUsed(eTargetPlayer targetPlayer, eTargetPlayer AIIndex = eTargetPlayer.PLAYER)
         {
-            eCARDVALUES card = GetCard(targetPlayer);
+            eCardValues card = GetCard(targetPlayer);
             if (AIIndex != eTargetPlayer.PLAYER)
             {
                 CardController.instance.AddKnownCard(card, AIIndex);
@@ -135,8 +149,8 @@ namespace BBSL_LOVELETTER
 
         void KingCardUsed(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
         {
-            eCARDVALUES card = GetCard(initialPlayer);
-            eCARDVALUES card2 = GetCard(targetPlayer);
+            eCardValues card = GetCard(initialPlayer);
+            eCardValues card2 = GetCard(targetPlayer);
             ChangeCard(initialPlayer, card2);
             ChangeCard(targetPlayer, card);
 
@@ -151,9 +165,9 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        eCARDVALUES GetCard(eTargetPlayer player)
+        eCardValues GetCard(eTargetPlayer player)
         {
-            eCARDVALUES card = eCARDVALUES.INVALID;
+            eCardValues card = eCardValues.INVALID;
             switch (player)
             {
                 case eTargetPlayer.PLAYER:
@@ -172,7 +186,7 @@ namespace BBSL_LOVELETTER
             return card;
         }
 
-        void ChangeCard(eTargetPlayer player, eCARDVALUES newCard)
+        void ChangeCard(eTargetPlayer player, eCardValues newCard)
         {
             switch (player)
             {
@@ -204,11 +218,24 @@ namespace BBSL_LOVELETTER
             return enemyAIs;
         }
 
-        public bool IsPlayerValidPlayer()
+        public bool IsPlayerValidTarget()
         {
-            //IF player is valid numberOfValidPlayers++;
-            //IF player is only valid target numberOfValidPlayers = -1
-            return true;
+            return Player.IsTargetable();
+        }
+
+        public game_EnemyAI GetAIList(eTargetPlayer AI)
+        {
+            switch (AI)
+            {
+                case eTargetPlayer.AI1:
+                    return AIList[0];
+                case eTargetPlayer.AI2:
+                    return AIList[1];
+                case eTargetPlayer.AI3:
+                    return AIList[2];
+            }
+            Debug.Log("Something went wrong please check this");
+            return null;
         }
     }
 }

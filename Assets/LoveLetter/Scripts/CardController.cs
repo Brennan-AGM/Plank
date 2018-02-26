@@ -25,8 +25,8 @@ namespace BBSL_LOVELETTER
         private List<Card> MaxCardsList = new List<Card>();
         private List<Card> GameCardsList = new List<Card>();
         private List<Card> CurrentDrawPileList = new List<Card>();
-        public Card player1Card = new Card(eCARDVALUES.INVALID);
-        private Card missingCard = new Card(eCARDVALUES.INVALID);
+        public Card player1Card = new Card(eCardValues.INVALID);
+        private Card missingCard = new Card(eCardValues.INVALID);
 
         [SerializeField]
         private game_Logic game_logic;
@@ -59,14 +59,14 @@ namespace BBSL_LOVELETTER
         
         void SetupMaxCardsList()
         {
-            MaxCardsList.Add(new Card(eCARDVALUES.GUARD, 5));
-            MaxCardsList.Add(new Card(eCARDVALUES.PRIEST, 2));
-            MaxCardsList.Add(new Card(eCARDVALUES.BARON, 2));
-            MaxCardsList.Add(new Card(eCARDVALUES.HANDMAID, 2));
-            MaxCardsList.Add(new Card(eCARDVALUES.PRINCE, 2));
-            MaxCardsList.Add(new Card(eCARDVALUES.KING, 1));
-            MaxCardsList.Add(new Card(eCARDVALUES.COUNTESS, 1));
-            MaxCardsList.Add(new Card(eCARDVALUES.PRINCESS, 1));
+            MaxCardsList.Add(new Card(eCardValues.GUARD, 5));
+            MaxCardsList.Add(new Card(eCardValues.PRIEST, 2));
+            MaxCardsList.Add(new Card(eCardValues.BARON, 2));
+            MaxCardsList.Add(new Card(eCardValues.HANDMAID, 2));
+            MaxCardsList.Add(new Card(eCardValues.PRINCE, 2));
+            MaxCardsList.Add(new Card(eCardValues.KING, 1));
+            MaxCardsList.Add(new Card(eCardValues.COUNTESS, 1));
+            MaxCardsList.Add(new Card(eCardValues.PRINCESS, 1));
         }
 
         void SetupGameCards()
@@ -75,14 +75,14 @@ namespace BBSL_LOVELETTER
             {
                 for (int j = 0; j < MaxCardsList[i].GetMaxCard(); j++)
                 {
-                    GameCardsList.Add(new Card((eCARDVALUES) i ));
+                    GameCardsList.Add(new Card((eCardValues) i ));
                 }
             }
             CurrentDrawPileList = new List<Card>(GameCardsList);
             for (int i = 0; i < 5; i++)
             {
                 int value = Random.Range(0, CurrentDrawPileList.Count);
-                SetPlayerCardValues((eCARDVALUES) value, (eTargetPlayer) i);
+                SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), (eTargetPlayer) i);
                 CurrentDrawPileList.RemoveAt(value);
             }
         }
@@ -92,11 +92,11 @@ namespace BBSL_LOVELETTER
             int value = Random.Range(0, CurrentDrawPileList.Count);
             if (player >= eTargetPlayer.AI1)
             {
-                SetPlayerCardValues((eCARDVALUES)value, player);
+                SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), player);
             }
             else
             {
-                SetPlayerCardValues((eCARDVALUES)value, 0);
+                SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), 0);
             }
             CurrentDrawPileList.RemoveAt(value);
         }
@@ -113,7 +113,7 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        public void AddKnownCard(eCARDVALUES value, eTargetPlayer AIIndex = eTargetPlayer.INVALID)
+        public void AddKnownCard(eCardValues value, eTargetPlayer AIIndex = eTargetPlayer.INVALID)
         {
             if (AIIndex == eTargetPlayer.INVALID)
             {
@@ -133,7 +133,7 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        void SetPlayerCardValues(eCARDVALUES card, eTargetPlayer index)
+        void SetPlayerCardValues(eCardValues card, eTargetPlayer index)
         {
             switch (index)
             {
@@ -141,15 +141,15 @@ namespace BBSL_LOVELETTER
                     player1Card.SetCardValue(card);
                     break;
                 case eTargetPlayer.AI1:
-                    game_logic.AIList[0].DrawNewCard(card);
+                    game_logic.GetAIList(eTargetPlayer.AI1).DrawNewCard(card);
                     Player2AddKhownCards.Add(new Card(card));
                     break;
                 case eTargetPlayer.AI2:
-                    game_logic.AIList[1].DrawNewCard(card);
+                    game_logic.GetAIList(eTargetPlayer.AI2).DrawNewCard(card);
                     Player3AddKhownCards.Add(new Card(card));
                     break;
                 case eTargetPlayer.AI3:
-                    game_logic.AIList[2].DrawNewCard(card);
+                    game_logic.GetAIList(eTargetPlayer.AI3).DrawNewCard(card);
                     Player4AddKhownCards.Add(new Card(card));
                     break;
                 case eTargetPlayer.INVALID:
@@ -158,12 +158,12 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        public void PlayerUseCard(eCARDVALUES card)
+        public void PlayerUseCard(eCardValues card)
         {
             ShownCard.Add(new Card(card));
         }
 
-        public void AIUseCard(eCARDVALUES card, eTargetPlayer AIIndex)
+        public void AIUseCard(eCardValues card, eTargetPlayer AIIndex)
         {
             ShownCard.Add(new Card(card));
             if(AIIndex == eTargetPlayer.AI1)
@@ -194,9 +194,9 @@ namespace BBSL_LOVELETTER
             return CurrentDrawPileList.Count;
         }
 
-        public List<eCARDVALUES> CardsAvailable()
+        public List<eCardValues> CardsAvailable()
         {
-            List<eCARDVALUES> cardList = new List<eCARDVALUES>();
+            List<eCardValues> cardList = new List<eCardValues>();
             bool found = false;
             for (int i = 0; i < CurrentDrawPileList.Count; i++)
             {

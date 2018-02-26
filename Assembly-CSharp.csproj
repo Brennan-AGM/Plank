@@ -66,6 +66,8 @@
      <Compile Include="Assets\LoveLetter\Scripts\CardNumber.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\game_EnemyAI.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\game_Logic.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\game_Player.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\game_UIController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />

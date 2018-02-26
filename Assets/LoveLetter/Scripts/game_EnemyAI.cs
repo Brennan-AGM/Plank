@@ -12,20 +12,31 @@ namespace BBSL_LOVELETTER
         private eTargetPlayer currentPlayer;
         
         //CARD TO KEEP
-        private Card Card1st = new Card(eCARDVALUES.INVALID);
+        private Card Card1st = new Card(eCardValues.INVALID);
 
         //CARD TO USE
-        private Card Card2nd = new Card(eCARDVALUES.INVALID);
+        private Card Card2nd = new Card(eCardValues.INVALID);
 
         private bool targetable = true;
         private eTargetPlayer targetPlayer = eTargetPlayer.INVALID;
-        private eCARDVALUES targetCardValue = eCARDVALUES.INVALID;
+        private eCardValues targetCardValue = eCardValues.INVALID;
         private int totalUsedCards = 0;
+        private bool canPlay = true;
+
+        public bool CanAIStillPlay()
+        {
+            return canPlay;
+        }
+
+        public void SetPlay(bool isDead)
+        {
+            canPlay = isDead;
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <returns>If False, either player is dead or protected via Handmaid</returns>
+        /// <returns>If False player is protected via Handmaid</returns>
         public bool IsTargetable()
         {
             return targetable;
@@ -46,14 +57,14 @@ namespace BBSL_LOVELETTER
             return targetPlayer;
         }
 
-        public eCARDVALUES GetTargetCardValue()
+        public eCardValues GetTargetCardValue()
         {
             return targetCardValue;
         }
 
-        public void DrawNewCard(eCARDVALUES cardValue)
+        public void DrawNewCard(eCardValues cardValue)
         {
-            if (Card1st.GetCardValue() == eCARDVALUES.INVALID)
+            if (Card1st.GetCardValue() == eCardValues.INVALID)
             {
                 //1st draw, no cards distributed yet
                 Card1st.SetCardValue(cardValue);
@@ -70,7 +81,7 @@ namespace BBSL_LOVELETTER
                     if(CheckWithAICardValue(cardValue))
                     {
                         //swap 1st and 2nd card
-                        eCARDVALUES temp = Card1st.GetCardValue();
+                        eCardValues temp = Card1st.GetCardValue();
                         Card1st.SetCardValue(cardValue);
                         Card2nd.SetCardValue(temp);
                     }
@@ -81,7 +92,7 @@ namespace BBSL_LOVELETTER
                     }
                 }
             }
-            if(Card2nd.GetCardValue() != eCARDVALUES.INVALID)
+            if(Card2nd.GetCardValue() != eCardValues.INVALID)
             {
                 totalUsedCards += (int)Card2nd.GetCardValue();
                 AIUseCard();
@@ -90,29 +101,33 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        public void SetNewCard(eCARDVALUES cardValue)
+        public void SetNewCard(eCardValues cardValue)
         {
             Card1st.SetCardValue(cardValue);
         }
 
         #region Card Selection
-        bool CheckWithAICardValue(eCARDVALUES cardValue)
+        bool CheckWithAICardValue(eCardValues cardValue)
         {
-            if (Card1st.GetCardValue() == eCARDVALUES.PRINCESS)
+            if (Card1st.GetCardValue() == eCardValues.PRINCESS)
             {
+                //AI automatically will not change cards if current card held is the princess
                 return false;
             }
-            else if (cardValue == eCARDVALUES.PRINCESS)
+            else if (cardValue == eCardValues.PRINCESS)
             {
+                //AI automatically will change cards if drawn card is the princess
                 return true;
             }
-            else if (Card1st.GetCardValue() == eCARDVALUES.COUNTESS && cardValue == eCARDVALUES.KING || cardValue == eCARDVALUES.PRINCE)
+            else if (Card1st.GetCardValue() == eCardValues.COUNTESS && cardValue == eCardValues.KING || cardValue == eCardValues.PRINCE)
             {
+                //Playes are forced to remove the 'countess' card from their hand if a king/prince is drawn
                 return true;
             }
-            else if ((Card1st.GetCardValue() == eCARDVALUES.KING && cardValue == eCARDVALUES.COUNTESS) ||
-                    (Card1st.GetCardValue() == eCARDVALUES.PRINCE && cardValue == eCARDVALUES.COUNTESS))
+            else if ((Card1st.GetCardValue() == eCardValues.KING && cardValue == eCardValues.COUNTESS) ||
+                    (Card1st.GetCardValue() == eCardValues.PRINCE && cardValue == eCardValues.COUNTESS))
             {
+                //Playes are forced to remove the 'countess' card from their hand if a king/prince is held
                 return false;
             }
             switch (AiType)
@@ -130,6 +145,10 @@ namespace BBSL_LOVELETTER
             }
         }
 
+        /// <summary>
+        /// Easy AI just randomizes with all 2 cards drawn after above condition
+        /// </summary>
+        /// <returns></returns>
         bool CheckCardEasyAI()
         {
             if(Random.Range(0, 2) == 0)
@@ -142,20 +161,24 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        bool CheckCardMediumAI(eCARDVALUES cardValue)
+        /// <summary>
+        /// Medium AI has a card priority of Duchess, Prince, King, Handmaid, Guard, Baron, Priest
+        /// When the draw pile is low though, it will prioritize high value card
+        /// </summary>
+        /// <param name="cardValue"></param>
+        /// <returns></returns>
+        bool CheckCardMediumAI(eCardValues cardValue)
         {
-            //Duchess, Prince, King, Handmaid, Guard, Baron, Priest
-
             if(CardController.instance.CardsLeftInDrawPile() > 3)
             {
-                if (cardValue == eCARDVALUES.COUNTESS || cardValue == eCARDVALUES.PRINCE)
+                if (cardValue == eCardValues.COUNTESS || cardValue == eCardValues.PRINCE)
                 {
                     //Change current card
                     return true;
                 }
-                else if (cardValue == eCARDVALUES.KING)
+                else if (cardValue == eCardValues.KING)
                 {
-                    if(Card1st.GetCardValue() == eCARDVALUES.PRINCE)
+                    if(Card1st.GetCardValue() == eCardValues.PRINCE)
                     {
                         //Play King card
                         return false;
@@ -163,9 +186,9 @@ namespace BBSL_LOVELETTER
                     //Change current card
                     return true;
                 }
-                else if (cardValue == eCARDVALUES.HANDMAID)
+                else if (cardValue == eCardValues.HANDMAID)
                 {
-                    if (Card1st.GetCardValue() >= eCARDVALUES.HANDMAID)
+                    if (Card1st.GetCardValue() >= eCardValues.HANDMAID)
                     {
                         //Play Handmaid card
                         return false;
@@ -173,9 +196,9 @@ namespace BBSL_LOVELETTER
                     //Change current card
                     return true;
                 }
-                else if (cardValue == eCARDVALUES.GUARD)
+                else if (cardValue == eCardValues.GUARD)
                 {
-                    if (Card1st.GetCardValue() != eCARDVALUES.BARON || Card1st.GetCardValue() != eCARDVALUES.PRIEST)
+                    if (Card1st.GetCardValue() != eCardValues.BARON || Card1st.GetCardValue() != eCardValues.PRIEST)
                     {
                         //Play Guard card
                         return false;
@@ -199,21 +222,21 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        bool CheckCardHardAI(eCARDVALUES cardValue)
+        bool CheckCardHardAI(eCardValues cardValue)
         {
             //BETTER HARD AI
             //Duchess, Handmaid, King, Prince, Guard, Baron, Priest
 
             if (CardController.instance.CardsLeftInDrawPile() > 2)
             {
-                if (cardValue == eCARDVALUES.COUNTESS || cardValue == eCARDVALUES.HANDMAID)
+                if (cardValue == eCardValues.COUNTESS || cardValue == eCardValues.HANDMAID)
                 {
                     //Change current card
                     return true;
                 }
-                else if (cardValue == eCARDVALUES.KING)
+                else if (cardValue == eCardValues.KING)
                 {
-                    if (Card1st.GetCardValue() == eCARDVALUES.HANDMAID)
+                    if (Card1st.GetCardValue() == eCardValues.HANDMAID)
                     {
                         //Play King card
                         return false;
@@ -221,9 +244,9 @@ namespace BBSL_LOVELETTER
                     //Change current card
                     return true;
                 }
-                else if (cardValue == eCARDVALUES.HANDMAID)
+                else if (cardValue == eCardValues.HANDMAID)
                 {
-                    if (Card1st.GetCardValue() >= eCARDVALUES.HANDMAID)
+                    if (Card1st.GetCardValue() >= eCardValues.HANDMAID)
                     {
                         //Play Handmaid card
                         return false;
@@ -231,9 +254,9 @@ namespace BBSL_LOVELETTER
                     //Change current card
                     return true;
                 }
-                else if (cardValue == eCARDVALUES.GUARD)
+                else if (cardValue == eCardValues.GUARD)
                 {
-                    if (Card1st.GetCardValue() != eCARDVALUES.BARON || Card1st.GetCardValue() != eCARDVALUES.PRIEST)
+                    if (Card1st.GetCardValue() != eCardValues.BARON || Card1st.GetCardValue() != eCardValues.PRIEST)
                     {
                         //Play Guard card
                         return false;
@@ -257,7 +280,7 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        bool CheckCardInsaneAI(eCARDVALUES cardValue)
+        bool CheckCardInsaneAI(eCardValues cardValue)
         {
             //BETTER INSANE AI
             return true;
@@ -265,6 +288,9 @@ namespace BBSL_LOVELETTER
         #endregion
 
         #region Card Usage
+        /// <summary>
+        /// Called when the AI is ready to use a card and check it's decision
+        /// </summary>
         void AIUseCard()
         {
             switch (AiType)
@@ -286,64 +312,25 @@ namespace BBSL_LOVELETTER
 
         void EasyAIUseCard()
         {
-            List<game_EnemyAI> listOfValidTargets = new List<game_EnemyAI>();
-            int target = 0;
             switch (Card2nd.GetCardValue())
             {
-                case eCARDVALUES.GUARD:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if(listOfValidTargets.Count > 1)
-                    {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if(target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
-                    }
-
-                    //CHANCE for possible cards left
-                    //CardController.instance.
+                case eCardValues.GUARD:
+                    targetPlayer = GetValidTargetPlayer();
+                    targetCardValue = GetValidRandomGuardTarget();
                     break;
-                case eCARDVALUES.PRIEST:
-                case eCARDVALUES.BARON:
-                case eCARDVALUES.PRINCE:
-                case eCARDVALUES.KING:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
+                case eCardValues.PRIEST:
+                case eCardValues.BARON:
+                    targetPlayer = GetValidTargetPlayer();
+                    break;
+                case eCardValues.PRINCE:
+                case eCardValues.KING:
+                    targetPlayer = GetValidTargetPlayer();
+                    if(targetPlayer == eTargetPlayer.INVALID)
                     {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
+                        if(IsTargetable())
+                        {
+                            targetPlayer = currentPlayer;
+                        }
                     }
                     break;
             }
@@ -351,63 +338,25 @@ namespace BBSL_LOVELETTER
 
         void MediumAIUseCard()
         {
-            List<game_EnemyAI> listOfValidTargets = new List<game_EnemyAI>();
-            int target = 0;
             switch (Card2nd.GetCardValue())
             {
-                case eCARDVALUES.GUARD:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
-                    {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
-                    }
-
-                    //CHANCE for possible cards left
+                case eCardValues.GUARD:
+                    targetPlayer = GetValidTargetPlayer();
+                    targetCardValue = GetValidRandomGuardTarget();
                     break;
-                case eCARDVALUES.PRIEST:
-                case eCARDVALUES.BARON:
-                case eCARDVALUES.PRINCE:
-                case eCARDVALUES.KING:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
+                case eCardValues.PRIEST:
+                case eCardValues.BARON:
+                    targetPlayer = GetValidTargetPlayer();
+                    break;
+                case eCardValues.PRINCE:
+                case eCardValues.KING:
+                    targetPlayer = GetValidTargetPlayer();
+                    if (targetPlayer == eTargetPlayer.INVALID)
                     {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
+                        if (IsTargetable())
+                        {
+                            targetPlayer = currentPlayer;
+                        }
                     }
                     break;
             }
@@ -415,63 +364,25 @@ namespace BBSL_LOVELETTER
 
         void HardAIUseCard()
         {
-            List<game_EnemyAI> listOfValidTargets = new List<game_EnemyAI>();
-            int target = 0;
             switch (Card2nd.GetCardValue())
             {
-                case eCARDVALUES.GUARD:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
-                    {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
-                    }
-
-                    //CHANCE for possible cards left
+                case eCardValues.GUARD:
+                    targetPlayer = GetValidTargetPlayer();
+                    targetCardValue = GetValidRandomGuardTarget();
                     break;
-                case eCARDVALUES.PRIEST:
-                case eCARDVALUES.BARON:
-                case eCARDVALUES.PRINCE:
-                case eCARDVALUES.KING:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
+                case eCardValues.PRIEST:
+                case eCardValues.BARON:
+                    targetPlayer = GetValidTargetPlayer();
+                    break;
+                case eCardValues.PRINCE:
+                case eCardValues.KING:
+                    targetPlayer = GetValidTargetPlayer();
+                    if (targetPlayer == eTargetPlayer.INVALID)
                     {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
+                        if (IsTargetable())
+                        {
+                            targetPlayer = currentPlayer;
+                        }
                     }
                     break;
             }
@@ -479,88 +390,118 @@ namespace BBSL_LOVELETTER
 
         void InsaneAIUseCard()
         {
-            List<game_EnemyAI> listOfValidTargets = new List<game_EnemyAI>();
-            int target = 0;
             switch (Card2nd.GetCardValue())
             {
-                case eCARDVALUES.GUARD:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
-                    {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
-                    }
-
-                    //CHANCE for possible cards left
+                case eCardValues.GUARD:
+                    targetPlayer = GetValidTargetPlayer();
+                    targetCardValue = GetValidRandomGuardTarget();
                     break;
-                case eCARDVALUES.PRIEST:
-                case eCARDVALUES.BARON:
-                case eCARDVALUES.PRINCE:
-                case eCARDVALUES.KING:
-                    //GetValid
-                    //if(playervalid)
-                    //{
-
-                    //}
-                    //else
-                    //{
-
-                    //}
-                    if (listOfValidTargets.Count > 1)
+                case eCardValues.PRIEST:
+                case eCardValues.BARON:
+                    targetPlayer = GetValidTargetPlayer();
+                    break;
+                case eCardValues.PRINCE:
+                case eCardValues.KING:
+                    targetPlayer = GetValidTargetPlayer();
+                    if (targetPlayer == eTargetPlayer.INVALID)
                     {
-                        listOfValidTargets.Remove(this);
-                    }
-                    //int target = Random.Range(0, listOfValidTargets.Count + 1);
-                    target = Random.Range(0, listOfValidTargets.Count);
-                    if (target == listOfValidTargets.Count)
-                    {
-                        targetPlayer = eTargetPlayer.PLAYER;
-                    }
-                    else
-                    {
-                        targetPlayer = listOfValidTargets[target].GetCurrentPlayer();
+                        if (IsTargetable())
+                        {
+                            targetPlayer = currentPlayer;
+                        }
                     }
                     break;
             }
         }
+        
+        /// <summary>
+        /// Used by AI(Easy ,Medium) to get valid target when using Guard Card
+        /// </summary>
+        /// <returns></returns>
+        eCardValues GetValidRandomGuardTarget()
+        {
+            List<eCardValues> cardList = CardController.instance.CardsAvailable();
+
+            //this is used because Guard can only look for non-Guard cards
+            cardList.Remove(eCardValues.GUARD);
+            int targetCard = 0;
+
+            //this is for the probability that all remaining cards might be Guards
+            if (cardList.Count == 0)
+            {
+                targetCard = Random.Range(1, 8);
+                return (eCardValues)targetCard;
+            }
+            else
+            {
+                targetCard = Random.Range(0, cardList.Count);
+                return cardList[targetCard];
+            }
+        }
+
+        /// <summary>
+        /// Gets a random valid targetable player for Easy and Medium AI
+        /// </summary>
+        /// <returns></returns>
+        eTargetPlayer GetValidTargetPlayer()
+        {
+            List<game_EnemyAI> listOfValidTargets = game_Logic.instance.GetValidAIPlayers();
+            int target = 0;
+            bool canTargetPlayer = false;
+
+            //Used to remove AI self from target pool
+            if (listOfValidTargets.Count > 1 && targetable)
+            {
+                listOfValidTargets.Remove(this);
+            }
+
+            if (game_Logic.instance.IsPlayerValidTarget())
+            {
+                target = Random.Range(0, listOfValidTargets.Count + 1);
+                canTargetPlayer = true;
+            }
+            else
+            {
+                target = Random.Range(0, listOfValidTargets.Count);
+            }
+
+            if(!canTargetPlayer && listOfValidTargets.Count == 0)
+            {
+                return eTargetPlayer.INVALID;
+            }
+            else if (target == listOfValidTargets.Count)
+            {
+                return eTargetPlayer.PLAYER;
+            }
+            else
+            {
+                return listOfValidTargets[target].GetCurrentPlayer();
+            }
+        }
         #endregion
 
+        /// <summary>
+        /// Reset The AI's card values
+        /// </summary>
         public void Reset()
         {
-            Card1st = new Card(eCARDVALUES.INVALID);
-            Card2nd = new Card(eCARDVALUES.INVALID);
+            Card1st = new Card(eCardValues.INVALID);
+            Card2nd = new Card(eCardValues.INVALID);
             targetable = true;
             targetPlayer = eTargetPlayer.INVALID;
-            targetCardValue = eCARDVALUES.INVALID;
+            targetCardValue = eCardValues.INVALID;
             totalUsedCards = 0;
         }
 
-        public eCARDVALUES Get1stCardValue()
+        public eCardValues Get1stCardValue()
         {
             return Card1st.GetCardValue();
         }
 
-        public eCARDVALUES UseGet2ndCardValue()
+        public eCardValues UseGet2ndCardValue()
         {
-            eCARDVALUES value = Card2nd.GetCardValue();
-            Card2nd.SetCardValue(eCARDVALUES.INVALID);
+            eCardValues value = Card2nd.GetCardValue();
+            Card2nd.SetCardValue(eCardValues.INVALID);
             return value;
         }
     }

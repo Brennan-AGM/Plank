@@ -1,8 +1,8 @@
 ﻿namespace BBSL_LOVELETTER
 {
-    public enum eCARDVALUES
+    public enum eCardValues
     {
-        INVALID = 0,
+        INVALID = -1,
         GUARD,
         PRIEST,
         BARON,
@@ -15,25 +15,25 @@
 
     public class Card
     {
-        private eCARDVALUES cardvalue = eCARDVALUES.INVALID;
+        private eCardValues cardvalue = eCardValues.INVALID;
         private int maxNum = 0;
-        public Card(eCARDVALUES value)
+        public Card(eCardValues value)
         {
             cardvalue = value;
         }
 
-        public Card(eCARDVALUES value, int numvalue)
+        public Card(eCardValues value, int numvalue)
         {
             cardvalue = value;
             maxNum = numvalue;
         }
 
-        public void SetCardValue(eCARDVALUES value)
+        public void SetCardValue(eCardValues value)
         {
             cardvalue = value;
         }
 
-        public eCARDVALUES GetCardValue()
+        public eCardValues GetCardValue()
         {
             return cardvalue;
         }
