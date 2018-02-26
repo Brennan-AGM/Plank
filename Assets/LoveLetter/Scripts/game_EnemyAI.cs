@@ -18,9 +18,9 @@ namespace BBSL_LOVELETTER
         private Card Card2nd = new Card(eCARDVALUES.INVALID);
 
         private bool targetable = true;
-
         private eTargetPlayer targetPlayer = eTargetPlayer.INVALID;
         private eCARDVALUES targetCardValue = eCARDVALUES.INVALID;
+        private int totalUsedCards = 0;
 
         /// <summary>
         /// 
@@ -55,30 +55,35 @@ namespace BBSL_LOVELETTER
         {
             if (Card1st.GetCardValue() == eCARDVALUES.INVALID)
             {
+                //1st draw, no cards distributed yet
                 Card1st.SetCardValue(cardValue);
             }
             else
             {
                 if(Card1st.GetCardValue() == cardValue)
                 {
+                    //if you drew a duplicate of the same card
                     Card2nd.SetCardValue(cardValue);
                 }
                 else
                 {
                     if(CheckWithAICardValue(cardValue))
                     {
+                        //swap 1st and 2nd card
                         eCARDVALUES temp = Card1st.GetCardValue();
                         Card1st.SetCardValue(cardValue);
                         Card2nd.SetCardValue(temp);
                     }
                     else
                     {
+                        //keep 1st card and have drawn card as used value
                         Card2nd.SetCardValue(cardValue);
                     }
                 }
             }
             if(Card2nd.GetCardValue() != eCARDVALUES.INVALID)
             {
+                totalUsedCards += (int)Card2nd.GetCardValue();
                 AIUseCard();
                 //gamelogic call
                 //Card2nd.SetCardValue(eCARDVALUES.INVALID);
@@ -311,6 +316,7 @@ namespace BBSL_LOVELETTER
                     }
 
                     //CHANCE for possible cards left
+                    CardController.instance.
                     break;
                 case eCARDVALUES.PRIEST:
                 case eCARDVALUES.BARON:
@@ -536,10 +542,14 @@ namespace BBSL_LOVELETTER
         }
         #endregion
 
-        public void EndGame()
+        public void Reset()
         {
             Card1st = new Card(eCARDVALUES.INVALID);
             Card2nd = new Card(eCARDVALUES.INVALID);
+            targetable = true;
+            targetPlayer = eTargetPlayer.INVALID;
+            targetCardValue = eCARDVALUES.INVALID;
+            totalUsedCards = 0;
         }
 
         public eCARDVALUES Get1stCardValue()

@@ -193,5 +193,41 @@ namespace BBSL_LOVELETTER
         {
             return CurrentDrawPileList.Count;
         }
+
+        public List<eCARDVALUES> CardsAvailable()
+        {
+            List<eCARDVALUES> cardList = new List<eCARDVALUES>();
+            bool found = false;
+            for (int i = 0; i < CurrentDrawPileList.Count; i++)
+            {
+                found = false;
+                for (int j = 0; j < cardList.Count; j++)
+                {
+                    if(CurrentDrawPileList[i].GetCardValue() == cardList[j])
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found)
+                {
+                    cardList.Add(CurrentDrawPileList[i].GetCardValue());
+                }
+            }
+            found = false;
+            for (int i = 0; i < cardList.Count; i++)
+            {
+                if (missingCard.GetCardValue() == cardList[i])
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                cardList.Add(missingCard.GetCardValue());
+            }
+            return cardList;
+        }
     }
 }
