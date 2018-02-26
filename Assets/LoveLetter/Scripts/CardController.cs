@@ -65,7 +65,7 @@ namespace BBSL_LOVELETTER
             MaxCardsList.Add(new Card(eCARDVALUES.HANDMAID, 2));
             MaxCardsList.Add(new Card(eCARDVALUES.PRINCE, 2));
             MaxCardsList.Add(new Card(eCARDVALUES.KING, 1));
-            MaxCardsList.Add(new Card(eCARDVALUES.DUCHESS, 1));
+            MaxCardsList.Add(new Card(eCARDVALUES.COUNTESS, 1));
             MaxCardsList.Add(new Card(eCARDVALUES.PRINCESS, 1));
         }
 

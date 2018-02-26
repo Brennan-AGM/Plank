@@ -9,7 +9,7 @@
         HANDMAID,
         PRINCE,
         KING,
-        DUCHESS,
+        COUNTESS,
         PRINCESS,
     }
 

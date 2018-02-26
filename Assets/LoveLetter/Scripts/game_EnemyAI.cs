@@ -106,12 +106,12 @@ namespace BBSL_LOVELETTER
             {
                 return true;
             }
-            else if (Card1st.GetCardValue() == eCARDVALUES.DUCHESS && cardValue == eCARDVALUES.KING || cardValue == eCARDVALUES.PRINCE)
+            else if (Card1st.GetCardValue() == eCARDVALUES.COUNTESS && cardValue == eCARDVALUES.KING || cardValue == eCARDVALUES.PRINCE)
             {
                 return true;
             }
-            else if ((Card1st.GetCardValue() == eCARDVALUES.KING && cardValue == eCARDVALUES.DUCHESS) ||
-                    (Card1st.GetCardValue() == eCARDVALUES.PRINCE && cardValue == eCARDVALUES.DUCHESS))
+            else if ((Card1st.GetCardValue() == eCARDVALUES.KING && cardValue == eCARDVALUES.COUNTESS) ||
+                    (Card1st.GetCardValue() == eCARDVALUES.PRINCE && cardValue == eCARDVALUES.COUNTESS))
             {
                 return false;
             }
@@ -148,7 +148,7 @@ namespace BBSL_LOVELETTER
 
             if(CardController.instance.CardsLeftInDrawPile() > 3)
             {
-                if (cardValue == eCARDVALUES.DUCHESS || cardValue == eCARDVALUES.PRINCE)
+                if (cardValue == eCARDVALUES.COUNTESS || cardValue == eCARDVALUES.PRINCE)
                 {
                     //Change current card
                     return true;
@@ -206,7 +206,7 @@ namespace BBSL_LOVELETTER
 
             if (CardController.instance.CardsLeftInDrawPile() > 2)
             {
-                if (cardValue == eCARDVALUES.DUCHESS || cardValue == eCARDVALUES.HANDMAID)
+                if (cardValue == eCARDVALUES.COUNTESS || cardValue == eCARDVALUES.HANDMAID)
                 {
                     //Change current card
                     return true;
@@ -316,7 +316,7 @@ namespace BBSL_LOVELETTER
                     }
 
                     //CHANCE for possible cards left
-                    CardController.instance.
+                    //CardController.instance.
                     break;
                 case eCARDVALUES.PRIEST:
                 case eCARDVALUES.BARON:

@@ -46,7 +46,7 @@ namespace BBSL_LOVELETTER
                 case eCARDVALUES.KING:
                     KingCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
-                case eCARDVALUES.DUCHESS:
+                case eCARDVALUES.COUNTESS:
                     //do nothing
                     break;
                 case eCARDVALUES.PRINCESS:
@@ -84,7 +84,7 @@ namespace BBSL_LOVELETTER
                 case eCARDVALUES.KING:
                     KingCardUsed(AIIndex, targetPlayer);
                     break;
-                case eCARDVALUES.DUCHESS:
+                case eCARDVALUES.COUNTESS:
                     //do nothing
                     break;
                 case eCARDVALUES.PRINCESS:
