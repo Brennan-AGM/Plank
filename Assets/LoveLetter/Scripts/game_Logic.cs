@@ -19,6 +19,10 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private game_Player Player;
 
+        private eTargetPlayer CurrentPlayer = eTargetPlayer.INVALID;
+        private int CurrentPlayerIndex = -1;
+        private List<eTargetPlayer> ListOfPlayers = new List<eTargetPlayer>();
+
         public static game_Logic instance = null;
         private void Awake()
         {
@@ -30,10 +34,204 @@ namespace BBSL_LOVELETTER
             instance = this;
         }
 
+        void Start()
+        {
+            Reset();
+            GetNextPLayer();
+        }
+
+        void Reset(bool hardReset = false)
+        {
+            CurrentPlayer = eTargetPlayer.INVALID;
+            CurrentPlayerIndex = -1;
+            for (int i = 0; i < AIList.Length; i++)
+            {
+                AIList[i].Reset(hardReset);
+            }
+            Player.Reset(hardReset);
+            ResetListOfPlayers();
+        }
+
+        void ResetListOfPlayers()
+        {
+            ListOfPlayers.Clear();
+            ListOfPlayers.Add(eTargetPlayer.PLAYER);
+            ListOfPlayers.Add(eTargetPlayer.AI1);
+            ListOfPlayers.Add(eTargetPlayer.AI2);
+            ListOfPlayers.Add(eTargetPlayer.AI3);
+        }
+
+        bool HasPlayers()
+        {
+            int players = 0;
+            if (Player.CanAIStillPlay())
+            {
+                players++;
+            }
+            for (int i = 0; i < AIList.Length; i++)
+            {
+                if (AIList[i].CanAIStillPlay())
+                {
+                    players++;
+                }
+            }
+            if (players > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        #region TurnController
         void GetNextPLayer()
         {
-
+            if(CurrentPlayerIndex == -1)
+            {
+                CurrentPlayerIndex = 0;
+                CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
+            }
+            else
+            {
+                if(CardController.instance.CardsLeftInDrawPile() > 0 && HasPlayers())
+                {
+                    CheckNextPlayer();
+                }
+                else
+                {
+                    CheckWinner();
+                    CheckForTies();
+                    AnnouncementOfWinner();
+                }
+            }
         }
+
+        void CheckNextPlayer()
+        {
+            if(CurrentPlayerIndex < ListOfPlayers.Count)
+            {
+                CurrentPlayerIndex++;
+            }
+            else
+            {
+                CurrentPlayerIndex = 0;
+            }
+            CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
+        }
+
+        eTargetPlayer WinningPlayer;
+        eCardValues WinningPlayerCard;
+        eTargetPlayer TiePlayer;
+        eCardValues TiePlayerCard;
+
+        void AnnouncementOfWinner()
+        {
+            if(WinningPlayer != eTargetPlayer.INVALID)
+            {
+                //there is a valid winner
+                if (WinningPlayer == eTargetPlayer.PLAYER)
+                {
+                    if(Player.IsWinnerYet())
+                    {
+                        //finish game
+                        Debug.Log("GAME FINISH WINNER IS: " + WinningPlayer);
+                        StartCoroutine(StartNextGameIE());
+                    }
+                    else
+                    {
+                        //finish round
+                        StartCoroutine(StartNextRoundIE());
+                    }
+                }
+                else
+                {
+                    if (GetAIList(WinningPlayer).IsWinnerYet())
+                    {
+                        StartCoroutine(StartNextGameIE());
+                        //finish game
+                        Debug.Log("GAME FINISH WINNER IS: " + WinningPlayer);
+                    }
+                    else
+                    {
+                        //finish round
+                        StartCoroutine(StartNextRoundIE());
+                    }
+                }
+            }
+            else
+            {
+                //Super Tie has occured
+            }
+        }
+
+        IEnumerator StartNextGameIE()
+        {
+            yield return new WaitForSeconds(1.0f);
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+            Reset(true);
+            GetNextPLayer();
+        }
+
+        IEnumerator StartNextRoundIE()
+        {
+            yield return new WaitForSeconds(1.0f);
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+            Reset();
+            GetNextPLayer();
+        }
+
+        void CheckWinner()
+        {
+            WinningPlayer = eTargetPlayer.INVALID;
+            WinningPlayerCard = eCardValues.INVALID;
+            TiePlayer = eTargetPlayer.INVALID;
+            TiePlayerCard = eCardValues.INVALID;
+            WinningPlayer = ListOfPlayers[0];
+            WinningPlayerCard = GetCard(ListOfPlayers[0]);
+            for (int i = 1; i < ListOfPlayers.Count; i++)
+            {
+                if(GetCard(ListOfPlayers[i]) > WinningPlayerCard)
+                {
+                    WinningPlayer = ListOfPlayers[i];
+                    WinningPlayerCard = GetCard(ListOfPlayers[i]);
+                    TiePlayer = eTargetPlayer.INVALID;
+                    TiePlayerCard = eCardValues.INVALID;
+                }
+                else
+                {
+                    TiePlayer = ListOfPlayers[i];
+                    TiePlayerCard = WinningPlayerCard;
+                }
+            }
+        }
+
+        void CheckForTies()
+        {
+            //When Tie happens
+            if (TiePlayer != eTargetPlayer.INVALID)
+            {
+                int winplayerScore = 0;
+                int tieplayerScore = 0;
+                if (WinningPlayer == eTargetPlayer.PLAYER)
+                {
+                    winplayerScore = Player.GetTotalCards();
+                }
+                else
+                {
+                    winplayerScore = GetAIList(WinningPlayer).GetTotalCards();
+                }
+                tieplayerScore = GetAIList(TiePlayer).GetTotalCards();
+
+                if (winplayerScore < tieplayerScore)
+                {
+                    WinningPlayer = TiePlayer;
+                }
+                else if (winplayerScore == tieplayerScore)
+                {
+                    WinningPlayer = eTargetPlayer.INVALID;
+                }
+            }
+        }
+        #endregion
 
         void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
         {
@@ -91,7 +289,7 @@ namespace BBSL_LOVELETTER
                     break;
             }
             //Show card used
-            //Get Next player
+            GetNextPLayer();
         }
 
         public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
@@ -151,7 +349,7 @@ namespace BBSL_LOVELETTER
                     break;
             }
             //Show card used
-            //Get Next player
+            GetNextPLayer();
         }
 
         #region Card Used
@@ -361,7 +559,7 @@ namespace BBSL_LOVELETTER
 
         void KillPLayer(eTargetPlayer targetPlayer)
         {
-            if(targetPlayer == eTargetPlayer.PLAYER)
+            if (targetPlayer == eTargetPlayer.PLAYER)
             {
                 Player.SetPlay(false);
             }
@@ -369,6 +567,7 @@ namespace BBSL_LOVELETTER
             {
                 GetAIList(targetPlayer).SetPlay(false);
             }
+            ListOfPlayers.Remove(targetPlayer);
         }
     }
     #endregion

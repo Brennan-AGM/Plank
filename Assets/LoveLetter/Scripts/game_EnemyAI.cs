@@ -22,6 +22,7 @@ namespace BBSL_LOVELETTER
         private eCardValues targetCardValue = eCardValues.INVALID;
         private int totalUsedCards = 0;
         private bool canPlay = true;
+        private int pointsEarned = 0;
 
         public bool CanAIStillPlay()
         {
@@ -488,9 +489,9 @@ namespace BBSL_LOVELETTER
         #endregion
 
         /// <summary>
-        /// Reset The AI's card values
+        /// Reset The AI's card values, hardReset includes points earned
         /// </summary>
-        public void Reset()
+        public void Reset(bool hardReset = false)
         {
             Card1st = new Card(eCardValues.INVALID);
             Card2nd = new Card(eCardValues.INVALID);
@@ -499,6 +500,10 @@ namespace BBSL_LOVELETTER
             targetPlayer = eTargetPlayer.INVALID;
             targetCardValue = eCardValues.INVALID;
             totalUsedCards = 0;
+            if (hardReset)
+            {
+                pointsEarned = 0;
+            }
         }
 
         public eCardValues Get1stCardValue()
@@ -509,6 +514,7 @@ namespace BBSL_LOVELETTER
         public eCardValues UseGet2ndCardValue()
         {
             eCardValues value = Card2nd.GetCardValue();
+            totalUsedCards += (int)Card2nd.GetCardValue();
             Card2nd.SetCardValue(eCardValues.INVALID);
             return value;
         }
@@ -517,6 +523,21 @@ namespace BBSL_LOVELETTER
         {
             totalUsedCards += (int)Card1st.GetCardValue();
             Card1st.SetCardValue(eCardValues.INVALID);
+        }
+
+        public int GetTotalCards()
+        {
+            return totalUsedCards;
+        }
+
+        public bool IsWinnerYet()
+        {
+            pointsEarned++;
+            if(pointsEarned == 4)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
