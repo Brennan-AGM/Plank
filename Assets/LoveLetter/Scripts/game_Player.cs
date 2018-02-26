@@ -35,9 +35,46 @@ namespace BBSL_LOVELETTER
             return canPlay;
         }
 
-        public void SetPlay(bool isDead)
+        public void SetPlay(bool canPlay)
         {
-            canPlay = isDead;
+            this.canPlay = canPlay;
+            if (!canPlay)
+            {
+                Card1st.SetCardValue(eCardValues.INVALID);
+                Card2nd.SetCardValue(eCardValues.INVALID);
+            }
+        }
+
+        /// <summary>
+        /// Reset The AI's card values
+        /// </summary>
+        public void Reset()
+        {
+            Card1st = new Card(eCardValues.INVALID);
+            Card2nd = new Card(eCardValues.INVALID);
+            targetable = true;
+            canPlay = true;
+            targetPlayer = eTargetPlayer.INVALID;
+            targetCardValue = eCardValues.INVALID;
+            totalUsedCards = 0;
+        }
+
+        public eCardValues Get1stCardValue()
+        {
+            return Card1st.GetCardValue();
+        }
+
+        public eCardValues UseGet2ndCardValue()
+        {
+            eCardValues value = Card2nd.GetCardValue();
+            Card2nd.SetCardValue(eCardValues.INVALID);
+            return value;
+        }
+
+        public void ForceDiscard()
+        {
+            totalUsedCards += (int)Card1st.GetCardValue();
+            Card1st.SetCardValue(eCardValues.INVALID);
         }
     }
 }

@@ -28,9 +28,14 @@ namespace BBSL_LOVELETTER
             return canPlay;
         }
 
-        public void SetPlay(bool isDead)
+        public void SetPlay(bool canPlay)
         {
-            canPlay = isDead;
+            this.canPlay = canPlay;
+            if(!canPlay)
+            {
+                Card1st.SetCardValue(eCardValues.INVALID);
+                Card2nd.SetCardValue(eCardValues.INVALID);
+            }
         }
 
         /// <summary>
@@ -95,7 +100,9 @@ namespace BBSL_LOVELETTER
             if(Card2nd.GetCardValue() != eCardValues.INVALID)
             {
                 totalUsedCards += (int)Card2nd.GetCardValue();
+                targetPlayer = eTargetPlayer.INVALID;
                 AIUseCard();
+                game_Logic.instance.AIUseCard(Card2nd.GetCardValue(), currentPlayer, targetPlayer);
                 //gamelogic call
                 //Card2nd.SetCardValue(eCARDVALUES.INVALID);
             }
@@ -488,6 +495,7 @@ namespace BBSL_LOVELETTER
             Card1st = new Card(eCardValues.INVALID);
             Card2nd = new Card(eCardValues.INVALID);
             targetable = true;
+            canPlay = true;
             targetPlayer = eTargetPlayer.INVALID;
             targetCardValue = eCardValues.INVALID;
             totalUsedCards = 0;
@@ -503,6 +511,12 @@ namespace BBSL_LOVELETTER
             eCardValues value = Card2nd.GetCardValue();
             Card2nd.SetCardValue(eCardValues.INVALID);
             return value;
+        }
+
+        public void ForceDiscard()
+        {
+            totalUsedCards += (int)Card1st.GetCardValue();
+            Card1st.SetCardValue(eCardValues.INVALID);
         }
     }
 }

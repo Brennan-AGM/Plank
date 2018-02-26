@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BBSL_LOVELETTER
 {
-    public enum eRESULT
+    public enum eResult
     {
         INVALID = -1,
         LOSE,
@@ -14,7 +14,6 @@ namespace BBSL_LOVELETTER
 
     public class game_Logic : MonoBehaviour
     {
-        private bool playerTargetable = true;
         [SerializeField]
         private game_EnemyAI[] AIList;
         [SerializeField]
@@ -45,7 +44,7 @@ namespace BBSL_LOVELETTER
                     BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
                 case eCardValues.HANDMAID:
-                    playerTargetable = false;
+                    HandMaidCardUsed(eTargetPlayer.PLAYER);
                     break;
                 case eCardValues.PRINCE:
                     if (!CardController.instance.CheckIfDrawPileEmpty())
@@ -69,30 +68,47 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
         {
             CardController.instance.AIUseCard(card, AIIndex);
             switch (card)
             {
                 case eCardValues.GUARD:
+
+                    KillPLayer(targetPlayer);
                     break;
                 case eCardValues.PRIEST:
                     PriestCardUsed(AIIndex, targetPlayer);
                     break;
                 case eCardValues.BARON:
-                    BaronCardUsed(AIIndex, targetPlayer);
+                    eResult result = BaronCardUsed(AIIndex, targetPlayer);
+                    if(result == eResult.WIN)
+                    {
+                        KillPLayer(targetPlayer);
+                    }
+                    else if(result == eResult.LOSE)
+                    {
+                        KillPLayer(AIIndex);
+                    }
                     break;
                 case eCardValues.HANDMAID:
-                    AIUsedHandMaid(AIIndex);
+                    HandMaidCardUsed(AIIndex);
                     break;
                 case eCardValues.PRINCE:
-                    if (!CardController.instance.CheckIfDrawPileEmpty())
+                    if(PrinceCardUsed(targetPlayer) == eResult.DRAW)
                     {
-                        CardController.instance.DrawCard(targetPlayer);
+                        if (!CardController.instance.CheckIfDrawPileEmpty())
+                        {
+                            CardController.instance.DrawCard(targetPlayer);
+                        }
+                        else
+                        {
+                            CardController.instance.DrawMissingCard(targetPlayer);
+                        }
                     }
                     else
                     {
-                        CardController.instance.DrawMissingCard(targetPlayer);
+                        KillPLayer(targetPlayer);
                     }
                     break;
                 case eCardValues.KING:
@@ -103,14 +119,52 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRINCESS:
                     //lose
+                    KillPLayer(AIIndex);
+                    PostResult(eResult.LOSE, AIIndex);
                     break;
             }
+            //Show card used
+            //Get Next player
         }
 
-        void AIUsedHandMaid(eTargetPlayer AIIndex)
+        //void PostResult(eResult result, eTargetPlayer initialPlayer, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        //{
+        //    switch(result)
+        //    {
+        //        case eResult.WIN:
+        //            if(GetAIList(targetPlayer) != null)
+        //            {
+        //                GetAIList(targetPlayer).SetPlay(false);
+        //            }
+        //            else
+        //            {
+        //                Player.SetPlay(false);
+        //            }
+        //            break;
+        //        case eResult.LOSE:
+        //            if (GetAIList(initialPlayer) != null)
+        //            {
+        //                GetAIList(initialPlayer).SetPlay(false);
+        //            }
+        //            else
+        //            {
+        //                Player.SetPlay(false);
+        //            }
+        //            break;
+        //    }
+        //}
+
+        /// <summary>
+        /// Handmaid protects player from getting targetted till the next draw
+        /// </summary>
+        /// <param name="player"></param>
+        void HandMaidCardUsed(eTargetPlayer player)
         {
-            switch(AIIndex)
+            switch(player)
             {
+                case eTargetPlayer.PLAYER:
+                    Player.SetTargetable(false);
+                    break;
                 case eTargetPlayer.AI1:
                     AIList[0].SetTargetable(false);
                     break;
@@ -123,20 +177,31 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        eRESULT BaronCardUsed(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
+        /// <summary>
+        /// Baron card let's AI compare card with a target player; the player with the higher value wins otherwise nothing happens
+        /// </summary>
+        /// <param name="initialPlayer"></param>
+        /// <param name="targetPlayer"></param>
+        /// <returns></returns>
+        eResult BaronCardUsed(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
         {
-            eRESULT result = eRESULT.DRAW;
+            eResult result = eResult.DRAW;
             if(GetCard(initialPlayer) > GetCard(targetPlayer))
             {
-                result = eRESULT.WIN;
+                result = eResult.WIN;
             }
             else if (GetCard(initialPlayer) > GetCard(targetPlayer))
             {
-                result = eRESULT.LOSE;
+                result = eResult.LOSE;
             }
             return result;
         }
 
+        /// <summary>
+        /// Priest card lets AI see target player's card
+        /// </summary>
+        /// <param name="targetPlayer"></param>
+        /// <param name="AIIndex"></param>
         void PriestCardUsed(eTargetPlayer targetPlayer, eTargetPlayer AIIndex = eTargetPlayer.PLAYER)
         {
             eCardValues card = GetCard(targetPlayer);
@@ -147,6 +212,37 @@ namespace BBSL_LOVELETTER
             //show card
         }
 
+        /// <summary>
+        /// Prince card lets AI force a player to discard his card
+        /// </summary>
+        /// <param name="targetPlayer"></param>
+        eResult PrinceCardUsed(eTargetPlayer targetPlayer)
+        {
+            eResult result = eResult.DRAW;
+            eCardValues card = GetCard(targetPlayer);
+
+            if (card == eCardValues.PRINCESS)
+            {
+                result = eResult.LOSE;
+            }
+
+            if (targetPlayer != eTargetPlayer.PLAYER)
+            {
+                GetAIList(targetPlayer).ForceDiscard();
+            }
+            else
+            {
+                Player.ForceDiscard();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// King card swaps cards with target player
+        /// </summary>
+        /// <param name="initialPlayer"></param>
+        /// <param name="targetPlayer"></param>
         void KingCardUsed(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
         {
             eCardValues card = GetCard(initialPlayer);
@@ -236,6 +332,18 @@ namespace BBSL_LOVELETTER
             }
             Debug.Log("Something went wrong please check this");
             return null;
+        }
+
+        void KillPLayer(eTargetPlayer targetPlayer)
+        {
+            if(targetPlayer == eTargetPlayer.PLAYER)
+            {
+                Player.SetPlay(false);
+            }
+            else
+            {
+                GetAIList(targetPlayer).SetPlay(false);
+            }
         }
     }
 }
