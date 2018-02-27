@@ -64,6 +64,11 @@ namespace BBSL_LOVELETTER
             }
         }
 
+        public void SetNewCard(eCardValues cardValue)
+        {
+            Card1st.SetCardValue(cardValue);
+        }
+
         public eCardValues Get1stCardValue()
         {
             return Card1st.GetCardValue();

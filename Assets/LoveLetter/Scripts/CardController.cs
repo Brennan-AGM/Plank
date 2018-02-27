@@ -4,15 +4,6 @@ using UnityEngine;
 
 namespace BBSL_LOVELETTER
 {
-    public enum eTargetPlayer
-    {
-        INVALID = -1,
-        PLAYER,
-        AI1,
-        AI2,
-        AI3,
-    }
-
     public class CardController : MonoBehaviour
     {
         public static CardController instance { get; private set; }
@@ -25,11 +16,7 @@ namespace BBSL_LOVELETTER
         private List<Card> MaxCardsList = new List<Card>();
         private List<Card> GameCardsList = new List<Card>();
         private List<Card> CurrentDrawPileList = new List<Card>();
-        public Card player1Card = new Card(eCardValues.INVALID);
         private Card missingCard = new Card(eCardValues.INVALID);
-
-        [SerializeField]
-        private game_Logic game_logic;
         
         void Awake()
         {
@@ -49,7 +36,12 @@ namespace BBSL_LOVELETTER
             SetupGameCards();
         }
 
-        void Reset()
+        public void ResetGame()
+        {
+            ResetRound();
+        }
+
+        public void ResetRound()
         {
             ShownCard.Clear();
             Player2AddKhownCards.Clear();
@@ -78,6 +70,7 @@ namespace BBSL_LOVELETTER
                     GameCardsList.Add(new Card((eCardValues) i ));
                 }
             }
+            CurrentDrawPileList.Clear();
             CurrentDrawPileList = new List<Card>(GameCardsList);
             for (int i = 0; i < 5; i++)
             {

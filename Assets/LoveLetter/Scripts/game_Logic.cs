@@ -4,6 +4,15 @@ using UnityEngine;
 
 namespace BBSL_LOVELETTER
 {
+    public enum eTargetPlayer
+    {
+        INVALID = -1,
+        PLAYER,
+        AI1,
+        AI2,
+        AI3,
+    }
+
     public enum eResult
     {
         INVALID = -1,
@@ -40,6 +49,10 @@ namespace BBSL_LOVELETTER
             GetNextPLayer();
         }
 
+        /// <summary>
+        /// Reset the game for a new round/game
+        /// </summary>
+        /// <param name="hardReset">Refers if we will reset the game</param>
         void Reset(bool hardReset = false)
         {
             CurrentPlayer = eTargetPlayer.INVALID;
@@ -50,6 +63,17 @@ namespace BBSL_LOVELETTER
             }
             Player.Reset(hardReset);
             ResetListOfPlayers();
+
+            if(hardReset)
+            {
+                CardController.instance.ResetGame();
+                game_UIController.instance.ResetGame();
+            }
+            else
+            {
+                CardController.instance.ResetRound();
+                game_UIController.instance.ResetRound();
+            }
         }
 
         void ResetListOfPlayers()
@@ -490,7 +514,7 @@ namespace BBSL_LOVELETTER
             switch (player)
             {
                 case eTargetPlayer.PLAYER:
-                    card = CardController.instance.player1Card.GetCardValue();
+                    card = Player.Get1stCardValue();
                     break;
                 case eTargetPlayer.AI1:
                     card = AIList[0].Get1stCardValue();
@@ -510,7 +534,7 @@ namespace BBSL_LOVELETTER
             switch (player)
             {
                 case eTargetPlayer.PLAYER:
-                    CardController.instance.player1Card.SetCardValue(newCard);
+                    Player.SetNewCard(newCard);
                     break;
                 case eTargetPlayer.AI1:
                     AIList[0].SetNewCard(newCard);
