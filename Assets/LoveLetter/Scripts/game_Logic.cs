@@ -46,7 +46,6 @@ namespace BBSL_LOVELETTER
         void Start()
         {
             Reset();
-            GetNextPLayer();
         }
 
         /// <summary>
@@ -107,9 +106,10 @@ namespace BBSL_LOVELETTER
         }
 
         #region TurnController
-        void GetNextPLayer()
+        IEnumerator GetNextPLayerIE(float waitTime = 0.0f)
         {
-            if(CurrentPlayerIndex == -1)
+            yield return new WaitForSeconds(waitTime);
+            if (CurrentPlayerIndex == -1)
             {
                 CurrentPlayerIndex = 0;
                 CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
@@ -192,7 +192,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(1.0f);
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
             Reset(true);
-            GetNextPLayer();
+            StartCoroutine(GetNextPLayerIE());
         }
 
         IEnumerator StartNextRoundIE()
@@ -200,7 +200,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(1.0f);
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
             Reset();
-            GetNextPLayer();
+            StartCoroutine(GetNextPLayerIE());
         }
 
         void CheckWinner()
@@ -257,14 +257,16 @@ namespace BBSL_LOVELETTER
         }
         #endregion
 
-        void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        public void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
             CardController.instance.PlayerUseCard(card);
+            float waitTime = 1.0f;
             switch (card)
             {
                 case eCardValues.GUARD:
-                    if (GuardCardUsed(card, targetPlayer) == eResult.WIN)
+                    if (GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
                     {
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPLayer(targetPlayer);
                     }
                     break;
@@ -275,11 +277,19 @@ namespace BBSL_LOVELETTER
                     eResult result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     if (result == eResult.WIN)
                     {
+                        //SHOW enemy card wait time
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPLayer(targetPlayer);
                     }
                     else if (result == eResult.LOSE)
                     {
+                        //SHOW enemy card wait time
+                        game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
                         KillPLayer(eTargetPlayer.PLAYER);
+                    }
+                    else
+                    {
+                        //SHOW DRAW more wait time
                     }
                     break;
                 case eCardValues.HANDMAID:
@@ -299,6 +309,7 @@ namespace BBSL_LOVELETTER
                     }
                     else
                     {
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPLayer(targetPlayer);
                     }
                     break;
@@ -309,21 +320,25 @@ namespace BBSL_LOVELETTER
                     //do nothing
                     break;
                 case eCardValues.PRINCESS:
+                    game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
                     KillPLayer(eTargetPlayer.PLAYER);
                     break;
             }
             //Show card used
-            GetNextPLayer();
+            //DO ANIMATION
+            StartCoroutine(GetNextPLayerIE(waitTime));
         }
 
-        public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID)
+        public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
             CardController.instance.AIUseCard(card, AIIndex);
+            float waitTime = 1.0f;
             switch (card)
             {
                 case eCardValues.GUARD:
-                    if(GuardCardUsed(card, targetPlayer) == eResult.WIN)
+                    if(GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
                     {
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPLayer(targetPlayer);
                     }
                     break;
@@ -334,11 +349,17 @@ namespace BBSL_LOVELETTER
                     eResult result = BaronCardUsed(AIIndex, targetPlayer);
                     if(result == eResult.WIN)
                     {
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPLayer(targetPlayer);
                     }
                     else if(result == eResult.LOSE)
                     {
+                        game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
                         KillPLayer(AIIndex);
+                    }
+                    else
+                    {
+
                     }
                     break;
                 case eCardValues.HANDMAID:
@@ -358,6 +379,7 @@ namespace BBSL_LOVELETTER
                     }
                     else
                     {
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPLayer(targetPlayer);
                     }
                     break;
@@ -369,11 +391,12 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRINCESS:
                     //lose
+                    game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
                     KillPLayer(AIIndex);
                     break;
             }
             //Show card used
-            GetNextPLayer();
+            StartCoroutine(GetNextPLayerIE(waitTime));
         }
 
         #region Card Used

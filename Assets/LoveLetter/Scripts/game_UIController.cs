@@ -7,6 +7,14 @@ using DG.Tweening;
 
 namespace BBSL_LOVELETTER
 {
+    public enum eButtonUsage
+    {
+        INVALID = -1,
+        FIRSTCARDUSE,
+        SECONDCARDUSE,
+        CANCELACTION,
+    }
+
     public class game_UIController : MonoBehaviour
     {
         [Header("SPRITE REFERENCE")]
@@ -14,6 +22,8 @@ namespace BBSL_LOVELETTER
         private Sprite[] cardSprites;
         [SerializeField]
         private Sprite[] cardSpritesSmall;
+        [SerializeField]
+        private Sprite cardbackSprite;
 
         [Header("")][Header("CARD REFERENCE")]
         [SerializeField]
@@ -34,6 +44,8 @@ namespace BBSL_LOVELETTER
         [Header("")][Header("TRANSFORM REFERENCE")]
         [SerializeField]
         private Transform[] tinycardsHolder;
+        [SerializeField]
+        private Transform[] playerTargetPosition;
 
         [Header("")][Header("PREFAB REFERENCE")]
         [SerializeField]
@@ -50,6 +62,11 @@ namespace BBSL_LOVELETTER
         [Header("")][Header("MESSAGE REFERENCE")]
         [SerializeField]
         private TextMeshProUGUI winMessage;
+        
+        [Header("")]
+        [Header("BUTTON REFERENCE")]
+        [SerializeField]
+        private Button[] playerUseButton;
 
         private bool hideDetails = false;
 
@@ -95,11 +112,11 @@ namespace BBSL_LOVELETTER
             Reset2ndCard();
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], hiddenCard, 0.5f);
-            ResizeCard(cardsToDistribute[0], hiddenCard, 0.5f);
+            MoveCard(cardsToDistribute[0], hiddenCard, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], hiddenCard, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
 
-            MoveCard(cardsToDistribute[1], player1SingleCardPos, 0.5f);
+            MoveCard(cardsToDistribute[1], player1SingleCardPos, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
 
@@ -166,11 +183,167 @@ namespace BBSL_LOVELETTER
         {
             players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
             players2ndCards[0].SetCard(game_Logic.instance.GetPlayer().Get2ndCardValue());
+            TogglePlayerButtons(true);
+        }
+
+        void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
+        {
+            StartCoroutine(ShowPlayerCardUseIE(initialplayer, cardused, targetplayer, button));
+        }
+
+        IEnumerator ShowPlayerCardUseIE(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
+        {
+            float speed = 1.0f;
+            if(button == eButtonUsage.FIRSTCARDUSE)
+            {
+                MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+                yield return new WaitForEndOfFrame();
+
+                MoveCard(players2ndCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
+            }
+            else if(button == eButtonUsage.SECONDCARDUSE)
+            {
+                MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+                yield return new WaitForEndOfFrame();
+
+                MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
+            }
+            else
+            {
+                MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+                yield return new WaitForEndOfFrame();
+            }
+
+            MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+
+            //flip card
+            cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+            yield return new WaitForSeconds(1.0f * speed);
+
+            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+            UpdateCardHolder(initialplayer, cardused);
+            yield return new WaitForEndOfFrame();
+            Reset1stCard();
+
+        }
+
+        void UpdateCardHolder(eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            GameObject smallCard;
+            smallCard = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/CardSmall"));
+            smallCard.GetComponent<CardNumber>().SetCard(cardused);
+            smallCard.transform.parent = tinycardsHolder[GetPlayerIndex(targetplayer)];
+        }
+
+        public void PlayerDiscardCard(eTargetPlayer targetplayer, eCardValues cardused, bool killplayer = false)
+        {
+            StartCoroutine(PlayerDiscardCardIE(targetplayer, cardused));
+        }
+
+        IEnumerator PlayerDiscardCardIE(eTargetPlayer targetplayer, eCardValues cardused, bool killplayer = false)
+        {
+            float speed = 1.0f;
+            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
+            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
+            players1stCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(false);
+            yield return new WaitForEndOfFrame();
+
+            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+            UpdateCardHolder(targetplayer, cardused);
+            yield return new WaitForEndOfFrame();
+            Reset1stCard();
+        }
+        #endregion
+        #endregion
+
+        #region UseCard
+        eCardValues tempcard = eCardValues.INVALID;
+        eButtonUsage playerChoice = eButtonUsage.INVALID;
+        [HideInInspector]
+        public eCardValues tempguardcard = eCardValues.INVALID;
+        [HideInInspector]
+        public eTargetPlayer temptarget = eTargetPlayer.INVALID;
+
+        public void UseCard(eButtonUsage button)
+        {
+            TogglePlayerButtons(false);
+            playerChoice = button;
+            if (button == eButtonUsage.FIRSTCARDUSE)
+            {
+                tempcard = game_Logic.instance.GetPlayer().Get1stCardValue();
+            }
+            else if(button == eButtonUsage.SECONDCARDUSE)
+            {
+                tempcard = game_Logic.instance.GetPlayer().Get2ndCardValue();
+            }
+
+            if (tempcard == eCardValues.COUNTESS ||
+                tempcard == eCardValues.PRINCESS ||
+                tempcard == eCardValues.HANDMAID)
+            {
+                game_Logic.instance.PlayerUseCard(tempcard);
+
+                tempcard = eCardValues.INVALID;
+            }
+            else
+            {
+                //target still required
+                TogglePlayerButtons(false);
+                ToggleTargetPlayerPanel(true);
+            }
+        }
+
+        public void FinishTargetPlayerPanel()
+        {
+            if (tempcard == eCardValues.GUARD)
+            {
+                //need to select which card
+                ToggleTargetPlayerPanel(false);
+                ToggleGuardSelectionPanel(true);
+            }
+            else
+            {
+                game_Logic.instance.PlayerUseCard(tempcard, temptarget);
+                tempcard = eCardValues.INVALID;
+            }
+        }
+
+        public void FinishGuardSelectionPanel()
+        {
+            game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
+            tempcard = eCardValues.INVALID;
+        }
+
+        void ToggleGuardSelectionPanel(bool unhide)
+        {
+
+        }
+
+        void ToggleTargetPlayerPanel(bool unhide)
+        {
+
+        }
+
+        void TogglePlayerButtons(bool unhide)
+        {
+            for (int i = 0; i < playerUseButton.Length; i++)
+            {
+                playerUseButton[i].gameObject.SetActive(unhide);
+            }
         }
         #endregion
 
-        #endregion
-        
         #region Details
         #region Resets
         public void ResetGame()

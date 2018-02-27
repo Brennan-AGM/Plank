@@ -64,6 +64,7 @@
      <Compile Include="Assets\LoveLetter\Scripts\Card.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\CardController.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\CardNumber.cs" />
+     <Compile Include="Assets\LoveLetter\Scripts\game_Button.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\game_EnemyAI.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\game_Logic.cs" />
      <Compile Include="Assets\LoveLetter\Scripts\game_Player.cs" />
