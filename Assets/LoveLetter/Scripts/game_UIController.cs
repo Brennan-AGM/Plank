@@ -23,6 +23,10 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private GameObject hiddenCard;
         [SerializeField]
+        private GameObject player1SingleCardPos;
+        [SerializeField]
+        private GameObject player1DoubleCardPos;
+        [SerializeField]
         private CardNumber[] players1stCards;
         [SerializeField]
         private CardNumber[] players2ndCards;
@@ -63,6 +67,7 @@ namespace BBSL_LOVELETTER
         void Start()
         {
             ToggleDetails(false);
+            DistributeCards();
         }
 
         void Update()
@@ -85,6 +90,7 @@ namespace BBSL_LOVELETTER
 
         IEnumerator DistributeCardsIE()
         {
+            float speed = 1.0f;
             //Total Wait Time 1.5 secs
             Reset1stCard();
             Reset2ndCard();
@@ -92,50 +98,51 @@ namespace BBSL_LOVELETTER
 
             MoveCard(cardsToDistribute[0], hiddenCard, 0.5f);
             ResizeCard(cardsToDistribute[0], hiddenCard, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.25f * speed);
 
-            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f);
-            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            MoveCard(cardsToDistribute[1], player1SingleCardPos, 0.5f);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.25f * speed);
 
             Reset1stCard();
+            hiddenCard.SetActive(true);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f);
-            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
-            players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f);
-            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.25f * speed);
 
             Reset1stCard();
             players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject, 0.5f);
-            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
             players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f);
-            ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
+            MoveCard(players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, player1DoubleCardPos, 0.5f * speed);
+            yield return new WaitForSeconds(0.25f * speed);
 
             Reset1stCard();
             players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f);
-            ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f);
-            yield return new WaitForSeconds(0.25f);
+            MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
             players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
