@@ -111,6 +111,11 @@ namespace BBSL_LOVELETTER
             Card1st.SetCardValue(eCardValues.INVALID);
         }
 
+        public void ForceSetValue(eCardValues cardValue)
+        {
+            Card1st.SetCardValue(cardValue);
+        }
+
         public int GetTotalCards()
         {
             return totalUsedCards;

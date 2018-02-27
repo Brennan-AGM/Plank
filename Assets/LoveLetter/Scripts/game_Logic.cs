@@ -301,10 +301,12 @@ namespace BBSL_LOVELETTER
                         if (!CardController.instance.CheckIfDrawPileEmpty())
                         {
                             CardController.instance.DrawCard(targetPlayer);
+                            game_UIController.instance.PlayerDrawCard(targetPlayer, GetCard(targetPlayer));
                         }
                         else
                         {
                             CardController.instance.DrawMissingCard(targetPlayer);
+                            game_UIController.instance.PlayerDrawMissingCard(targetPlayer, GetCard(targetPlayer));
                         }
                     }
                     else
@@ -368,13 +370,18 @@ namespace BBSL_LOVELETTER
                 case eCardValues.PRINCE:
                     if(PrinceCardUsed(targetPlayer) == eResult.DRAW)
                     {
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer));
                         if (!CardController.instance.CheckIfDrawPileEmpty())
                         {
+                            //drawAnim
                             CardController.instance.DrawCard(targetPlayer);
+                            game_UIController.instance.PlayerDrawCard(targetPlayer, GetCard(targetPlayer));
                         }
                         else
                         {
+                            //SpecialdrawAnim
                             CardController.instance.DrawMissingCard(targetPlayer);
+                            game_UIController.instance.PlayerDrawMissingCard(targetPlayer, GetCard(targetPlayer));
                         }
                     }
                     else

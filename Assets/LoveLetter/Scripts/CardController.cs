@@ -98,11 +98,11 @@ namespace BBSL_LOVELETTER
         {
             if (player >= eTargetPlayer.AI1)
             {
-                SetPlayerCardValues(missingCard.GetCardValue(), player);
+                ForcePlayerCardValues(missingCard.GetCardValue(), player);
             }
             else
             {
-                SetPlayerCardValues(missingCard.GetCardValue(), 0);
+                ForcePlayerCardValues(missingCard.GetCardValue(), 0);
             }
         }
 
@@ -123,6 +123,28 @@ namespace BBSL_LOVELETTER
             else if (AIIndex == eTargetPlayer.AI3)
             {
                 Player4AddKhownCards.Add(new Card(value));
+            }
+        }
+
+        void ForcePlayerCardValues(eCardValues card, eTargetPlayer index)
+        {
+            switch (index)
+            {
+                case eTargetPlayer.PLAYER:
+                    game_Logic.instance.GetPlayer().ForceSetValue(card);
+                    break;
+                case eTargetPlayer.AI1:
+                    game_Logic.instance.GetAIList(eTargetPlayer.AI1).ForceSetValue(card);
+                    Player2AddKhownCards.Add(new Card(card));
+                    break;
+                case eTargetPlayer.AI2:
+                    game_Logic.instance.GetAIList(eTargetPlayer.AI2).ForceSetValue(card);
+                    Player3AddKhownCards.Add(new Card(card));
+                    break;
+                case eTargetPlayer.AI3:
+                    game_Logic.instance.GetAIList(eTargetPlayer.AI3).ForceSetValue(card);
+                    Player4AddKhownCards.Add(new Card(card));
+                    break;
             }
         }
 

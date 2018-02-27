@@ -68,6 +68,11 @@ namespace BBSL_LOVELETTER
             return targetCardValue;
         }
 
+        public void ForceSetValue(eCardValues cardValue)
+        {
+            Card1st.SetCardValue(cardValue);
+        }
+
         public void DrawNewCard(eCardValues cardValue)
         {
             if (Card1st.GetCardValue() == eCardValues.INVALID)

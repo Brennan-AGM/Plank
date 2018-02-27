@@ -31,7 +31,7 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private GameObject deck;
         [SerializeField]
-        private GameObject hiddenCard;
+        private GameObject missingCard;
         [SerializeField]
         private GameObject player1SingleCardPos;
         [SerializeField]
@@ -112,8 +112,8 @@ namespace BBSL_LOVELETTER
             Reset2ndCard();
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], hiddenCard, 0.5f * speed);
-            ResizeCard(cardsToDistribute[0], hiddenCard, 0.5f * speed);
+            MoveCard(cardsToDistribute[0], missingCard, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], missingCard, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
 
             MoveCard(cardsToDistribute[1], player1SingleCardPos, 0.5f * speed);
@@ -121,7 +121,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset1stCard();
-            hiddenCard.SetActive(true);
+            missingCard.SetActive(true);
             yield return new WaitForEndOfFrame();
 
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f * speed);
@@ -179,6 +179,8 @@ namespace BBSL_LOVELETTER
         }
 
         #region ShowCards
+        private bool doneShowingCard = false;
+
         void ShowPlayerCards()
         {
             players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
@@ -188,6 +190,7 @@ namespace BBSL_LOVELETTER
 
         void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
         {
+            doneShowingCard = false;
             StartCoroutine(ShowPlayerCardUseIE(initialplayer, cardused, targetplayer, button));
         }
 
@@ -233,7 +236,7 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
-
+            doneShowingCard = true;
         }
 
         void UpdateCardHolder(eTargetPlayer targetplayer, eCardValues cardused)
@@ -251,6 +254,7 @@ namespace BBSL_LOVELETTER
 
         IEnumerator PlayerDiscardCardIE(eTargetPlayer targetplayer, eCardValues cardused, bool killplayer = false)
         {
+            yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
             ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
@@ -263,6 +267,55 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(targetplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
+        }
+
+        public void PlayerDrawCard(eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            StartCoroutine(PlayerDrawCardIE(targetplayer, cardused));
+        }
+
+        IEnumerator PlayerDrawCardIE(eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            yield return new WaitUntil(() => doneShowingCard);
+            float speed = 1.0f;
+            MoveCard(cardsToDistribute[1], deck, 0.0f);
+            ResizeCard(cardsToDistribute[1], deck, 0.0f);
+            yield return new WaitForEndOfFrame();
+
+            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+            yield return new WaitForEndOfFrame();
+            Reset2ndCard();
+            if(targetplayer == eTargetPlayer.PLAYER)
+            {
+                //ShowCard
+            }
+        }
+
+        public void PlayerDrawMissingCard(eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            StartCoroutine(PlayerDrawMissingCardIE(targetplayer, cardused));
+        }
+
+        IEnumerator PlayerDrawMissingCardIE(eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            yield return new WaitUntil(() => doneShowingCard);
+            float speed = 1.0f;
+            MoveCard(cardsToDistribute[1], missingCard, 0.0f);
+            ResizeCard(cardsToDistribute[1], missingCard, 0.0f);
+            missingCard.gameObject.SetActive(false);
+            yield return new WaitForEndOfFrame();
+
+            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+            yield return new WaitForEndOfFrame();
+            Reset2ndCard();
+            if (targetplayer == eTargetPlayer.PLAYER)
+            {
+                //ShowCard
+            }
         }
         #endregion
         #endregion
@@ -354,7 +407,7 @@ namespace BBSL_LOVELETTER
 
         public void ResetRound()
         {
-            hiddenCard.SetActive(false);
+            missingCard.SetActive(false);
             deck.SetActive(true);
             for (int i = 0; i < players1stCards.Length; i++)
             {
