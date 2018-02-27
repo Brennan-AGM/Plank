@@ -66,7 +66,14 @@ namespace BBSL_LOVELETTER
 
         public void SetNewCard(eCardValues cardValue)
         {
-            Card1st.SetCardValue(cardValue);
+            if(Card1st.GetCardValue() == eCardValues.INVALID)
+            {
+                Card1st.SetCardValue(cardValue);
+            }
+            else
+            {
+                Card2nd.SetCardValue(cardValue);
+            }
         }
 
         public eCardValues Get1stCardValue()
@@ -74,11 +81,26 @@ namespace BBSL_LOVELETTER
             return Card1st.GetCardValue();
         }
 
-        public eCardValues UseGet2ndCardValue()
+        public eCardValues Get2ndCardValue()
         {
-            eCardValues value = Card2nd.GetCardValue();
-            totalUsedCards += (int)Card2nd.GetCardValue();
-            Card2nd.SetCardValue(eCardValues.INVALID);
+            return Card2nd.GetCardValue();
+        }
+
+        public eCardValues UseCardValue(bool use2ndCard = true)
+        {
+            eCardValues value = eCardValues.INVALID;
+            if(use2ndCard)
+            {
+                value = Card2nd.GetCardValue();
+                totalUsedCards += (int)Card2nd.GetCardValue();
+                Card2nd.SetCardValue(eCardValues.INVALID);
+            }
+            else
+            {
+                value = Card1st.GetCardValue();
+                totalUsedCards += (int)Card1st.GetCardValue();
+                Card1st.SetCardValue(eCardValues.INVALID);
+            }
             return value;
         }
 

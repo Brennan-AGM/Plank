@@ -67,7 +67,6 @@ namespace BBSL_LOVELETTER
         void Start()
         {
             ToggleDetails(false);
-            DistributeCards();
         }
 
         void Update()
@@ -113,6 +112,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
+            players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f * speed);
@@ -147,6 +147,7 @@ namespace BBSL_LOVELETTER
             Reset2ndCard();
             players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
+            ShowPlayerCards();
         }
 
         void MoveCard(GameObject card, GameObject targetObjsPos, float duration)
@@ -159,8 +160,17 @@ namespace BBSL_LOVELETTER
         {
             card.GetComponent<RectTransform>().DOSizeDelta(targetObjsSizeDelta.GetComponent<RectTransform>().sizeDelta, duration);
         }
+
+        #region ShowCards
+        void ShowPlayerCards()
+        {
+            players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
+            players2ndCards[0].SetCard(game_Logic.instance.GetPlayer().Get2ndCardValue());
+        }
         #endregion
 
+        #endregion
+        
         #region Details
         #region Resets
         public void ResetGame()
@@ -186,9 +196,10 @@ namespace BBSL_LOVELETTER
                 int childCount = tinycardsHolder[i].childCount;
                 for (int j = 0; j < childCount; j++)
                 {
-                    Destroy(tinycardsHolder[i].GetChild(0));
+                    Destroy(tinycardsHolder[i].GetChild(0).gameObject);
                 }
             }
+            DistributeCards();
         }
 
         void ResetAllPlayerScore()

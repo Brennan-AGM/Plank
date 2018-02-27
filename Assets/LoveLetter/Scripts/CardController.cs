@@ -28,12 +28,7 @@ namespace BBSL_LOVELETTER
             instance = this;
 
             DontDestroyOnLoad(gameObject);
-        }
-
-        void Start()
-        {
             SetupMaxCardsList();
-            SetupGameCards();
         }
 
         public void ResetGame()
@@ -47,6 +42,7 @@ namespace BBSL_LOVELETTER
             Player2AddKhownCards.Clear();
             Player3AddKhownCards.Clear();
             Player4AddKhownCards.Clear();
+            SetupGameCards();
         }
         
         void SetupMaxCardsList()
@@ -72,12 +68,16 @@ namespace BBSL_LOVELETTER
             }
             CurrentDrawPileList.Clear();
             CurrentDrawPileList = new List<Card>(GameCardsList);
+            int value = 0;
             for (int i = 0; i < 5; i++)
             {
-                int value = Random.Range(0, CurrentDrawPileList.Count);
+                value = Random.Range(0, CurrentDrawPileList.Count);
                 SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), (eTargetPlayer) i);
                 CurrentDrawPileList.RemoveAt(value);
             }
+            value = Random.Range(0, CurrentDrawPileList.Count);
+            SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), eTargetPlayer.PLAYER);
+            CurrentDrawPileList.RemoveAt(value);
         }
 
         public void DrawCard(eTargetPlayer player)
@@ -131,8 +131,7 @@ namespace BBSL_LOVELETTER
             switch (index)
             {
                 case eTargetPlayer.PLAYER:
-
-                    //game_Logic.instance.GetPlayer().SetCardValue(card);
+                    game_Logic.instance.GetPlayer().SetNewCard(card);
                     break;
                 case eTargetPlayer.AI1:
                     game_Logic.instance.GetAIList(eTargetPlayer.AI1).DrawNewCard(card);
