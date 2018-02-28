@@ -106,7 +106,7 @@ namespace BBSL_LOVELETTER
         }
 
         #region TurnController
-        IEnumerator GetNextPLayerIE(float waitTime = 0.0f)
+        IEnumerator GetNextPlayerIE(float waitTime = 0.0f)
         {
             yield return new WaitForSeconds(waitTime);
             if (CurrentPlayerIndex == -1)
@@ -209,7 +209,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(1.0f);
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
             Reset(true);
-            StartCoroutine(GetNextPLayerIE());
+            StartCoroutine(GetNextPlayerIE());
         }
 
         IEnumerator StartNextRoundIE()
@@ -217,7 +217,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(1.0f);
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
             Reset();
-            StartCoroutine(GetNextPLayerIE());
+            StartCoroutine(GetNextPlayerIE());
         }
 
         void CheckWinner()
@@ -339,20 +339,33 @@ namespace BBSL_LOVELETTER
                     //do nothing
                     break;
                 case eCardValues.PRINCESS:
-                    game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, GetPlayer().Get2ndCardValue(), true);
+                    eCardValues unusedCard = GetPlayer().Get2ndCardValue();
+                    if(GetPlayer().Get2ndCardValue() == card)
+                    {
+                        unusedCard = GetPlayer().Get1stCardValue();
+                    }
+                    game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, unusedCard, true);
                     KillPlayer(eTargetPlayer.PLAYER);
                     break;
             }
-            //Show card used
+            if(GetPlayer().Get1stCardValue() == card)
+            {
+                GetPlayer().ForceSetValue(GetPlayer().UseCardValue(false));
+            }
+            else
+            {
+                GetPlayer().UseCardValue(true);
+            }
             //DO ANIMATION
-            StartCoroutine(GetNextPLayerIE(waitTime));
+
+            StartCoroutine(GetNextPlayerIE(waitTime));
         }
 
         public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
             Debug.Log("AI USE CARD");
             CardController.instance.AIUseCard(card, AIIndex);
-            float waitTime = 1.0f;
+            float waitTime = 5.0f;
             switch (card)
             {
                 case eCardValues.GUARD:
@@ -361,11 +374,11 @@ namespace BBSL_LOVELETTER
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
                     }
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.PRIEST:
                     PriestCardUsed(AIIndex, targetPlayer);
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.BARON:
                     eResult result = BaronCardUsed(AIIndex, targetPlayer);
@@ -383,11 +396,11 @@ namespace BBSL_LOVELETTER
                     {
 
                     }
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.HANDMAID:
                     HandMaidCardUsed(AIIndex);
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, AIIndex);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 5.0f);
                     break;
                 case eCardValues.PRINCE:
                     if(PrinceCardUsed(targetPlayer) == eResult.DRAW)
@@ -411,25 +424,25 @@ namespace BBSL_LOVELETTER
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
                     }
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.KING:
                     KingCardUsed(AIIndex, targetPlayer);
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.COUNTESS:
                     //do nothing
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, AIIndex);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 5.0f);
                     break;
                 case eCardValues.PRINCESS:
                     //lose
-                    game_UIController.instance.PlayerDiscardCard(AIIndex, GetAIList(AIIndex).UseGet2ndCardValue(), true);
+                    game_UIController.instance.PlayerDiscardCard(AIIndex, GetCard(AIIndex), true);
                     KillPlayer(AIIndex);
-                    game_UIController.instance.ShowPlayerCardUse(AIIndex, card, AIIndex);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 5.0f);
                     break;
             }
             //Show card used
-            StartCoroutine(GetNextPLayerIE(waitTime));
+            StartCoroutine(GetNextPlayerIE(waitTime));
         }
 
         #region Card Used

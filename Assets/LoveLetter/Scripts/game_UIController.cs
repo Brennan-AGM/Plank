@@ -195,6 +195,37 @@ namespace BBSL_LOVELETTER
             TogglePlayerButtons(true);
         }
 
+        public void ShowAICardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay)
+        {
+            doneShowingCard = false;
+            StartCoroutine(ShowAICardUseIE(initialplayer, cardused, targetplayer, delay));
+        }
+
+        IEnumerator ShowAICardUseIE(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay = 1.0f)
+        {
+            float speed = 1.0f;
+            yield return new WaitForSeconds(delay * speed);
+            MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+            ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+            players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+            yield return new WaitForEndOfFrame();
+
+            MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+
+            //flip card
+            cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+            yield return new WaitForSeconds(1.0f * speed);
+
+            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+            UpdateCardHolder(initialplayer, cardused);
+            yield return new WaitForEndOfFrame();
+            Reset1stCard();
+            doneShowingCard = true;
+        }
+
         public void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
         {
             doneShowingCard = false;
@@ -226,13 +257,6 @@ namespace BBSL_LOVELETTER
                 yield return new WaitForEndOfFrame();
 
                 MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
-            }
-            else
-            {
-                MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
-                ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
-                players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
-                yield return new WaitForEndOfFrame();
             }
 
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
