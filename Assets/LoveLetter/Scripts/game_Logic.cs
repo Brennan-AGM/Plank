@@ -108,7 +108,6 @@ namespace BBSL_LOVELETTER
         #region TurnController
         IEnumerator GetNextPLayerIE(float waitTime = 0.0f)
         {
-            Debug.Log("NEXT PLAYER");
             yield return new WaitForSeconds(waitTime);
             if (CurrentPlayerIndex == -1)
             {
@@ -120,12 +119,10 @@ namespace BBSL_LOVELETTER
             {
                 if(CardController.instance.CardsLeftInDrawPile() > 0 && HasPlayers())
                 {
-                    Debug.Log("NEXT ACTION");
                     CheckNextPlayer();
                 }
                 else
                 {
-                    Debug.Log("END ACTION");
                     CheckWinner();
                     CheckForTies();
                     AnnouncementOfWinner();
@@ -135,7 +132,7 @@ namespace BBSL_LOVELETTER
 
         void CheckNextPlayer()
         {
-            if(CurrentPlayerIndex < ListOfPlayers.Count)
+            if(CurrentPlayerIndex < ListOfPlayers.Count - 1)
             {
                 CurrentPlayerIndex++;
             }
@@ -143,14 +140,13 @@ namespace BBSL_LOVELETTER
             {
                 CurrentPlayerIndex = 0;
             }
+            Debug.Log(CurrentPlayerIndex);
             CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
-            Debug.Log(CurrentPlayer);
             PlayerDrawCard();
         }
 
         void PlayerDrawCard()
         {
-            Debug.Log("PLAYER DRAW CARD");
             CardController.instance.PlayerDrawCard(CurrentPlayer);
             if (CurrentPlayer == eTargetPlayer.PLAYER)
             {
@@ -343,7 +339,7 @@ namespace BBSL_LOVELETTER
                     //do nothing
                     break;
                 case eCardValues.PRINCESS:
-                    game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
+                    game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, GetPlayer().Get2ndCardValue(), true);
                     KillPlayer(eTargetPlayer.PLAYER);
                     break;
             }
@@ -427,7 +423,7 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRINCESS:
                     //lose
-                    game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
+                    game_UIController.instance.PlayerDiscardCard(AIIndex, GetAIList(AIIndex).UseGet2ndCardValue(), true);
                     KillPlayer(AIIndex);
                     game_UIController.instance.ShowPlayerCardUse(AIIndex, card, AIIndex);
                     break;

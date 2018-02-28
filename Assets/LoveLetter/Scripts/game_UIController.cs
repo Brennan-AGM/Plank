@@ -208,11 +208,14 @@ namespace BBSL_LOVELETTER
             {
                 MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
-                players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
                 cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+
+                MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+                players1stCards[GetPlayerIndex(initialplayer)].GetComponent<Image>().sprite = players2ndCards[GetPlayerIndex(initialplayer)].GetComponent<Image>().sprite;
+                players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
                 yield return new WaitForEndOfFrame();
 
-                MoveCard(players2ndCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
+                MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
             }
             else if(button == eButtonUsage.SECONDCARDUSE)
             {
@@ -292,14 +295,19 @@ namespace BBSL_LOVELETTER
             ResizeCard(cardsToDistribute[1], deck, 0.0f);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            if (targetplayer == eTargetPlayer.PLAYER)
+            {
+                MoveCard(players1stCards[GetPlayerIndex(targetplayer)].gameObject, player1DoubleCardPos, 0.5f * speed);
+            }
+            MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
+            players2ndCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
             Reset2ndCard();
             if(targetplayer == eTargetPlayer.PLAYER)
             {
-                //ShowCard
+                ShowPlayerCards();
             }
             doneDrawingCard = false;
         }
@@ -380,6 +388,7 @@ namespace BBSL_LOVELETTER
             }
             else
             {
+                ToggleTargetPlayerPanel(false);
                 game_Logic.instance.PlayerUseCard(tempcard, temptarget);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
                 ResetCardUseValues();
@@ -388,6 +397,7 @@ namespace BBSL_LOVELETTER
 
         public void FinishGuardSelectionPanel()
         {
+            ToggleGuardSelectionPanel(false);
             game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
             ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
             ResetCardUseValues();
@@ -402,7 +412,7 @@ namespace BBSL_LOVELETTER
         /// Show Panel to select target player from
         /// </summary>
         /// <param name="unhide"></param>
-        void ToggleTargetPlayerPanel(bool unhide, eCardValues card)
+        void ToggleTargetPlayerPanel(bool unhide, eCardValues card = eCardValues.INVALID)
         {
             if(unhide == false)
             {
@@ -544,6 +554,7 @@ namespace BBSL_LOVELETTER
 
         public Sprite GetCardSpritesSmall(eCardValues value)
         {
+            Debug.Log((int)value);
             return cardSpritesSmall[(int)value];
         }
         
