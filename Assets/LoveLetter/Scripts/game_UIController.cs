@@ -366,7 +366,7 @@ namespace BBSL_LOVELETTER
             {
                 //target still required
                 TogglePlayerButtons(false);
-                ToggleTargetPlayerPanel(true);
+                ToggleTargetPlayerPanel(true, tempcard);
             }
         }
 
@@ -375,7 +375,7 @@ namespace BBSL_LOVELETTER
             if (tempcard == eCardValues.GUARD)
             {
                 //need to select which card
-                ToggleTargetPlayerPanel(false);
+                ToggleTargetPlayerPanel(false, tempcard);
                 ToggleGuardSelectionPanel(true);
             }
             else
@@ -402,7 +402,7 @@ namespace BBSL_LOVELETTER
         /// Show Panel to select target player from
         /// </summary>
         /// <param name="unhide"></param>
-        void ToggleTargetPlayerPanel(bool unhide)
+        void ToggleTargetPlayerPanel(bool unhide, eCardValues card)
         {
             if(unhide == false)
             {
@@ -417,7 +417,15 @@ namespace BBSL_LOVELETTER
             }
             else
             {
-                for (int i = 0; i < playerTargetButton.Length; i++)
+                if(card == eCardValues.PRINCE)
+                {
+                    playerTargetButton[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(unhide);
+                }
+                else
+                {
+                    playerCantTargetButton[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(unhide);
+                }
+                for (int i = 1; i < playerTargetButton.Length; i++)
                 {
                     if(game_Logic.instance.IsPlayerValidTarget((eTargetPlayer) i))
                     {

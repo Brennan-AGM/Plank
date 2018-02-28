@@ -108,20 +108,24 @@ namespace BBSL_LOVELETTER
         #region TurnController
         IEnumerator GetNextPLayerIE(float waitTime = 0.0f)
         {
+            Debug.Log("NEXT PLAYER");
             yield return new WaitForSeconds(waitTime);
             if (CurrentPlayerIndex == -1)
             {
                 CurrentPlayerIndex = 0;
                 CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
+                CheckNextPlayer();
             }
             else
             {
                 if(CardController.instance.CardsLeftInDrawPile() > 0 && HasPlayers())
                 {
+                    Debug.Log("NEXT ACTION");
                     CheckNextPlayer();
                 }
                 else
                 {
+                    Debug.Log("END ACTION");
                     CheckWinner();
                     CheckForTies();
                     AnnouncementOfWinner();
@@ -140,11 +144,13 @@ namespace BBSL_LOVELETTER
                 CurrentPlayerIndex = 0;
             }
             CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
+            Debug.Log(CurrentPlayer);
             PlayerDrawCard();
         }
 
         void PlayerDrawCard()
         {
+            Debug.Log("PLAYER DRAW CARD");
             CardController.instance.PlayerDrawCard(CurrentPlayer);
             if (CurrentPlayer == eTargetPlayer.PLAYER)
             {
@@ -282,7 +288,7 @@ namespace BBSL_LOVELETTER
                     if (GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
-                        KillPLayer(targetPlayer);
+                        KillPlayer(targetPlayer);
                     }
                     break;
                 case eCardValues.PRIEST:
@@ -294,13 +300,13 @@ namespace BBSL_LOVELETTER
                     {
                         //SHOW enemy card wait time
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
-                        KillPLayer(targetPlayer);
+                        KillPlayer(targetPlayer);
                     }
                     else if (result == eResult.LOSE)
                     {
                         //SHOW enemy card wait time
                         game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
-                        KillPLayer(eTargetPlayer.PLAYER);
+                        KillPlayer(eTargetPlayer.PLAYER);
                     }
                     else
                     {
@@ -327,7 +333,7 @@ namespace BBSL_LOVELETTER
                     else
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
-                        KillPLayer(targetPlayer);
+                        KillPlayer(targetPlayer);
                     }
                     break;
                 case eCardValues.KING:
@@ -338,7 +344,7 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRINCESS:
                     game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
-                    KillPLayer(eTargetPlayer.PLAYER);
+                    KillPlayer(eTargetPlayer.PLAYER);
                     break;
             }
             //Show card used
@@ -348,6 +354,7 @@ namespace BBSL_LOVELETTER
 
         public void AIUseCard(eCardValues card, eTargetPlayer AIIndex, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
+            Debug.Log("AI USE CARD");
             CardController.instance.AIUseCard(card, AIIndex);
             float waitTime = 1.0f;
             switch (card)
@@ -356,7 +363,7 @@ namespace BBSL_LOVELETTER
                     if(GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
-                        KillPLayer(targetPlayer);
+                        KillPlayer(targetPlayer);
                     }
                     game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
                     break;
@@ -369,12 +376,12 @@ namespace BBSL_LOVELETTER
                     if(result == eResult.WIN)
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
-                        KillPLayer(targetPlayer);
+                        KillPlayer(targetPlayer);
                     }
                     else if(result == eResult.LOSE)
                     {
                         game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
-                        KillPLayer(AIIndex);
+                        KillPlayer(AIIndex);
                     }
                     else
                     {
@@ -406,7 +413,7 @@ namespace BBSL_LOVELETTER
                     else
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
-                        KillPLayer(targetPlayer);
+                        KillPlayer(targetPlayer);
                     }
                     game_UIController.instance.ShowPlayerCardUse(AIIndex, card, targetPlayer);
                     break;
@@ -421,7 +428,7 @@ namespace BBSL_LOVELETTER
                 case eCardValues.PRINCESS:
                     //lose
                     game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
-                    KillPLayer(AIIndex);
+                    KillPlayer(AIIndex);
                     game_UIController.instance.ShowPlayerCardUse(AIIndex, card, AIIndex);
                     break;
             }
@@ -650,7 +657,7 @@ namespace BBSL_LOVELETTER
             return Player;
         }
 
-        void KillPLayer(eTargetPlayer targetPlayer)
+        void KillPlayer(eTargetPlayer targetPlayer)
         {
             if (targetPlayer == eTargetPlayer.PLAYER)
             {
