@@ -591,9 +591,20 @@ namespace BBSL_LOVELETTER
             return enemyAIs;
         }
 
-        public bool IsPlayerValidTarget()
+        public bool IsPlayerValidTarget(eTargetPlayer target)
         {
-            return Player.IsTargetable();
+            switch(target)
+            {
+                case eTargetPlayer.PLAYER:
+                    return Player.IsTargetable();
+                case eTargetPlayer.AI1:
+                    return AIList[0].IsTargetable();
+                case eTargetPlayer.AI2:
+                    return AIList[1].IsTargetable();
+                case eTargetPlayer.AI3:
+                    return AIList[2].IsTargetable();
+            }
+            return false;
         }
 
         public game_EnemyAI GetAIList(eTargetPlayer AI)

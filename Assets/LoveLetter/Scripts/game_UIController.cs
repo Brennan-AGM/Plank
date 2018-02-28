@@ -67,6 +67,12 @@ namespace BBSL_LOVELETTER
         [Header("BUTTON REFERENCE")]
         [SerializeField]
         private Button[] playerUseButton;
+        [SerializeField]
+        private GameObject[] playerTargetButton;
+        [SerializeField]
+        private GameObject[] playerCantTargetButton;
+        [SerializeField]
+        private Button[] guardTargetButton;
 
         private bool hideDetails = false;
 
@@ -382,10 +388,38 @@ namespace BBSL_LOVELETTER
         {
 
         }
-
+        
+        /// <summary>
+        /// Show Panel to select target player from
+        /// </summary>
+        /// <param name="unhide"></param>
         void ToggleTargetPlayerPanel(bool unhide)
         {
-
+            if(unhide == false)
+            {
+                for (int i = 0; i < playerTargetButton.Length; i++)
+                {
+                    playerTargetButton[i].gameObject.SetActive(unhide);
+                }
+                for (int i = 0; i < playerCantTargetButton.Length; i++)
+                {
+                    playerCantTargetButton[i].gameObject.SetActive(unhide);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < playerUseButton.Length; i++)
+                {
+                    if(game_Logic.instance.IsPlayerValidTarget((eTargetPlayer) i))
+                    {
+                        playerTargetButton[i].gameObject.SetActive(unhide);
+                    }
+                    else
+                    {
+                        playerCantTargetButton[i].gameObject.SetActive(unhide);
+                    }
+                }
+            }
         }
 
         void TogglePlayerButtons(bool unhide)
