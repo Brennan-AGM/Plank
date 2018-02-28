@@ -109,8 +109,7 @@ namespace BBSL_LOVELETTER
                 targetPlayer = eTargetPlayer.INVALID;
                 AIUseCard();
                 game_Logic.instance.AIUseCard(Card2nd.GetCardValue(), currentPlayer, targetPlayer);
-                //gamelogic call
-                //Card2nd.SetCardValue(eCARDVALUES.INVALID);
+                Card2nd.SetCardValue(eCardValues.INVALID);
             }
         }
 

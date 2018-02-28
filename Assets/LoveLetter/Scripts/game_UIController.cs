@@ -186,6 +186,7 @@ namespace BBSL_LOVELETTER
 
         #region ShowCards
         private bool doneShowingCard = false;
+        private bool doneDrawingCard = false;
 
         void ShowPlayerCards()
         {
@@ -194,7 +195,7 @@ namespace BBSL_LOVELETTER
             TogglePlayerButtons(true);
         }
 
-        void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
+        public void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
         {
             doneShowingCard = false;
             StartCoroutine(ShowPlayerCardUseIE(initialplayer, cardused, targetplayer, button));
@@ -208,6 +209,7 @@ namespace BBSL_LOVELETTER
                 MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+                cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
                 yield return new WaitForEndOfFrame();
 
                 MoveCard(players2ndCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
@@ -217,6 +219,7 @@ namespace BBSL_LOVELETTER
                 MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+                cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
                 yield return new WaitForEndOfFrame();
 
                 MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
@@ -275,12 +278,13 @@ namespace BBSL_LOVELETTER
             Reset1stCard();
         }
 
-        public void PlayerDrawCard(eTargetPlayer targetplayer, eCardValues cardused)
+        public void PlayerDrawCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
+            doneDrawingCard = false;
             StartCoroutine(PlayerDrawCardIE(targetplayer, cardused));
         }
 
-        IEnumerator PlayerDrawCardIE(eTargetPlayer targetplayer, eCardValues cardused)
+        IEnumerator PlayerDrawCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
             yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
@@ -297,14 +301,16 @@ namespace BBSL_LOVELETTER
             {
                 //ShowCard
             }
+            doneDrawingCard = false;
         }
 
-        public void PlayerDrawMissingCard(eTargetPlayer targetplayer, eCardValues cardused)
+        public void PlayerDrawMissingCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
+            doneDrawingCard = false;
             StartCoroutine(PlayerDrawMissingCardIE(targetplayer, cardused));
         }
 
-        IEnumerator PlayerDrawMissingCardIE(eTargetPlayer targetplayer, eCardValues cardused)
+        IEnumerator PlayerDrawMissingCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
             yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
@@ -322,6 +328,7 @@ namespace BBSL_LOVELETTER
             {
                 //ShowCard
             }
+            doneDrawingCard = true;
         }
         #endregion
         #endregion
@@ -338,11 +345,11 @@ namespace BBSL_LOVELETTER
         {
             TogglePlayerButtons(false);
             playerChoice = button;
-            if (button == eButtonUsage.FIRSTCARDUSE)
+            if (playerChoice == eButtonUsage.FIRSTCARDUSE)
             {
                 tempcard = game_Logic.instance.GetPlayer().Get1stCardValue();
             }
-            else if(button == eButtonUsage.SECONDCARDUSE)
+            else if(playerChoice == eButtonUsage.SECONDCARDUSE)
             {
                 tempcard = game_Logic.instance.GetPlayer().Get2ndCardValue();
             }
@@ -352,8 +359,8 @@ namespace BBSL_LOVELETTER
                 tempcard == eCardValues.HANDMAID)
             {
                 game_Logic.instance.PlayerUseCard(tempcard);
-
-                tempcard = eCardValues.INVALID;
+                ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, eTargetPlayer.PLAYER, playerChoice);
+                ResetCardUseValues();
             }
             else
             {
@@ -374,14 +381,16 @@ namespace BBSL_LOVELETTER
             else
             {
                 game_Logic.instance.PlayerUseCard(tempcard, temptarget);
-                tempcard = eCardValues.INVALID;
+                ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+                ResetCardUseValues();
             }
         }
 
         public void FinishGuardSelectionPanel()
         {
             game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
-            tempcard = eCardValues.INVALID;
+            ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+            ResetCardUseValues();
         }
 
         void ToggleGuardSelectionPanel(bool unhide)
@@ -491,6 +500,14 @@ namespace BBSL_LOVELETTER
         void ResetCardRectTransform(GameObject card, Vector2 sizeDelta)
         {
             card.GetComponent<RectTransform>().DOSizeDelta(sizeDelta, 0);
+        }
+
+        void ResetCardUseValues()
+        {
+            tempcard = eCardValues.INVALID;
+            playerChoice = eButtonUsage.INVALID;
+            temptarget = eTargetPlayer.INVALID;
+            tempguardcard = eCardValues.INVALID;
         }
         #endregion
 

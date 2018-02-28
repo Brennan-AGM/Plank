@@ -80,17 +80,10 @@ namespace BBSL_LOVELETTER
             CurrentDrawPileList.RemoveAt(value);
         }
 
-        public void DrawCard(eTargetPlayer player)
+        public void PlayerDrawCard(eTargetPlayer player)
         {
             int value = Random.Range(0, CurrentDrawPileList.Count);
-            if (player >= eTargetPlayer.AI1)
-            {
-                SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), player);
-            }
-            else
-            {
-                SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), 0);
-            }
+            SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), player);
             CurrentDrawPileList.RemoveAt(value);
         }
 
