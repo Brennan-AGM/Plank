@@ -28,7 +28,9 @@ namespace BBSL_LOVELETTER
         {
             if(textnum != null)
             {
+                int value = (int)cardValue;
                 image.sprite = game_UIController.instance.GetCardSpritesSmall(cardValue);
+                textnum.text = value.ToString();
             }
             else
             {

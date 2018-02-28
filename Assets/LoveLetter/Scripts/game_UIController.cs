@@ -417,7 +417,7 @@ namespace BBSL_LOVELETTER
             }
             else
             {
-                for (int i = 0; i < playerUseButton.Length; i++)
+                for (int i = 0; i < playerTargetButton.Length; i++)
                 {
                     if(game_Logic.instance.IsPlayerValidTarget((eTargetPlayer) i))
                     {
