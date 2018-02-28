@@ -523,12 +523,14 @@ namespace BBSL_LOVELETTER
 
         void Reset1stCard()
         {
+            cardsToDistribute[0].GetComponent<Image>().sprite = cardbackSprite;
             ResetCardPostion(cardsToDistribute[0], deck);
             ResetCardRectTransform(cardsToDistribute[0], new Vector2(75, 100));
         }
 
         void Reset2ndCard()
         {
+            cardsToDistribute[1].GetComponent<Image>().sprite = cardbackSprite;
             ResetCardPostion(cardsToDistribute[1], deck);
             ResetCardRectTransform(cardsToDistribute[1], new Vector2(75, 100));
         }

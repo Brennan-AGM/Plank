@@ -315,6 +315,7 @@ namespace BBSL_LOVELETTER
                 case eCardValues.PRINCE:
                     if (PrinceCardUsed(targetPlayer) == eResult.DRAW)
                     {
+                        waitTime = 5.0f;
                         if (!CardController.instance.CheckIfDrawPileEmpty())
                         {
                             CardController.instance.PlayerDrawCard(targetPlayer);
@@ -333,6 +334,7 @@ namespace BBSL_LOVELETTER
                     }
                     break;
                 case eCardValues.KING:
+                    waitTime = 3.0f;
                     KingCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
                 case eCardValues.COUNTESS:
