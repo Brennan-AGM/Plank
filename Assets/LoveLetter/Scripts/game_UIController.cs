@@ -72,7 +72,7 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private GameObject[] playerCantTargetButton;
         [SerializeField]
-        private Button[] guardTargetButton;
+        private GameObject guardTargetSelection;
 
         private bool hideDetails = false;
 
@@ -422,14 +422,17 @@ namespace BBSL_LOVELETTER
         public void FinishGuardSelectionPanel()
         {
             ToggleGuardSelectionPanel(false);
-            game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
-            ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+            if(tempcard != eCardValues.INVALID)
+            {
+                game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
+                ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+            }
             ResetCardUseValues();
         }
 
         void ToggleGuardSelectionPanel(bool unhide)
         {
-
+            guardTargetSelection.SetActive(unhide);
         }
         
         /// <summary>

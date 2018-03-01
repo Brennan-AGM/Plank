@@ -51,7 +51,6 @@ namespace BBSL_DOMEMO
 
         void ContinueAI()
         {
-            Debug.Log(currentAITurn);
             if (currentAITurn < 3)
             {
                 switch (AIList[currentAITurn].GetAiType())
@@ -209,7 +208,6 @@ namespace BBSL_DOMEMO
 
         IEnumerator DelayAI(int value, int aiID)
         {
-            Debug.Log("DELAY START");
             game_UIController.instance.TogglePlayerGlow(aiID, true, 1.0f);
             game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.TURN);
             yield return new WaitForSeconds(1.0f);
