@@ -10,11 +10,13 @@ namespace BBSL_DOMEMO
 
         [Header("TILEREFERENCE")]
         [SerializeField]
-        private GameObject[] ShownTileHolder;
+        private Transform[] ShownTileHolder;
         [SerializeField]
-        private GameObject[] PlayerTileHolder;
+        private Transform[] PlayerTileHolder;
         [SerializeField]
-        private GameObject HiddenTileHolder;
+        private Transform HiddenTileHolder;
+
+        public Transform TileHolders;
 
         [Header("RESPONSE")]
         [SerializeField]
@@ -52,7 +54,7 @@ namespace BBSL_DOMEMO
             ClearChildren(HiddenTileHolder);
         }
 
-        public GameObject GetTileHolder(int id = 0, int type = 0)
+        public Transform GetTileHolder(int id = 0, int type = 0)
         {
             switch (type)
             {
@@ -120,28 +122,33 @@ namespace BBSL_DOMEMO
             PlayerAnswer[AiID].gameObject.SetActive(false);
         }
 
-        void ClearChildren(GameObject[] List)
+        void ClearChildren(Transform[] List)
         {
             for (int i = 0; i < List.Length; i++)
             {
-                for (int j = 0; j < List[i].transform.childCount; j++)
+                for (int j = 0; j < List[i].childCount; j++)
                 {
-                    Destroy(List[i].transform.GetChild(j).gameObject);
+                    Destroy(List[i].GetChild(j).gameObject);
                 }
             }
         }
 
-        void ClearChildren(GameObject List)
+        void ClearChildren(Transform List)
         {
-            for (int i = 0; i < List.transform.childCount; i++)
+            for (int i = 0; i < List.childCount; i++)
             {
-                Destroy(List.transform.GetChild(i).gameObject);
+                Destroy(List.GetChild(i).gameObject);
             }
         }
 
         public void ShowTiles(int value)
         {
             TileController.instance.InstantiateTiles(value, -1);
+        }
+
+        public Transform GetTileTargetPos(int value)
+        {
+            return GetTileHolder(value - 1, 0).transform;
         }
     }
 }

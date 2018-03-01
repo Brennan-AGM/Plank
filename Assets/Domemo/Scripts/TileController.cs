@@ -305,11 +305,11 @@ namespace BBSL_DOMEMO
             switch (type)
             {
                 case -2:
-                    return game_UIController.instance.GetTileHolder(0, 2).transform;
+                    return game_UIController.instance.GetTileHolder(0, 2);
                 case -1:
-                    return game_UIController.instance.GetTileHolder(value - 1, 0).transform;
+                    return game_UIController.instance.GetTileHolder(value - 1, 0);
                 default:
-                    return game_UIController.instance.GetTileHolder(type, 1).transform;
+                    return game_UIController.instance.GetTileHolder(type, 1);
             }
         }
 
@@ -353,7 +353,7 @@ namespace BBSL_DOMEMO
             }
         }
 
-        GameObject GetTileReference(int value, int type)
+        GameObject GetTileReference(int value, int type, bool remove = true)
         {
             List<KeyValuePair<int, GameObject>> TempList = new List<KeyValuePair<int, GameObject>>();
             GameObject Temp_gmobj = null;
@@ -381,7 +381,10 @@ namespace BBSL_DOMEMO
                     Temp_gmobj = tile.Value;
                 }
             }
-            TempList.Remove(new KeyValuePair<int, GameObject>(value, Temp_gmobj));
+            if(remove)
+            {
+                TempList.Remove(new KeyValuePair<int, GameObject>(value, Temp_gmobj));
+            }
 
             if (type == 0)
             {
@@ -406,6 +409,11 @@ namespace BBSL_DOMEMO
         public void RemoveTile(int value, int aiID)
         {
             ReduceTile(GetTileReference(value, aiID));
+        }
+
+        public GameObject GetTile(int value, int aiID)
+        {
+            return GetTileReference(value, aiID, false);
         }
     }
 }

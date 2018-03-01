@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using DG.Tweening;
 
 namespace BBSL_DOMEMO
 {
@@ -213,12 +214,32 @@ namespace BBSL_DOMEMO
             yield return new WaitForSeconds(1.5f);
             game_UIController.instance.GetPlayerAnswer(value, aiID);
             yield return new WaitForSeconds(1.5f);
+            TurnOnHighlight(AIAnswer, aiID);
             if (AIAnswer)
             {
+                //Delay
+                GameObject newTile = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"), game_UIController.instance.TileHolders.transform);
+                newTile.GetComponentInChildren<TileNumber>().SetNumber(value);
+                newTile.transform.position = TileController.instance.GetTile(value, aiID).transform.position;
+                Transform targetParent = game_UIController.instance.GetTileTargetPos(value);
+                Vector3 pos = targetParent.position;
+                if (targetParent.childCount > 0)
+                {
+                    pos = targetParent.GetChild(targetParent.childCount - 1).transform.position;
+                    pos = new Vector3(pos.x + 20, pos.y);
+                    targetParent.DOLocalMoveX(targetParent.localPosition.x - 20f, 1.0f);
+                }
+                newTile.transform.DOMove(pos, 1.0f);
                 TileController.instance.RemoveTile(value, aiID);
+                yield return new WaitForSeconds(1.0f);
+                yield return new WaitForEndOfFrame();
+                Destroy(newTile);
+                if (targetParent.childCount > 0)
+                {
+                    targetParent.DOLocalMoveX(targetParent.localPosition.x + 20f, 0.0f);
+                }
                 game_UIController.instance.ShowTiles(value);
             }
-            TurnOnHighlight(AIAnswer, aiID);
             yield return new WaitForSeconds(1.0f);
             Debug.Log("DELAY END");
             StartCoroutine(DelayAIEnd(aiID));
