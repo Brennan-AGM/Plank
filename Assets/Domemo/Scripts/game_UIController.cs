@@ -26,12 +26,9 @@ namespace BBSL_DOMEMO
 
         [Header("RESULTS")]
         [SerializeField]
-        private GameObject Correct_gmobj;
+        private GameObject MessageBox_gmobj;
         [SerializeField]
-        private GameObject Wrong_gmobj;
-        [SerializeField]
-        private GameObject Winner_gmobj;
-
+        private TMPro.TextMeshProUGUI Message_Text;
 
         [Header("Button")]
         public Button pick_btn;
@@ -75,18 +72,27 @@ namespace BBSL_DOMEMO
         {
             if (result == eTURNRESULT.CORRECT)
             {
-                Correct_gmobj.SetActive(true);
+                SetMessageBox("Player is <#1A742DFF>correct!</color>");
             }
             else if (result == eTURNRESULT.WRONG)
             {
-                Wrong_gmobj.SetActive(true);
+                SetMessageBox("Player is <#E51919FF>wrong!</color>");
             }
         }
 
-        public void GetWinner(string value)
+        public void SetMessageBox(string text)
         {
-            Winner_gmobj.SetActive(true);
-            Winner_gmobj.GetComponentInChildren<Text>().text = value;
+            Message_Text.text = text;
+            StartCoroutine(MoveMessageBoxIE());
+        }
+
+        IEnumerator MoveMessageBoxIE()
+        {
+            MessageBox_gmobj.transform.DOLocalMoveY(350f, 0.0f);
+            yield return new WaitForEndOfFrame();
+            MessageBox_gmobj.transform.DOLocalMoveY(284f, 1.0f);
+            yield return new WaitForSeconds(2.0f);
+            MessageBox_gmobj.transform.DOLocalMoveY(350f, 1.0f);
         }
 
         public GameObject GetPlayerTurn(int value)

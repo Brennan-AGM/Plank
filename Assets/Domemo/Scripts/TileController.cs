@@ -66,10 +66,13 @@ namespace BBSL_DOMEMO
         void Begin()
         {
             for (int i = 1; i <= 7; i++)
+            {
                 for (int y = 7 - i; y < 7; y++)
+                {
                     TileList.Add(new Tile(i));
+                }
+            }  
 
-            //TileList.
             distribNum = 0;
             int count = 0;
             while (TileList.Count > 0)
@@ -77,11 +80,17 @@ namespace BBSL_DOMEMO
                 int randomnum = Random.Range(0, TileList.Count);
 
                 if (count < 4)
+                {
                     distribNum = -2;
+                }
                 else if (count < 8)
+                {
                     distribNum = -1;
+                }
                 else if (count == 8)
+                {
                     distribNum = 0;
+                }
 
                 DistributeTiles(TileList[randomnum].GetTileValue());
                 TileList.RemoveAt(randomnum);
@@ -240,22 +249,6 @@ namespace BBSL_DOMEMO
             return false;
         }
         #region SendResponse
-        public void SendResponse(int value)
-        {
-            if (CheckList(value, 0))
-            {
-                InstantiateTiles(value, -1);
-                ReduceTile(GetTileReference(value, 0));
-                //Debug.Log("Correct");
-                game_UIController.instance.DetermineResult(eTURNRESULT.CORRECT);
-            }
-            else
-            {
-                //Debug.Log("Wrong");
-                game_UIController.instance.DetermineResult(eTURNRESULT.WRONG);
-            }
-        }
-
         public bool SendResponse(int value, int ai)
         {
             if (CheckList(value, ai))

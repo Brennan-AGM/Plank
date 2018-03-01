@@ -72,6 +72,7 @@ namespace BBSL_DOMEMO
             }
             else
             {
+                game_UIController.instance.SetMessageBox("Player's turn");
                 game_UIController.instance.pick_btn.interactable = true;
             }
         }
@@ -150,19 +151,19 @@ namespace BBSL_DOMEMO
             string chosenWinner = "";
             if (TileController.instance.GetList(1).Count == 0)
             {
-                chosenWinner = "Player 1 Wins";
+                chosenWinner = "<#00FF02FF>Player</color> Wins!!!";
             }
             else if (TileController.instance.GetList(2).Count == 0)
             {
-                chosenWinner = "Player 2 Wins";
+                chosenWinner = "<#002BCAFF>AI 1</color> Wins!!!";
             }
             else if (TileController.instance.GetList(3).Count == 0)
             {
-                chosenWinner = "Player 3 Wins";
+                chosenWinner = "<#8D00CAFF>AI 2</color> Wins!!!";
             }
             else if (TileController.instance.GetList(4).Count == 0)
             {
-                chosenWinner = "Player 4 Wins";
+                chosenWinner = "<#ff8000>AI 3</color> Wins!!!";
             }
             else
             {
@@ -180,7 +181,7 @@ namespace BBSL_DOMEMO
 
         void ShowWinner(string value)
         {
-            game_UIController.instance.GetWinner(value);
+            game_UIController.instance.SetMessageBox(value);
         }
         #endregion
 
@@ -241,13 +242,11 @@ namespace BBSL_DOMEMO
                 game_UIController.instance.ShowTiles(value);
             }
             yield return new WaitForSeconds(1.0f);
-            Debug.Log("DELAY END");
             StartCoroutine(DelayAIEnd(aiID));
         }
 
         IEnumerator DelayAIEnd(int AiID)
         {
-            Debug.Log("END START");
             yield return new WaitForSeconds(1.0f);
             game_UIController.instance.GetPlayerTurn(AiID).SetActive(false);
             game_UIController.instance.RemovePlayerAnswer(AiID);
@@ -257,7 +256,51 @@ namespace BBSL_DOMEMO
                 currentAITurn++;
                 ContinueAI();
             }
-            Debug.Log("END END");
+        }
+
+        public void SendResponse(int value)
+        {
+            StartCoroutine(SendResponseIE(value));
+        }
+
+        IEnumerator SendResponseIE(int value)
+        {
+            yield return new WaitForSeconds(0.5f);
+            if (TileController.instance.CheckList(value, 0))
+            {
+                game_UIController.instance.DetermineResult(eTURNRESULT.CORRECT);
+                yield return new WaitForSeconds(0.5f);
+                //Delay
+                GameObject newTile = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"), game_UIController.instance.TileHolders.transform);
+                newTile.GetComponentInChildren<TileNumber>().SetNumber(value);
+                newTile.transform.position = TileController.instance.GetTile(value, 0).transform.position;
+                Transform targetParent = game_UIController.instance.GetTileTargetPos(value);
+                Vector3 pos = targetParent.position;
+                if (targetParent.childCount > 0)
+                {
+                    pos = targetParent.GetChild(targetParent.childCount - 1).transform.position;
+                    pos = new Vector3(pos.x + 20, pos.y);
+                    targetParent.DOLocalMoveX(targetParent.localPosition.x - 20f, 1.0f);
+                }
+                newTile.transform.DOMove(pos, 1.0f);
+
+                TileController.instance.RemoveTile(value, 0);
+                yield return new WaitForSeconds(1.0f);
+                yield return new WaitForEndOfFrame();
+                Destroy(newTile);
+                if (targetParent.childCount > 0)
+                {
+                    targetParent.DOLocalMoveX(targetParent.localPosition.x + 20f, 0.0f);
+                }
+                game_UIController.instance.ShowTiles(value);
+                yield return new WaitForSeconds(1.0f);
+            }
+            else
+            {
+                game_UIController.instance.DetermineResult(eTURNRESULT.WRONG);
+                yield return new WaitForSeconds(3.0f);
+            }
+            StartAITurn();
         }
         #endregion
     }
