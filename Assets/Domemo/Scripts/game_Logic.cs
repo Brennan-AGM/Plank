@@ -210,11 +210,11 @@ namespace BBSL_DOMEMO
         IEnumerator DelayAI(int value, int aiID)
         {
             Debug.Log("DELAY START");
-            game_UIController.instance.GetPlayerTurn(aiID).SetActive(true);
+            game_UIController.instance.TogglePlayerGlow(aiID, true, 1.0f);
             game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.TURN);
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(1.0f);
             game_UIController.instance.GetPlayerAnswer(value, aiID);
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(2.0f);
             TurnOnHighlight(AIAnswer, aiID);
             if (AIAnswer)
             {
@@ -247,9 +247,9 @@ namespace BBSL_DOMEMO
 
         IEnumerator DelayAIEnd(int AiID)
         {
-            yield return new WaitForSeconds(1.0f);
-            game_UIController.instance.GetPlayerTurn(AiID).SetActive(false);
             game_UIController.instance.RemovePlayerAnswer(AiID);
+            game_UIController.instance.TogglePlayerGlow(AiID, false, 1.0f);
+            yield return new WaitForSeconds(1.0f);
             CurrentAITurn = true;
             if (!HasWinner())
             {

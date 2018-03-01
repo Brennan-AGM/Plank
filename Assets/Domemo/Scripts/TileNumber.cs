@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -54,6 +55,18 @@ namespace BBSL_DOMEMO
                 color = tempColor;
             }
             return color;
+        }
+
+        public void ToggleFade( bool unhide, float duration)
+        {
+            if (unhide == true)
+            {
+                Number.DOFade(1.0f, duration);
+            }
+            else
+            {
+                Number.DOFade(0.0f, duration);
+            }
         }
     }
 }

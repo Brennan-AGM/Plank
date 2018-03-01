@@ -22,7 +22,9 @@ namespace BBSL_DOMEMO
         [SerializeField]
         private TileNumber[] PlayerAnswer;
         [SerializeField]
-        private GameObject[] PlayerTurn;
+        private Image[] PlayerGlow;
+        [SerializeField]
+        private Image[] PlayerChatBubble;
 
         [Header("RESULTS")]
         [SerializeField]
@@ -95,37 +97,62 @@ namespace BBSL_DOMEMO
             MessageBox_gmobj.transform.DOLocalMoveY(350f, 1.0f);
         }
 
-        public GameObject GetPlayerTurn(int value)
+        public Image GetPlayerGlow(int value)
         {
-            return PlayerTurn[value];
+            return PlayerGlow[value];
+        }
+
+        public void TogglePlayerGlow(int value, bool unhide, float duration)
+        {
+            if(unhide == true)
+            {
+                PlayerGlow[value].DOFade(1.0f, duration);
+            }
+            else
+            {
+                PlayerGlow[value].DOFade(0.0f, duration);
+            }
+            TogglePlayerChatBubble(value, unhide, duration);
+        }
+
+        void TogglePlayerChatBubble(int value, bool unhide, float duration)
+        {
+            if (unhide == true)
+            {
+                PlayerChatBubble[value].DOFillAmount(1.0f, duration);
+            }
+            else
+            {
+                PlayerChatBubble[value].DOFillAmount(0.0f, duration);
+            }
         }
 
         public void SetPlayerTurn(int value, eTURNRESULT result)
         {
-            Image target = PlayerTurn[value].GetComponent<Image>();
             switch (result)
             {
                 case eTURNRESULT.CORRECT:
-                    target.DOColor(Color.green, 0.5f);
+                    PlayerGlow[value].DOColor(Color.green, 0.5f);
                     break;
                 case eTURNRESULT.WRONG:
-                    target.DOColor(Color.red, 0.5f);
+                    PlayerGlow[value].DOColor(Color.red, 0.5f);
                     break;
                 case eTURNRESULT.TURN:
-                    target.DOColor(Color.white, 0.0f);
+                    PlayerGlow[value].DOColor(Color.white, 0.0f);
                     break;
             }
         }
 
         public void GetPlayerAnswer(int value, int AiID)
         {
-            PlayerAnswer[AiID].gameObject.SetActive(true);
             PlayerAnswer[AiID].SetNumber(value);
+            PlayerAnswer[AiID].ToggleFade(false, 0.0f);
+            PlayerAnswer[AiID].ToggleFade(true, 1.0f);
         }
 
         public void RemovePlayerAnswer(int AiID)
         {
-            PlayerAnswer[AiID].gameObject.SetActive(false);
+            PlayerAnswer[AiID].ToggleFade(false, 1.0f);
         }
 
         void ClearChildren(Transform[] List)
