@@ -192,7 +192,23 @@ namespace BBSL_LOVELETTER
         {
             players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
             players2ndCards[0].SetCard(game_Logic.instance.GetPlayer().Get2ndCardValue());
-            TogglePlayerButtons(true);
+
+            if(game_Logic.instance.GetPlayer().Get1stCardValue() == eCardValues.COUNTESS && 
+                (game_Logic.instance.GetPlayer().Get2ndCardValue() == eCardValues.PRINCE ||
+                game_Logic.instance.GetPlayer().Get2ndCardValue() == eCardValues.KING))
+            {
+                TogglePlayerButtons(true, 0);
+            }
+            else if (game_Logic.instance.GetPlayer().Get2ndCardValue() == eCardValues.COUNTESS &&
+                (game_Logic.instance.GetPlayer().Get1stCardValue() == eCardValues.PRINCE ||
+                game_Logic.instance.GetPlayer().Get1stCardValue() == eCardValues.KING))
+            {
+                TogglePlayerButtons(true, 1);
+            }
+            else
+            {
+                TogglePlayerButtons(true);
+            }
         }
 
         public void ShowAICardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay)
@@ -422,7 +438,7 @@ namespace BBSL_LOVELETTER
         public void FinishGuardSelectionPanel()
         {
             ToggleGuardSelectionPanel(false);
-            if(tempcard != eCardValues.INVALID)
+            if(tempguardcard != eCardValues.INVALID)
             {
                 game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
@@ -481,6 +497,17 @@ namespace BBSL_LOVELETTER
             for (int i = 0; i < playerUseButton.Length; i++)
             {
                 playerUseButton[i].gameObject.SetActive(unhide);
+            }
+        }
+
+        void TogglePlayerButtons(bool unhide, int only1CardOn)
+        {
+            for (int i = 0; i < playerUseButton.Length; i++)
+            {
+                if(only1CardOn == i)
+                {
+                    playerUseButton[i].gameObject.SetActive(unhide);
+                }
             }
         }
         #endregion
