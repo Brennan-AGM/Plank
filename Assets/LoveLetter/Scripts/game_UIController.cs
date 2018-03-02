@@ -634,14 +634,15 @@ namespace BBSL_LOVELETTER
             return -1;
         }
 
-        public void SetMessageBox(string text)
+        public void SetMessageBox(string text, float delay = 0.0f)
         {
             Message_Text.text = text;
             StartCoroutine(MoveMessageBoxIE());
         }
 
-        IEnumerator MoveMessageBoxIE()
+        IEnumerator MoveMessageBoxIE(float delay = 0.0f)
         {
+            yield return new WaitForSeconds(delay);
             MessageBox_gmobj.transform.DOLocalMoveY(360f, 0.0f);
             yield return new WaitForEndOfFrame();
             MessageBox_gmobj.transform.DOLocalMoveY(275f, 1.0f);
@@ -649,7 +650,14 @@ namespace BBSL_LOVELETTER
             MessageBox_gmobj.transform.DOLocalMoveY(360f, 1.0f);
         }
 
-        public void PlayerElimination(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
+        public void PlayerShield(eTargetPlayer targetPlayer, float delay = 0.0f)
+        {
+            text.Length = 0;
+            text.Append(GetPlayerText(targetPlayer)).Append(" is Protected!");
+            SetMessageBox(text.ToString(), delay);
+        }
+
+        public void PlayerElimination(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer, float delay = 0.0f)
         {
             text.Length = 0;
             if(targetPlayer != eTargetPlayer.INVALID)
@@ -660,7 +668,7 @@ namespace BBSL_LOVELETTER
             {
                 text.Append(GetPlayerText(initialPlayer)).Append(" commits seppuku!");
             }
-            SetMessageBox(text.ToString());
+            SetMessageBox(text.ToString(), delay);
         }
 
         string GetPlayerText(eTargetPlayer player)
