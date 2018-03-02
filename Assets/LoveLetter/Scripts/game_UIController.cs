@@ -274,7 +274,7 @@ namespace BBSL_LOVELETTER
 
                 MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
             }
-
+            
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
 
@@ -384,10 +384,8 @@ namespace BBSL_LOVELETTER
         #region UseCard
         eCardValues tempcard = eCardValues.INVALID;
         eButtonUsage playerChoice = eButtonUsage.INVALID;
-        [HideInInspector]
-        public eCardValues tempguardcard = eCardValues.INVALID;
-        [HideInInspector]
-        public eTargetPlayer temptarget = eTargetPlayer.INVALID;
+        eCardValues tempguardcard = eCardValues.INVALID;
+        eTargetPlayer temptarget = eTargetPlayer.INVALID;
 
         public void UseCard(eButtonUsage button)
         {
@@ -418,8 +416,9 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        public void FinishTargetPlayerPanel()
+        public void FinishTargetPlayerPanel(eTargetPlayer targetPlayer)
         {
+            temptarget = targetPlayer;
             if (tempcard == eCardValues.GUARD)
             {
                 //need to select which card
@@ -435,8 +434,9 @@ namespace BBSL_LOVELETTER
             }
         }
 
-        public void FinishGuardSelectionPanel()
+        public void FinishGuardSelectionPanel(eCardValues cardSelected)
         {
+            tempguardcard = cardSelected;
             ToggleGuardSelectionPanel(false);
             if(tempguardcard != eCardValues.INVALID)
             {

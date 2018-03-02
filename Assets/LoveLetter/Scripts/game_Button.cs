@@ -20,16 +20,12 @@ namespace BBSL_LOVELETTER
 
         public void SelectPlayerTarget()
         {
-            game_UIController.instance.temptarget = targetplayer;
-            game_UIController.instance.FinishTargetPlayerPanel();
-            game_UIController.instance.temptarget = eTargetPlayer.INVALID;
+            game_UIController.instance.FinishTargetPlayerPanel(targetplayer);
         }
 
         public void SelectGuardCard()
         {
-            game_UIController.instance.tempguardcard = targetcard;
-            game_UIController.instance.FinishGuardSelectionPanel();
-            game_UIController.instance.tempguardcard = eCardValues.INVALID;
+            game_UIController.instance.FinishGuardSelectionPanel(targetcard);
         }
     }
 }
