@@ -467,7 +467,7 @@ namespace BBSL_LOVELETTER
                 listOfValidTargets.Remove(this);
             }
 
-            if (game_Logic.instance.IsPlayerValidTarget(eTargetPlayer.PLAYER))
+            if (game_Logic.instance.IsPlayerAlive(eTargetPlayer.PLAYER))
             {
                 target = Random.Range(0, listOfValidTargets.Count + 1);
                 canTargetPlayer = true;

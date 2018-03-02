@@ -32,7 +32,7 @@ namespace BBSL_LOVELETTER
             targetable = isTargetable;
         }
 
-        public bool CanAIStillPlay()
+        public bool CanStillPlay()
         {
             return canPlay;
         }

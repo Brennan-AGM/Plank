@@ -87,7 +87,7 @@ namespace BBSL_LOVELETTER
         bool HasPlayers()
         {
             int players = 0;
-            if (Player.CanAIStillPlay())
+            if (Player.CanStillPlay())
             {
                 players++;
             }
@@ -641,7 +641,7 @@ namespace BBSL_LOVELETTER
             List<game_EnemyAI> enemyAIs = new List<game_EnemyAI>();
             for (int i = 0; i < AIList.Length; i++)
             {
-                if(AIList[i].IsTargetable())
+                if(AIList[i].CanAIStillPlay())
                 {
                     enemyAIs.Add(AIList[i]);
                 }
@@ -661,6 +661,22 @@ namespace BBSL_LOVELETTER
                     return AIList[1].IsTargetable();
                 case eTargetPlayer.AI3:
                     return AIList[2].IsTargetable();
+            }
+            return false;
+        }
+
+        public bool IsPlayerAlive(eTargetPlayer target)
+        {
+            switch (target)
+            {
+                case eTargetPlayer.PLAYER:
+                    return Player.CanStillPlay();
+                case eTargetPlayer.AI1:
+                    return AIList[0].CanAIStillPlay();
+                case eTargetPlayer.AI2:
+                    return AIList[1].CanAIStillPlay();
+                case eTargetPlayer.AI3:
+                    return AIList[2].CanAIStillPlay();
             }
             return false;
         }
