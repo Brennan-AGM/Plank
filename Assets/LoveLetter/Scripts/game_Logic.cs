@@ -285,6 +285,11 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
+                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
+                    }
+                    else
+                    {
+
                     }
                     break;
                 case eCardValues.PRIEST:
@@ -297,12 +302,14 @@ namespace BBSL_LOVELETTER
                         //SHOW enemy card wait time
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
+                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
                     }
                     else if (result == eResult.LOSE)
                     {
                         //SHOW enemy card wait time
                         game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
                         KillPlayer(eTargetPlayer.PLAYER);
+                        game_UIController.instance.PlayerElimination(targetPlayer, eTargetPlayer.PLAYER);
                     }
                     else
                     {
@@ -331,6 +338,7 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
+                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
                     }
                     break;
                 case eCardValues.KING:
@@ -348,6 +356,7 @@ namespace BBSL_LOVELETTER
                     }
                     game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, unusedCard, true);
                     KillPlayer(eTargetPlayer.PLAYER);
+                    game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, eTargetPlayer.INVALID);
                     break;
             }
             if(GetPlayer().Get1stCardValue() == card)
@@ -375,6 +384,7 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
@@ -388,11 +398,13 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     else if(result == eResult.LOSE)
                     {
                         game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
                         KillPlayer(AIIndex);
+                        game_UIController.instance.PlayerElimination(targetPlayer, AIIndex);
                     }
                     else
                     {
@@ -425,6 +437,7 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
@@ -441,6 +454,7 @@ namespace BBSL_LOVELETTER
                     game_UIController.instance.PlayerDiscardCard(AIIndex, GetCard(AIIndex), true);
                     KillPlayer(AIIndex);
                     game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 5.0f);
+                    game_UIController.instance.PlayerElimination(AIIndex, eTargetPlayer.INVALID);
                     break;
             }
             //Show card used

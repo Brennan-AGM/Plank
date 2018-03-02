@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Text;
 
 namespace BBSL_LOVELETTER
 {
@@ -61,8 +62,10 @@ namespace BBSL_LOVELETTER
         
         [Header("")][Header("MESSAGE REFERENCE")]
         [SerializeField]
-        private TextMeshProUGUI winMessage;
-        
+        private GameObject MessageBox_gmobj;
+        [SerializeField]
+        private TextMeshProUGUI Message_Text;
+
         [Header("")]
         [Header("BUTTON REFERENCE")]
         [SerializeField]
@@ -75,6 +78,7 @@ namespace BBSL_LOVELETTER
         private GameObject guardTargetSelection;
 
         private bool hideDetails = false;
+        StringBuilder text = new StringBuilder();
 
         public static game_UIController instance = null;
         private void Awake()
@@ -628,6 +632,51 @@ namespace BBSL_LOVELETTER
                     return 3;
             }
             return -1;
+        }
+
+        public void SetMessageBox(string text)
+        {
+            Message_Text.text = text;
+            StartCoroutine(MoveMessageBoxIE());
+        }
+
+        IEnumerator MoveMessageBoxIE()
+        {
+            MessageBox_gmobj.transform.DOLocalMoveY(360f, 0.0f);
+            yield return new WaitForEndOfFrame();
+            MessageBox_gmobj.transform.DOLocalMoveY(275f, 1.0f);
+            yield return new WaitForSeconds(2.0f);
+            MessageBox_gmobj.transform.DOLocalMoveY(360f, 1.0f);
+        }
+
+        public void PlayerElimination(eTargetPlayer initialPlayer, eTargetPlayer targetPlayer)
+        {
+            text.Length = 0;
+            if(targetPlayer != eTargetPlayer.INVALID)
+            {
+                text.Append(GetPlayerText(initialPlayer)).Append(" eliminates ").Append(GetPlayerText(targetPlayer)).Append("!");
+            }
+            else
+            {
+                text.Append(GetPlayerText(initialPlayer)).Append(" commits seppuku!");
+            }
+            SetMessageBox(text.ToString());
+        }
+
+        string GetPlayerText(eTargetPlayer player)
+        {
+            switch (player)
+            {
+                case eTargetPlayer.PLAYER:
+                    return "<#00FF02FF>Player</color>";
+                case eTargetPlayer.AI1:
+                    return "<#002BCAFF>Player 2</color>";
+                case eTargetPlayer.AI2:
+                    return "<#8D00CAFF>Player 3</color>";
+                case eTargetPlayer.AI3:
+                    return "<#ff8000>Player 4</color>";
+            }
+            return "";
         }
     }
 }
