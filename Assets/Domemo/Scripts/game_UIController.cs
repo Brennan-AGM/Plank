@@ -210,6 +210,8 @@ namespace BBSL_DOMEMO
         public void AddTileToPool(GameObject tile)
         {
             allTiles.Add(tile.GetComponent<Image>());
+            tile.GetComponent<Image>().DOFade(0.0f, 0.0f);
+            tile.GetComponentInChildren<TextMeshProUGUI>().DOFade(0.0f, 0);
         }
 
         public void StartDistribution()
@@ -222,10 +224,6 @@ namespace BBSL_DOMEMO
             yield return new WaitForEndOfFrame();
             for (int i = 0; i < allTiles.Count; i++)
             {
-                allTiles[i].gameObject.SetActive(false);
-                allTiles[i].DOFade(0.0f, 0.0f);
-                allTiles[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(0.0f, 0);
-                allTiles[i].gameObject.SetActive(true);
                 tileToShuffle[i].gameObject.SetActive(true);
                 tileToShuffle[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(1.0f, 0);
             }
