@@ -24,6 +24,12 @@ namespace BBSL_DOMEMO
         private List<KeyValuePair<int, GameObject>> Player4TilesReference = new List<KeyValuePair<int, GameObject>>();
         private int distribNum;
 
+        [Header("Prefab Reference")]
+        [SerializeField]
+        private GameObject tilePrefab;
+        [SerializeField]
+        private GameObject hiddentilePrefab;
+
 
         void Awake()
         {
@@ -277,11 +283,11 @@ namespace BBSL_DOMEMO
             GameObject target;
             if (type == -2 || type == 0)
             {
-                target = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/TileHidden"));
+                target = Instantiate(hiddentilePrefab);
             }
             else
             {
-                target = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"));
+                target = Instantiate(tilePrefab);
                 target.GetComponentInChildren<TileNumber>().SetNumber(value);
             }
 

@@ -298,7 +298,7 @@ namespace BBSL_LOVELETTER
         void UpdateCardHolder(eTargetPlayer targetplayer, eCardValues cardused)
         {
             GameObject smallCard;
-            smallCard = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/CardSmall"));
+            smallCard = Instantiate(tinycardsToShow);
             smallCard.GetComponent<CardNumber>().SetCard(cardused);
             smallCard.transform.parent = tinycardsHolder[GetPlayerIndex(targetplayer)];
         }
