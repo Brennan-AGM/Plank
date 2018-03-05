@@ -217,7 +217,7 @@ namespace BBSL_LOVELETTER
 
         public void ShowAICardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay)
         {
-            doneShowingCard = false;
+            SetShowingCard(false);
             StartCoroutine(ShowAICardUseIE(initialplayer, cardused, targetplayer, delay));
         }
 
@@ -243,12 +243,12 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
-            doneShowingCard = true;
+            SetShowingCard(true);
         }
 
         public void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
         {
-            doneShowingCard = false;
+            SetShowingCard(false);
             StartCoroutine(ShowPlayerCardUseIE(initialplayer, cardused, targetplayer, button));
         }
 
@@ -292,7 +292,7 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
-            doneShowingCard = true;
+            SetShowingCard(true);
         }
 
         void UpdateCardHolder(eTargetPlayer targetplayer, eCardValues cardused)
@@ -327,7 +327,7 @@ namespace BBSL_LOVELETTER
 
         public void PlayerDrawCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
-            doneDrawingCard = false;
+            SetDrawingDone(false);
             StartCoroutine(PlayerDrawCardIE(targetplayer, cardused));
         }
 
@@ -353,12 +353,12 @@ namespace BBSL_LOVELETTER
             {
                 ShowPlayerCards();
             }
-            doneDrawingCard = false;
+            SetDrawingDone(false);
         }
 
         public void PlayerDrawMissingCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
-            doneDrawingCard = false;
+            SetDrawingDone(false);
             StartCoroutine(PlayerDrawMissingCardIE(targetplayer, cardused));
         }
 
@@ -381,7 +381,7 @@ namespace BBSL_LOVELETTER
                 players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
                 //ShowCard
             }
-            doneDrawingCard = true;
+            SetDrawingDone(true);
         }
 
         public void PlayerSwapCard(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused)
@@ -729,6 +729,18 @@ namespace BBSL_LOVELETTER
                     return "<#ff8000>Player 4</color>";
             }
             return "";
+        }
+
+        void SetShowingCard(bool isDone)
+        {
+            //Debug.Log("SHOWING:" + isDone);
+            doneShowingCard = isDone;
+        }
+
+        void SetDrawingDone(bool isDone)
+        {
+            //Debug.Log("DRAWING:" + isDone);
+            doneDrawingCard = isDone;
         }
     }
 }

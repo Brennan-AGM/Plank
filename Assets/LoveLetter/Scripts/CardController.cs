@@ -82,7 +82,6 @@ namespace BBSL_LOVELETTER
 
         public void PlayerDrawCard(eTargetPlayer player)
         {
-            Debug.Log("PLAYER DRAW CARD");
             int value = Random.Range(0, CurrentDrawPileList.Count);
             SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), player);
             CurrentDrawPileList.RemoveAt(value);
