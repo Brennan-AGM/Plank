@@ -378,9 +378,45 @@ namespace BBSL_LOVELETTER
             Reset2ndCard();
             if (targetplayer == eTargetPlayer.PLAYER)
             {
+                players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
                 //ShowCard
             }
             doneDrawingCard = true;
+        }
+
+        public void PlayerSwapCard(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            StartCoroutine(PlayerSwapCardIE(initialplayer, targetplayer, cardused));
+        }
+
+        IEnumerator PlayerSwapCardIE(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused)
+        {
+            yield return new WaitUntil(() => doneShowingCard);
+            float speed = 1.0f;
+            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
+            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
+            players1stCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(false);
+
+            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
+            players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+            yield return new WaitForEndOfFrame();
+
+            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            MoveCard(cardsToDistribute[1], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            yield return new WaitForSeconds(0.5f * speed);
+
+            yield return new WaitForEndOfFrame();
+            Reset1stCard();
+            Reset2ndCard();
+            players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(true);
+            players1stCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(true);
+            if(initialplayer == eTargetPlayer.PLAYER || targetplayer == eTargetPlayer.PLAYER)
+            {
+                players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
+            }
         }
         #endregion
         #endregion
@@ -636,8 +672,9 @@ namespace BBSL_LOVELETTER
 
         public void SetMessageBox(string text, float delay = 0.0f)
         {
+            Debug.Log("MESSAGE: " + text);
             Message_Text.text = text;
-            StartCoroutine(MoveMessageBoxIE());
+            StartCoroutine(MoveMessageBoxIE(delay));
         }
 
         IEnumerator MoveMessageBoxIE(float delay = 0.0f)
@@ -648,6 +685,13 @@ namespace BBSL_LOVELETTER
             MessageBox_gmobj.transform.DOLocalMoveY(275f, 1.0f);
             yield return new WaitForSeconds(2.0f);
             MessageBox_gmobj.transform.DOLocalMoveY(360f, 1.0f);
+        }
+
+        public void PlayerUnaffected(eTargetPlayer targetPlayer, float delay = 0.0f)
+        {
+            text.Length = 0;
+            text.Append(GetPlayerText(targetPlayer)).Append(" is Unaffected!");
+            SetMessageBox(text.ToString(), delay);
         }
 
         public void PlayerShield(eTargetPlayer targetPlayer, float delay = 0.0f)

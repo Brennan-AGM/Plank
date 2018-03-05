@@ -277,19 +277,21 @@ namespace BBSL_LOVELETTER
         public void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
             CardController.instance.PlayerUseCard(card);
-            float waitTime = 1.5f;
+            float waitTime = 5.0f;
             switch (card)
             {
                 case eCardValues.GUARD:
                     if (GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
                     {
+                        waitTime = 3.0f;
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
-                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
+                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer, 2.0f);
                     }
                     else
                     {
-
+                        waitTime = 3.0f;
+                        game_UIController.instance.PlayerUnaffected(targetPlayer, 2.0f);
                     }
                     break;
                 case eCardValues.PRIEST:
@@ -317,6 +319,7 @@ namespace BBSL_LOVELETTER
                     }
                     break;
                 case eCardValues.HANDMAID:
+                    waitTime = 3.0f;
                     HandMaidCardUsed(eTargetPlayer.PLAYER);
                     game_UIController.instance.PlayerShield(eTargetPlayer.PLAYER);
                     break;
@@ -345,9 +348,11 @@ namespace BBSL_LOVELETTER
                 case eCardValues.KING:
                     waitTime = 3.0f;
                     KingCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                    game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card);
                     break;
                 case eCardValues.COUNTESS:
                     //do nothing
+                    waitTime = 3.0f;
                     break;
                 case eCardValues.PRINCESS:
                     eCardValues unusedCard = GetPlayer().Get2ndCardValue();
@@ -385,7 +390,11 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
-                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, 5.0f);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, waitTime + 3.0f);
+                    }
+                    else
+                    {
+                        game_UIController.instance.PlayerUnaffected(targetPlayer, waitTime + 3.0f);
                     }
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
@@ -406,7 +415,7 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
                         KillPlayer(AIIndex);
-                        game_UIController.instance.PlayerElimination(targetPlayer, AIIndex, 5.0f);
+                        game_UIController.instance.PlayerElimination(targetPlayer, AIIndex, waitTime + 3.0f);
                     }
                     else
                     {
@@ -440,12 +449,13 @@ namespace BBSL_LOVELETTER
                     {
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
-                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, 5.0f);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, waitTime + 3.0f);
                     }
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.KING:
                     KingCardUsed(AIIndex, targetPlayer);
+                    game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card);
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 5.0f);
                     break;
                 case eCardValues.COUNTESS:
@@ -457,7 +467,7 @@ namespace BBSL_LOVELETTER
                     game_UIController.instance.PlayerDiscardCard(AIIndex, GetCard(AIIndex), true);
                     KillPlayer(AIIndex);
                     game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 5.0f);
-                    game_UIController.instance.PlayerElimination(AIIndex, eTargetPlayer.INVALID, 5.0f);
+                    game_UIController.instance.PlayerElimination(AIIndex, eTargetPlayer.INVALID, waitTime + 3.0f);
                     break;
             }
             //Show card used
