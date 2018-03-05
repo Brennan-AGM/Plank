@@ -34,7 +34,11 @@ namespace BBSL_DOMEMO
         [SerializeField]
         private TMPro.TextMeshProUGUI Message_Text;
         [SerializeField]
+        private Transform MessageBox_targetpos;
+        private Vector3 MessageBox_initialpos;
+        [SerializeField]
         private GameObject ResetBox_gmobj;
+        private Vector3 ResetBox_initialpos;
 
         [Header("Button")]
         public Button pick_btn;
@@ -54,6 +58,9 @@ namespace BBSL_DOMEMO
             }
 
             instance = this;
+
+            ResetBox_initialpos = ResetBox_gmobj.transform.position;
+            MessageBox_initialpos = MessageBox_gmobj.transform.position;
         }
 
         public void Reset()
@@ -103,21 +110,21 @@ namespace BBSL_DOMEMO
         IEnumerator MoveMessageBoxIE()
         {
             Transform messagebox = MessageBox_gmobj.transform;
-            messagebox.DOLocalMoveY(380f, 0.0f);
+            messagebox.DOMoveY(MessageBox_initialpos.y, 0.0f);
             yield return new WaitForEndOfFrame();
-            messagebox.DOLocalMoveY(284f, 1.0f);
+            messagebox.DOMoveY(MessageBox_targetpos.position.y, 1.0f);
             yield return new WaitForSeconds(2.0f);
-            messagebox.DOLocalMoveY(380f, 1.0f);
+            messagebox.DOMoveY(MessageBox_initialpos.y, 1.0f);
         }
 
         public void OpenResetBox()
         {
-            ResetBox_gmobj.transform.DOLocalMoveY(0f, 1.0f);
+            ResetBox_gmobj.transform.DOMoveY(0f, 1.0f);
         }
 
         public void HideResetBox()
         {
-            ResetBox_gmobj.transform.DOLocalMoveY(380f, 0.0f);
+            ResetBox_gmobj.transform.DOMoveY(ResetBox_initialpos.y, 0.0f);
         }
 
         public Image GetPlayerGlow(int value)
