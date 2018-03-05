@@ -59,7 +59,6 @@ namespace BBSL_DOMEMO
             Player3TilesReference.Clear();
             Player4TilesReference.Clear();
             distribNum = 0;
-            game_UIController.instance.Reset();
             Begin();
         }
 

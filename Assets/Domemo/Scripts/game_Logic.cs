@@ -23,19 +23,21 @@ namespace BBSL_DOMEMO
 
         void Start()
         {
-            CurrentAITurn = true;
-            for (int i = 0; i < 3; i++)
-            {
-                RemovedTiles[i] = 0;
-            }
+            Reset();
         }
 
-        void Reset()
+        public void Reset()
         {
             CurrentAITurn = true;
+            game_UIController.instance.Reset();
+            TileController.instance.Reset();
             for (int i = 0; i < 3; i++)
             {
                 AIList[i].Reset();
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                RemovedTiles[i] = 0;
             }
         }
 
@@ -172,7 +174,7 @@ namespace BBSL_DOMEMO
             if (chosenWinner != "")
             {
                 ShowWinner(chosenWinner);
-                Reset();
+                game_UIController.instance.OpenResetBox();
             }
 
             return winner;

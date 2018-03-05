@@ -43,6 +43,7 @@ namespace BBSL_DOMEMO
             {
                 RemovedTiles[i] = 0;
             }
+            GetChoices();
         }
 
         public int GetAiID()

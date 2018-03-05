@@ -31,6 +31,8 @@ namespace BBSL_DOMEMO
         private GameObject MessageBox_gmobj;
         [SerializeField]
         private TMPro.TextMeshProUGUI Message_Text;
+        [SerializeField]
+        private GameObject ResetBox_gmobj;
 
         [Header("Button")]
         public Button pick_btn;
@@ -51,6 +53,7 @@ namespace BBSL_DOMEMO
             ClearChildren(ShownTileHolder);
             ClearChildren(PlayerTileHolder);
             ClearChildren(HiddenTileHolder);
+            HideResetBox();
         }
 
         public Transform GetTileHolder(int id = 0, int type = 0)
@@ -90,11 +93,22 @@ namespace BBSL_DOMEMO
 
         IEnumerator MoveMessageBoxIE()
         {
-            MessageBox_gmobj.transform.DOLocalMoveY(350f, 0.0f);
+            Transform messagebox = MessageBox_gmobj.transform;
+            messagebox.DOLocalMoveY(380f, 0.0f);
             yield return new WaitForEndOfFrame();
-            MessageBox_gmobj.transform.DOLocalMoveY(284f, 1.0f);
+            messagebox.DOLocalMoveY(284f, 1.0f);
             yield return new WaitForSeconds(2.0f);
-            MessageBox_gmobj.transform.DOLocalMoveY(350f, 1.0f);
+            messagebox.DOLocalMoveY(380f, 1.0f);
+        }
+
+        public void OpenResetBox()
+        {
+            ResetBox_gmobj.transform.DOLocalMoveY(0f, 1.0f);
+        }
+
+        public void HideResetBox()
+        {
+            ResetBox_gmobj.transform.DOLocalMoveY(380f, 0.0f);
         }
 
         public Image GetPlayerGlow(int value)
