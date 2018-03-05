@@ -11,20 +11,26 @@ public enum eEnemyDifficulty
     INSANE,
 }
 
+public enum ePlayer
+{
+    INVALID = -1,
+    PLAYER,
+    AI1,
+    AI2,
+    AI3,
+}
+
 namespace BBSL_DOMEMO
 {
     public class game_EnemyAI : MonoBehaviour
     {
-
-        [SerializeField]
         private int[] number = new int[7];
-        [SerializeField]
         private int unknownNumber = 0;
 
         [SerializeField]
         private eEnemyDifficulty AiType;
         [SerializeField]
-        private int AiID;
+        private ePlayer AiID;
 
         private List<Tile> TileHolder = new List<Tile>();
         private List<KeyValuePair<int, float>> Choice = new List<KeyValuePair<int, float>>();
@@ -48,7 +54,7 @@ namespace BBSL_DOMEMO
 
         public int GetAiID()
         {
-            return AiID;
+            return (int)AiID;
         }
 
         public eEnemyDifficulty GetAiType()
@@ -59,7 +65,7 @@ namespace BBSL_DOMEMO
         public void GetChoices()
         {
             Choice.Clear();
-            TileHolder = TileController.instance.GetList(AiID + 4);
+            TileHolder = TileController.instance.GetList((int)AiID + 4);
             unknownNumber = TileController.instance.GetList(8).Count;
             for (int i = 0; i < 7; i++)
             {
