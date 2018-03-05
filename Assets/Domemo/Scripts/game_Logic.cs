@@ -31,6 +31,7 @@ namespace BBSL_DOMEMO
             CurrentAITurn = true;
             game_UIController.instance.Reset();
             TileController.instance.Reset();
+            game_UIController.instance.StartDistribution();
             for (int i = 0; i < 3; i++)
             {
                 AIList[i].Reset();

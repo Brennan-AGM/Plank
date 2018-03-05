@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 using DG.Tweening;
+using System.Collections.Generic;
+using TMPro;
 
 namespace BBSL_DOMEMO
 {
@@ -37,6 +39,12 @@ namespace BBSL_DOMEMO
         [Header("Button")]
         public Button pick_btn;
 
+        [Header("Shuffle Tiles")]
+        [SerializeField]
+        private Image[] tileToShuffle;
+
+        private List<Image> allTiles = new List<Image>();
+
         public static game_UIController instance = null;
         private void Awake()
         {
@@ -50,6 +58,7 @@ namespace BBSL_DOMEMO
 
         public void Reset()
         {
+            allTiles.Clear();
             ClearChildren(ShownTileHolder);
             ClearChildren(PlayerTileHolder);
             ClearChildren(HiddenTileHolder);
@@ -196,6 +205,56 @@ namespace BBSL_DOMEMO
         public Transform GetTileTargetPos(int value)
         {
             return GetTileHolder(value - 1, 0).transform;
+        }
+
+        public void AddTileToPool(GameObject tile)
+        {
+            allTiles.Add(tile.GetComponent<Image>());
+        }
+
+        public void StartDistribution()
+        {
+            StartCoroutine(DistributionIE());
+        }
+
+        IEnumerator DistributionIE()
+        {
+            yield return new WaitForEndOfFrame();
+            for (int i = 0; i < allTiles.Count; i++)
+            {
+                allTiles[i].gameObject.SetActive(false);
+                allTiles[i].DOFade(0.0f, 0.0f);
+                allTiles[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(0.0f, 0);
+                allTiles[i].gameObject.SetActive(true);
+                tileToShuffle[i].gameObject.SetActive(true);
+                tileToShuffle[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(1.0f, 0);
+            }
+            yield return new WaitForEndOfFrame();
+            for (int i = 0; i < tileToShuffle.Length / 2; i++)
+            {
+                tileToShuffle[i].transform.DOMove(allTiles[i].transform.position, 0.5f);
+                tileToShuffle[tileToShuffle.Length - 1 - i].transform.DOMove(allTiles[tileToShuffle.Length - 1 - i].transform.position, 0.5f);
+                yield return new WaitForSeconds(0.25f);
+            }
+            //for (int i = 0; i < tileToShuffle.Length; i++)
+            //{
+            //    tileToShuffle[i].transform.DOMove(allTiles[i].transform.position, 0.5f);
+            //    yield return new WaitForSeconds(0.25f);
+            //}
+            yield return new WaitForEndOfFrame();
+            for (int i = 0; i < allTiles.Count; i++)
+            {
+                allTiles[i].DOFade(1.0f, 0.0f);
+                allTiles[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(1.0f, 0);
+                tileToShuffle[i].DOFade(0.0f, 1.0f);
+                tileToShuffle[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(0.0f, 1.0f);
+            }
+            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForEndOfFrame();
+            for (int i = 0; i < allTiles.Count; i++)
+            {
+                tileToShuffle[i].gameObject.SetActive(false);
+            }
         }
     }
 }

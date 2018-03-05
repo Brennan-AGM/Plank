@@ -39,7 +39,6 @@ namespace BBSL_DOMEMO
 
         void Start()
         {
-            Begin();
         }
 
         public void Reset()
@@ -102,7 +101,8 @@ namespace BBSL_DOMEMO
 
         void DistributeTiles(int value)
         {
-            InstantiateTiles(value, distribNum);
+            GameObject tile;
+            tile = InstantiateTiles(value, distribNum);
             switch (distribNum)
             {
                 case -2:
@@ -129,6 +129,7 @@ namespace BBSL_DOMEMO
                     AddKnownTiles(value, distribNum);
                     break;
             }
+            game_UIController.instance.AddTileToPool(tile);
         }
 
         void AddKnownTiles(int value, int id = 0)
@@ -271,7 +272,7 @@ namespace BBSL_DOMEMO
         }
         #endregion
 
-        public void InstantiateTiles(int value, int type)
+        public GameObject InstantiateTiles(int value, int type)
         {
             GameObject target;
             if (type == -2 || type == 0)
@@ -290,6 +291,7 @@ namespace BBSL_DOMEMO
                 //AllPlayerTiles[type] = target;
             }
             target.transform.SetParent(Getholder(value, type), false);
+            return target;
         }
 
         Transform Getholder(int value, int type)
