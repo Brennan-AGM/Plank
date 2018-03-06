@@ -326,6 +326,8 @@ namespace BBSL_LOVELETTER
                     }
                     else
                     {
+                        StartRunning();
+                        game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
                         //SHOW DRAW more wait time
                     }
                     break;
@@ -337,6 +339,8 @@ namespace BBSL_LOVELETTER
                 case eCardValues.PRINCE:
                     if (PrinceCardUsed(targetPlayer) == eResult.DRAW)
                     {
+                        StartRunning();
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer));
                         if (!CardController.instance.CheckIfDrawPileEmpty())
                         {
                             CardController.instance.PlayerDrawCard(targetPlayer);
@@ -396,7 +400,7 @@ namespace BBSL_LOVELETTER
         {
             Debug.Log(AIIndex +" USE CARD " + card + " on " + targetPlayer);
             CardController.instance.AIUseCard(card, AIIndex);
-            float aiThinkingTime = 2.0f;
+            float aiThinkingTime = 4.0f;
             switch (card)
             {
                 case eCardValues.GUARD:
@@ -428,19 +432,22 @@ namespace BBSL_LOVELETTER
                     if(result == eResult.WIN)
                     {
                         //SHOWDOWN
+                        StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
                         game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     else if(result == eResult.LOSE)
                     {
+                        StartRunning();
                         game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
                         KillPlayer(AIIndex);
                         game_UIController.instance.PlayerElimination(targetPlayer, AIIndex);
                     }
                     else
                     {
-
+                        StartRunning();
+                        game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
                     }
                     break;
                 case eCardValues.HANDMAID:

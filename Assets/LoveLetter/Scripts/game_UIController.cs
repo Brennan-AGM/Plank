@@ -420,10 +420,10 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
-            MoveCard(cardsToDistribute[1], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            MoveCard(cardsToDistribute[1], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
 
             yield return new WaitForEndOfFrame();
@@ -463,8 +463,8 @@ namespace BBSL_LOVELETTER
                 tempcard == eCardValues.PRINCESS ||
                 tempcard == eCardValues.HANDMAID)
             {
-                game_Logic.instance.PlayerUseCard(tempcard);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, eTargetPlayer.PLAYER, playerChoice);
+                game_Logic.instance.PlayerUseCard(tempcard);
                 ResetCardUseValues();
             }
             else
@@ -487,8 +487,8 @@ namespace BBSL_LOVELETTER
             else
             {
                 ToggleTargetPlayerPanel(false);
-                game_Logic.instance.PlayerUseCard(tempcard, temptarget);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+                game_Logic.instance.PlayerUseCard(tempcard, temptarget);
                 ResetCardUseValues();
             }
         }
@@ -499,8 +499,8 @@ namespace BBSL_LOVELETTER
             ToggleGuardSelectionPanel(false);
             if(tempguardcard != eCardValues.INVALID)
             {
-                game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+                game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
             }
             ResetCardUseValues();
         }
