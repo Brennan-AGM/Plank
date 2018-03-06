@@ -125,6 +125,7 @@ namespace BBSL_LOVELETTER
         {
             ToggleDetails(false);
             targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
+            ResetShowdownPanel();
         }
 
         void Update()
@@ -490,6 +491,9 @@ namespace BBSL_LOVELETTER
         IEnumerator OpenShowdownPanelIE(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
         {
             float speed = 1.0f;
+            eCardValues initialPlayerCardValue = game_Logic.instance.GetCard(initialplayer);
+            eCardValues targetPlayerCardValue = game_Logic.instance.GetCard(targetplayer);
+
             yield return new WaitForSeconds(1.0f * speed);
             initialPlayerPanel.gameObject.SetActive(true);
             targetPlayerPanel.gameObject.SetActive(true);
@@ -500,7 +504,7 @@ namespace BBSL_LOVELETTER
                 targetPlayerHiddenCard.ToggleCard(true);
                 initialPlayerCard.ToggleCard(true);
                 initialPlayerCard.SetCard(cardused);
-                targetPlayerCard.SetCard(game_Logic.instance.GetCard(targetplayer));
+                targetPlayerCard.SetCard(targetPlayerCardValue);
                 yield return new WaitForSeconds(1.0f);
                 if (cardused == eCardValues.GUARD || cardused == eCardValues.PRINCE)
                 {
@@ -516,10 +520,11 @@ namespace BBSL_LOVELETTER
                         }
 
                         targetPlayer_GuardText.DOFade(1.0f, 0.0f);
-                        targetPlayer_GuardText.transform.DOMoveY(0, 1.0f);
+                        targetPlayer_GuardText.transform.DOLocalMoveY(0, 1.0f);
                         yield return new WaitForSeconds(1.0f);
                     }
 
+                    result_Text.gameObject.SetActive(true);
                     result_Text.DOFade(1.0f, 1.0f);
                     vs_Text.gameObject.SetActive(true);
                     if (result == eResult.WIN || cardused == eCardValues.PRINCE)
@@ -556,14 +561,17 @@ namespace BBSL_LOVELETTER
                     hasPlayer = true;
                 }
 
-                initialPlayerCard.SetCard(game_Logic.instance.GetCard(initialplayer));
-                targetPlayerCard.SetCard(game_Logic.instance.GetCard(targetplayer));
+                initialPlayerCard.SetCard(initialPlayerCardValue);
+                targetPlayerCard.SetCard(targetPlayerCardValue);
                 if (initialplayer == eTargetPlayer.PLAYER) { initialPlayerCard.ToggleCard(true); }
                 else { initialPlayerHiddenCard.ToggleCard(true); }
 
                 if(targetplayer == eTargetPlayer.PLAYER) { targetPlayerCard.ToggleCard(true); }
                 else { targetPlayerHiddenCard.ToggleCard(true); }
 
+                result_Text.gameObject.SetActive(true);
+                result_Text.DOFade(1.0f, 1.0f);
+                vs_Text.gameObject.SetActive(true);
                 yield return new WaitForSeconds(1.0f);
                 #region Baron Win
                 if (result == eResult.WIN)
@@ -666,10 +674,27 @@ namespace BBSL_LOVELETTER
                 }
                 #endregion
             }
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.5f);
+            FadeShowdownPanel();
+            yield return new WaitForSeconds(1.0f);
             SetShowdown(true);
             game_Logic.DoneRunning();
-            ResetShowDownPanel();
+            ResetShowdownPanel();
+        }
+
+        void FadeShowdownPanel()
+        {
+            initialPlayerPanel.DOFade(0, 1);
+            initialPlayerHiddenCard.ToggleCard(false);
+            initialPlayerCard.ToggleCard(false);
+            initialPlayer_Text.DOFade(0, 1);
+            targetPlayerPanel.DOFade(0, 1);
+            targetPlayerHiddenCard.ToggleCard(false);
+            targetPlayerCard.ToggleCard(false);
+            targetPlayer_GuardText.text = string.Empty;
+            targetPlayer_Text.DOFade(0, 1);
+            vs_Text.gameObject.SetActive(false);
+            result_Text.DOFade(0, 0);
         }
 
         void ShowInitialPlayerCard()
@@ -696,13 +721,13 @@ namespace BBSL_LOVELETTER
         {
             if(initialPlayer)
             {
-                initialPlayerPanel.DOColor(GetColor("5EFB7380"), 0.5f);
+                initialPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
                 initialPlayer_Text.text = "Lose";
                 initialPlayer_Text.DOFade(1.0f, 1.0f);
             }
             else
             {
-                targetPlayerPanel.DOColor(GetColor("5EFB7380"), 0.5f);
+                targetPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
                 targetPlayer_Text.text = "Lose";
                 targetPlayer_Text.DOFade(1.0f, 1.0f);
             }
@@ -712,13 +737,13 @@ namespace BBSL_LOVELETTER
         {
             if (initialPlayer)
             {
-                initialPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
+                initialPlayerPanel.DOColor(GetColor("5EFB7380"), 0.5f);
                 initialPlayer_Text.text = "Win";
                 initialPlayer_Text.DOFade(1.0f, 1.0f);
             }
             else
             {
-                targetPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
+                targetPlayerPanel.DOColor(GetColor("5EFB7380"), 0.5f);
                 targetPlayer_Text.text = "Win";
                 targetPlayer_Text.DOFade(1.0f, 1.0f);
             }
@@ -728,12 +753,14 @@ namespace BBSL_LOVELETTER
         {
             if(initialPlayers)
             {
-                initialPlayerCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+                initialPlayerCard.transform.DORotate(new Vector3(0, 180), 0, RotateMode.Fast);
+                initialPlayerCard.transform.DORotate(new Vector3(0, 0), 1.0f, RotateMode.Fast);
                 initialPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
             }
             else
             {
-                targetPlayerCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+                targetPlayerCard.transform.DORotate(new Vector3(0, 180), 0, RotateMode.Fast);
+                targetPlayerCard.transform.DORotate(new Vector3(0, 0), 1.0f, RotateMode.Fast);
                 targetPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
             }
         }
@@ -943,30 +970,31 @@ namespace BBSL_LOVELETTER
             temptarget = eTargetPlayer.INVALID;
         }
 
-        void ResetShowDownPanel()
+        void ResetShowdownPanel()
         {
             initialPlayerPanel.gameObject.SetActive(false);
             initialPlayerPanel.DOColor(GetColor("D8D8D880"), 0);
             initialPlayerHiddenCard.ToggleCard(false);
             initialPlayerCard.ToggleCard(false);
-            initialPlayer_Text.gameObject.SetActive(false);
+            initialPlayerCard.transform.DORotate(new Vector3(0, 0), 0, RotateMode.Fast);
+            //initialPlayer_Text.gameObject.SetActive(false);
             initialPlayer_Text.DOFade(0, 0);
             initialPlayer_Text.text = string.Empty;
             targetPlayerPanel.gameObject.SetActive(false);
             targetPlayerPanel.DOColor(GetColor("D8D8D880"), 0);
             targetPlayerHiddenCard.ToggleCard(false);
             targetPlayerCard.ToggleCard(false);
-            targetPlayer_GuardText.gameObject.SetActive(false);
+            targetPlayerCard.transform.DORotate(new Vector3(0, 0), 0, RotateMode.Fast);
+            //targetPlayer_GuardText.gameObject.SetActive(false);
             targetPlayer_GuardText.text = string.Empty;
-            targetPlayer_Text.gameObject.SetActive(false);
+            targetPlayer_GuardText.transform.DOMove(targetPlayer_GuardTextPos, 0);
+            //targetPlayer_Text.gameObject.SetActive(false);
             targetPlayer_Text.text = string.Empty;
-            targetPlayer_Text.transform.DOMove(targetPlayer_GuardTextPos, 0);
             targetPlayer_Text.DOFade(0, 0);
             vs_Text.gameObject.SetActive(false);
             vs_Text.text = string.Empty;
             result_Text.gameObject.SetActive(false);
             result_Text.DOFade(0, 0);
-            vs_Text.text = string.Empty;
         }
         #endregion
 

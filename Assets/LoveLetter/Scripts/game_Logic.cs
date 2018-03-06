@@ -345,10 +345,12 @@ namespace BBSL_LOVELETTER
                     game_UIController.instance.PlayerShield(eTargetPlayer.PLAYER);
                     break;
                 case eCardValues.PRINCE:
-                    if (PrinceCardUsed(targetPlayer) == eResult.DRAW)
+                    eCardValues targetPlayersCardValue = GetCard(targetPlayer);
+                    result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                    if (result == eResult.DRAW)
                     {
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer));
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue);
                         if (!CardController.instance.CheckIfDrawPileEmpty())
                         {
                             CardController.instance.PlayerDrawCard(targetPlayer);
@@ -367,7 +369,7 @@ namespace BBSL_LOVELETTER
                         StartRunning();
                         game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue, true);
                         KillPlayer(targetPlayer);
                         StartRunning();
                         game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
@@ -476,11 +478,13 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRINCE:
                     StartRunning();
+                    eCardValues targetPlayersCardValue = GetCard(targetPlayer);
+                    result = PrinceCardUsed(targetPlayer);
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
-                    if (PrinceCardUsed(targetPlayer) == eResult.DRAW)
+                    if (result == eResult.DRAW)
                     {
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer));
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue);
                         if (!CardController.instance.CheckIfDrawPileEmpty())
                         {
                             //drawAnim
@@ -501,7 +505,7 @@ namespace BBSL_LOVELETTER
                         StartRunning();
                         game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result);
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
+                        game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue, true);
                         KillPlayer(targetPlayer);
                         StartRunning();
                         game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);

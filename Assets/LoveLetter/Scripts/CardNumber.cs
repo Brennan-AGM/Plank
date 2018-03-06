@@ -19,9 +19,6 @@ namespace BBSL_LOVELETTER
         void Awake()
         {
             image = GetComponent<Image>();
-            layoutelement = GetComponent<LayoutElement>();
-            width = layoutelement.preferredWidth;
-            height = layoutelement.preferredHeight;
         }
 
         public void SetCard(eCardValues cardValue)
