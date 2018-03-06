@@ -66,8 +66,7 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private TextMeshProUGUI Message_Text;
 
-        [Header("")]
-        [Header("BUTTON REFERENCE")]
+        [Header("")][Header("BUTTON REFERENCE")]
         [SerializeField]
         private Button[] playerUseButton;
         [SerializeField]
@@ -76,6 +75,12 @@ namespace BBSL_LOVELETTER
         private GameObject[] playerCantTargetButton;
         [SerializeField]
         private GameObject guardTargetSelection;
+
+
+        [Header("")][Header("OTHERS")]
+        [SerializeField]
+        private TextMeshProUGUI cardsRemaining;
+        private int storedcardsRemaining;
 
         private bool hideDetails = false;
         StringBuilder text = new StringBuilder();
@@ -122,10 +127,12 @@ namespace BBSL_LOVELETTER
             Reset2ndCard();
             yield return new WaitForEndOfFrame();
 
+            ReduceCards();
             MoveCard(cardsToDistribute[0], missingCard, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], missingCard, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
 
+            ReduceCards();
             MoveCard(cardsToDistribute[1], player1SingleCardPos, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
@@ -134,6 +141,7 @@ namespace BBSL_LOVELETTER
             missingCard.SetActive(true);
             yield return new WaitForEndOfFrame();
 
+            ReduceCards();
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
@@ -142,6 +150,7 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
+            ReduceCards();
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
@@ -150,6 +159,7 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
+            ReduceCards();
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
@@ -158,6 +168,7 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
+            ReduceCards();
             MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             MoveCard(players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, player1DoubleCardPos, 0.5f * speed);
@@ -167,6 +178,7 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject.SetActive(true);
             yield return new WaitForEndOfFrame();
 
+            ReduceCards();
             MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
@@ -352,6 +364,7 @@ namespace BBSL_LOVELETTER
             float speed = 1.0f;
             MoveCard(cardsToDistribute[1], deck, 0.0f);
             ResizeCard(cardsToDistribute[1], deck, 0.0f);
+            ReduceCards();
             yield return new WaitForEndOfFrame();
 
             if (targetplayer == eTargetPlayer.PLAYER)
@@ -648,7 +661,25 @@ namespace BBSL_LOVELETTER
         {
             scores[GetPlayerIndex(player)].text = "x " + score;
         }
-        
+
+        public void SetCardsRemaining(int cards)
+        {
+            storedcardsRemaining = cards;
+            cardsRemaining.text = cards.ToString();
+            deck.SetActive(true);
+        }
+
+        void ReduceCards()
+        {
+            storedcardsRemaining--;
+            cardsRemaining.text = storedcardsRemaining.ToString();
+            if(storedcardsRemaining == 0)
+            {
+                deck.SetActive(false);
+                
+            }
+        }
+
         void ToggleDetails(bool unhide)
         {
             if(hideDetails != unhide)
@@ -658,6 +689,11 @@ namespace BBSL_LOVELETTER
                 {
                     scoresGmObj[i].SetActive(unhide);
                 }
+                cardsRemaining.gameObject.SetActive(unhide);
+                //for (int i = 0; i < scoresGmObj.Length; i++)
+                //{
+                //    scoresGmObj[i].SetActive(unhide);
+                //}
             }
         }
         #endregion
