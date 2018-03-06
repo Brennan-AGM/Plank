@@ -733,7 +733,11 @@ namespace BBSL_LOVELETTER
 
         public bool IsPlayerValidTarget(eTargetPlayer target)
         {
-            switch(target)
+            if (IsPlayerAlive(target) == false)
+            {
+                return false;
+            }
+            switch (target)
             {
                 case eTargetPlayer.PLAYER:
                     return Player.IsTargetable();

@@ -420,10 +420,10 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
-            MoveCard(cardsToDistribute[1], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
+            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
 
             yield return new WaitForEndOfFrame();
