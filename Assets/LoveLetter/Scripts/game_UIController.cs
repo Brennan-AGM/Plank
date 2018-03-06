@@ -189,8 +189,9 @@ namespace BBSL_LOVELETTER
         }
 
         #region ShowCards
-        private bool doneShowingCard = false;
-        private bool doneDrawingCard = false;
+        private bool doneShowingCard = true;
+        private bool doneDrawingCard = true;
+        private bool doneDiscardingCard = true;
 
         void ShowPlayerCards()
         {
@@ -248,6 +249,7 @@ namespace BBSL_LOVELETTER
 
         public void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
         {
+            game_Logic.StartRunning();
             SetShowingCard(false);
             StartCoroutine(ShowPlayerCardUseIE(initialplayer, cardused, targetplayer, button));
         }
@@ -293,6 +295,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForEndOfFrame();
             Reset1stCard();
             SetShowingCard(true);
+            game_Logic.DoneRunning();
         }
 
         void UpdateCardHolder(eTargetPlayer targetplayer, eCardValues cardused)
@@ -305,6 +308,7 @@ namespace BBSL_LOVELETTER
 
         public void PlayerDiscardCard(eTargetPlayer targetplayer, eCardValues cardused, bool killplayer = false)
         {
+            SetDiscardingCard(false);
             StartCoroutine(PlayerDiscardCardIE(targetplayer, cardused));
         }
 
@@ -323,6 +327,8 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(targetplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
+            SetDiscardingCard(true);
+            game_Logic.DoneRunning();
         }
 
         public void PlayerDrawCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
@@ -334,6 +340,7 @@ namespace BBSL_LOVELETTER
         IEnumerator PlayerDrawCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
             yield return new WaitUntil(() => doneShowingCard);
+            yield return new WaitUntil(() => doneDiscardingCard);
             float speed = 1.0f;
             MoveCard(cardsToDistribute[1], deck, 0.0f);
             ResizeCard(cardsToDistribute[1], deck, 0.0f);
@@ -354,6 +361,7 @@ namespace BBSL_LOVELETTER
                 ShowPlayerCards();
             }
             SetDrawingDone(false);
+            game_Logic.DoneRunning();
         }
 
         public void PlayerDrawMissingCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
@@ -365,6 +373,7 @@ namespace BBSL_LOVELETTER
         IEnumerator PlayerDrawMissingCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
             yield return new WaitUntil(() => doneShowingCard);
+            yield return new WaitUntil(() => doneDiscardingCard);
             float speed = 1.0f;
             MoveCard(cardsToDistribute[1], missingCard, 0.0f);
             ResizeCard(cardsToDistribute[1], missingCard, 0.0f);
@@ -382,6 +391,7 @@ namespace BBSL_LOVELETTER
                 //ShowCard
             }
             SetDrawingDone(true);
+            game_Logic.DoneRunning();
         }
 
         public void PlayerSwapCard(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused)
@@ -417,6 +427,7 @@ namespace BBSL_LOVELETTER
             {
                 players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
             }
+            game_Logic.DoneRunning();
         }
         #endregion
         #endregion
@@ -685,6 +696,8 @@ namespace BBSL_LOVELETTER
             MessageBox_gmobj.transform.DOLocalMoveY(275f, 1.0f);
             yield return new WaitForSeconds(2.0f);
             MessageBox_gmobj.transform.DOLocalMoveY(360f, 1.0f);
+            yield return new WaitForSeconds(1.0f);
+            game_Logic.DoneRunning();
         }
 
         public void PlayerUnaffected(eTargetPlayer targetPlayer, float delay = 0.0f)
@@ -741,6 +754,12 @@ namespace BBSL_LOVELETTER
         {
             //Debug.Log("DRAWING:" + isDone);
             doneDrawingCard = isDone;
+        }
+
+        void SetDiscardingCard(bool isDone)
+        {
+            //Debug.Log("SHOWING:" + isDone);
+            doneDiscardingCard = isDone;
         }
     }
 }
