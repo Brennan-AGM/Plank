@@ -286,10 +286,14 @@ namespace BBSL_LOVELETTER
         public void PlayerUseCard(eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
             CardController.instance.PlayerUseCard(card);
+            eResult result = eResult.DRAW;
             switch (card)
             {
                 case eCardValues.GUARD:
-                    if (GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
+                    result = GuardCardUsed(guardcard, targetPlayer);
+                    StartRunning();
+                    game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
+                    if (result == eResult.WIN)
                     {
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
@@ -304,10 +308,14 @@ namespace BBSL_LOVELETTER
                     }
                     break;
                 case eCardValues.PRIEST:
+                    StartRunning();
+                    game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
                     PriestCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                     break;
                 case eCardValues.BARON:
-                    eResult result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                    result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                    StartRunning();
+                    game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
                     if (result == eResult.WIN)
                     {
                         StartRunning();
@@ -318,7 +326,6 @@ namespace BBSL_LOVELETTER
                     }
                     else if (result == eResult.LOSE)
                     {
-                        //SHOW enemy card wait time
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
                         KillPlayer(eTargetPlayer.PLAYER);
@@ -357,6 +364,8 @@ namespace BBSL_LOVELETTER
                     }
                     else
                     {
+                        StartRunning();
+                        game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
@@ -401,13 +410,17 @@ namespace BBSL_LOVELETTER
         {
             Debug.Log(AIIndex +" USE CARD " + card + " on " + targetPlayer);
             CardController.instance.AIUseCard(card, AIIndex);
+            eResult result = eResult.DRAW;
             float aiThinkingTime = 4.0f;
             switch (card)
             {
                 case eCardValues.GUARD:
+                    result = GuardCardUsed(guardcard, targetPlayer);
                     StartRunning();
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
-                    if (GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
+                    StartRunning();
+                    game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result);
+                    if (result == eResult.WIN)
                     {
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
@@ -424,15 +437,18 @@ namespace BBSL_LOVELETTER
                 case eCardValues.PRIEST:
                     PriestCardUsed(AIIndex, targetPlayer);
                     StartRunning();
+                    game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result);
+                    StartRunning();
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     break;
                 case eCardValues.BARON:
+                    result = BaronCardUsed(AIIndex, targetPlayer);
                     StartRunning();
                     game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
-                    eResult result = BaronCardUsed(AIIndex, targetPlayer);
-                    if(result == eResult.WIN)
+                    StartRunning();
+                    game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result);
+                    if (result == eResult.WIN)
                     {
-                        //SHOWDOWN
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
@@ -482,6 +498,8 @@ namespace BBSL_LOVELETTER
                     }
                     else
                     {
+                        StartRunning();
+                        game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result);
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
@@ -544,10 +562,6 @@ namespace BBSL_LOVELETTER
             if (AIIndex != eTargetPlayer.PLAYER)
             {
                 CardController.instance.AddKnownCard(card, AIIndex);
-            }
-            else
-            {
-                //show card
             }
         }
 

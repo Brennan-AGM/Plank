@@ -483,13 +483,8 @@ namespace BBSL_LOVELETTER
 
         public void OpenShowdownPanel(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
         {
-            game_Logic.StartRunning();
             SetShowdown(false);
             StartCoroutine(OpenShowdownPanelIE(cardused, initialplayer, targetplayer, result));
-            //guard, ok
-            //priest, just show card
-            //baron, ok
-            //Prince show if princess
         }
 
         IEnumerator OpenShowdownPanelIE(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
@@ -499,6 +494,7 @@ namespace BBSL_LOVELETTER
             initialPlayerPanel.gameObject.SetActive(true);
             targetPlayerPanel.gameObject.SetActive(true);
 
+            #region Guard, Prince, Priest
             if (cardused != eCardValues.BARON)
             {
                 targetPlayerHiddenCard.ToggleCard(true);
@@ -551,6 +547,7 @@ namespace BBSL_LOVELETTER
                     yield return new WaitForSeconds(0.5f);
                 }
             }
+            #endregion
             else
             {
                 bool hasPlayer = false;
