@@ -224,7 +224,9 @@ namespace BBSL_LOVELETTER
 
         IEnumerator ShowAICardUseIE(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay = 1.0f)
         {
+            Debug.Log("AI USE CARD");
             float speed = 1.0f;
+            yield return new WaitUntil(() => doneDrawingCard);
             yield return new WaitForSeconds(delay * speed);
             MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
             ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
@@ -245,6 +247,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForEndOfFrame();
             Reset1stCard();
             SetShowingCard(true);
+            game_Logic.DoneRunning();
         }
 
         public void ShowPlayerCardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, eButtonUsage button = eButtonUsage.INVALID)
@@ -314,6 +317,7 @@ namespace BBSL_LOVELETTER
 
         IEnumerator PlayerDiscardCardIE(eTargetPlayer targetplayer, eCardValues cardused, bool killplayer = false)
         {
+            Debug.Log("Player discard CARD");
             yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
@@ -339,8 +343,12 @@ namespace BBSL_LOVELETTER
 
         IEnumerator PlayerDrawCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
-            yield return new WaitUntil(() => doneShowingCard);
-            yield return new WaitUntil(() => doneDiscardingCard);
+            Debug.Log("Player Draw CARD");
+            if (cardused == eCardValues.PRINCE)
+            {
+                yield return new WaitUntil(() => doneShowingCard);
+                yield return new WaitUntil(() => doneDiscardingCard);
+            }
             float speed = 1.0f;
             MoveCard(cardsToDistribute[1], deck, 0.0f);
             ResizeCard(cardsToDistribute[1], deck, 0.0f);
@@ -360,7 +368,7 @@ namespace BBSL_LOVELETTER
             {
                 ShowPlayerCards();
             }
-            SetDrawingDone(false);
+            SetDrawingDone(true);
             game_Logic.DoneRunning();
         }
 
@@ -690,6 +698,7 @@ namespace BBSL_LOVELETTER
 
         IEnumerator MoveMessageBoxIE(float delay = 0.0f)
         {
+            yield return new WaitUntil(() => doneShowingCard);
             yield return new WaitForSeconds(delay);
             MessageBox_gmobj.transform.DOLocalMoveY(360f, 0.0f);
             yield return new WaitForEndOfFrame();

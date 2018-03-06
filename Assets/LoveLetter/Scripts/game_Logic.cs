@@ -146,6 +146,7 @@ namespace BBSL_LOVELETTER
                 CurrentPlayerIndex = 0;
             }
             CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
+            ResetProtection(CurrentPlayer);
             Debug.Log(CurrentPlayer);
             PlayerDrawCard();
         }
@@ -156,7 +157,7 @@ namespace BBSL_LOVELETTER
             {
                 CardController.instance.PlayerDrawCard(CurrentPlayer);
                 StartRunning();
-                game_UIController.instance.PlayerDrawCard(CurrentPlayer, Player.Get2ndCardValue());
+                game_UIController.instance.PlayerDrawCard(CurrentPlayer);
             }
             else
             {
@@ -293,12 +294,12 @@ namespace BBSL_LOVELETTER
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
                         StartRunning();
-                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer, 2.0f);
+                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
                     }
                     else
                     {
                         StartRunning();
-                        game_UIController.instance.PlayerUnaffected(targetPlayer, 2.0f);
+                        game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
                     }
                     break;
                 case eCardValues.PRIEST:
@@ -340,13 +341,13 @@ namespace BBSL_LOVELETTER
                         {
                             CardController.instance.PlayerDrawCard(targetPlayer);
                             StartRunning();
-                            game_UIController.instance.PlayerDrawCard(targetPlayer, GetCard(targetPlayer));
+                            game_UIController.instance.PlayerDrawCard(targetPlayer, card);
                         }
                         else
                         {
                             CardController.instance.DrawMissingCard(targetPlayer);
                             StartRunning();
-                            game_UIController.instance.PlayerDrawMissingCard(targetPlayer, GetCard(targetPlayer));
+                            game_UIController.instance.PlayerDrawMissingCard(targetPlayer, card);
                         }
                     }
                     else
@@ -400,42 +401,42 @@ namespace BBSL_LOVELETTER
             {
                 case eCardValues.GUARD:
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     if (GuardCardUsed(guardcard, targetPlayer) == eResult.WIN)
                     {
                         StartRunning();
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
                         KillPlayer(targetPlayer);
                         StartRunning();
-                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, 5.0f);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     else
                     {
                         StartRunning();
-                        game_UIController.instance.PlayerUnaffected(targetPlayer, 4.0f);
+                        game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
                     }
                     break;
                 case eCardValues.PRIEST:
                     PriestCardUsed(AIIndex, targetPlayer);
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     break;
                 case eCardValues.BARON:
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     eResult result = BaronCardUsed(AIIndex, targetPlayer);
                     if(result == eResult.WIN)
                     {
                         //SHOWDOWN
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
-                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, 4.0f);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     else if(result == eResult.LOSE)
                     {
                         game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
                         KillPlayer(AIIndex);
-                        game_UIController.instance.PlayerElimination(targetPlayer, AIIndex, 4.0f);
+                        game_UIController.instance.PlayerElimination(targetPlayer, AIIndex);
                     }
                     else
                     {
@@ -445,13 +446,13 @@ namespace BBSL_LOVELETTER
                 case eCardValues.HANDMAID:
                     HandMaidCardUsed(AIIndex);
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
                     StartRunning();
-                    game_UIController.instance.PlayerShield(AIIndex, 3.0f);
+                    game_UIController.instance.PlayerShield(AIIndex, 1.0f);
                     break;
                 case eCardValues.PRINCE:
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     if (PrinceCardUsed(targetPlayer) == eResult.DRAW)
                     {
                         StartRunning();
@@ -461,14 +462,14 @@ namespace BBSL_LOVELETTER
                             //drawAnim
                             CardController.instance.PlayerDrawCard(targetPlayer);
                             StartRunning();
-                            game_UIController.instance.PlayerDrawCard(targetPlayer, GetCard(targetPlayer));
+                            game_UIController.instance.PlayerDrawCard(targetPlayer, card);
                         }
                         else
                         {
                             //SpecialdrawAnim
                             CardController.instance.DrawMissingCard(targetPlayer);
                             StartRunning();
-                            game_UIController.instance.PlayerDrawMissingCard(targetPlayer, GetCard(targetPlayer));
+                            game_UIController.instance.PlayerDrawMissingCard(targetPlayer, card);
                         }
                     }
                     else
@@ -477,30 +478,30 @@ namespace BBSL_LOVELETTER
                         game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
                         KillPlayer(targetPlayer);
                         StartRunning();
-                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer, 4.0f);
+                        game_UIController.instance.PlayerElimination(AIIndex, targetPlayer);
                     }
                     break;
                 case eCardValues.KING:
                     KingCardUsed(AIIndex, targetPlayer);
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     StartRunning();
                     game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card);
                     break;
                 case eCardValues.COUNTESS:
                     //do nothing
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
                     break;
                 case eCardValues.PRINCESS:
                     //lose
                     KillPlayer(AIIndex);
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, 2.0f);
+                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
                     StartRunning();
                     game_UIController.instance.PlayerDiscardCard(AIIndex, GetCard(AIIndex), true);
                     StartRunning();
-                    game_UIController.instance.PlayerElimination(AIIndex, eTargetPlayer.INVALID, 4.0f);
+                    game_UIController.instance.PlayerElimination(AIIndex, eTargetPlayer.INVALID);
                     break;
             }
             //Show card used
@@ -584,6 +585,37 @@ namespace BBSL_LOVELETTER
                     break;
                 case eTargetPlayer.AI3:
                     AIList[2].SetTargetable(false);
+                    break;
+            }
+        }
+
+        void ResetProtection(eTargetPlayer player)
+        {
+            switch (player)
+            {
+                case eTargetPlayer.PLAYER:
+                    if(Player.IsTargetable() == false)
+                    {
+                        Player.SetTargetable(true);
+                    }
+                    break;
+                case eTargetPlayer.AI1:
+                    if (AIList[0].IsTargetable() == false)
+                    {
+                        AIList[0].SetTargetable(true);
+                    }
+                    break;
+                case eTargetPlayer.AI2:
+                    if (AIList[1].IsTargetable() == false)
+                    {
+                        AIList[1].SetTargetable(true);
+                    }
+                    break;
+                case eTargetPlayer.AI3:
+                    if (AIList[2].IsTargetable() == false)
+                    {
+                        AIList[2].SetTargetable(true);
+                    }
                     break;
             }
         }
