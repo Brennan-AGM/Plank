@@ -76,6 +76,30 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private GameObject guardTargetSelection;
 
+        [Header("")][Header("SHOWDOWN REFERENCE")]
+        [SerializeField]
+        private Image initialPlayerPanel;
+        [SerializeField]
+        private CardNumber initialPlayerHiddenCard;
+        [SerializeField]
+        private CardNumber initialPlayerCard;
+        [SerializeField]
+        private Image targetPlayerPanel;
+        [SerializeField]
+        private CardNumber targetPlayerHiddenCard;
+        [SerializeField]
+        private CardNumber targetPlayerCard;
+        [SerializeField]
+        private TextMeshProUGUI vs_Text;
+        [SerializeField]
+        private TextMeshProUGUI result_Text;
+        [SerializeField]
+        private TextMeshProUGUI initialPlayer_Text;
+        [SerializeField]
+        private TextMeshProUGUI targetPlayer_Text;
+        [SerializeField]
+        private TextMeshProUGUI targetPlayer_GuardText;
+        private Vector3 targetPlayer_GuardTextPos;
 
         [Header("")][Header("OTHERS")]
         [SerializeField]
@@ -85,6 +109,7 @@ namespace BBSL_LOVELETTER
         private bool hideDetails = false;
         StringBuilder text = new StringBuilder();
 
+        #region Awake, Start, Update
         public static game_UIController instance = null;
         private void Awake()
         {
@@ -99,6 +124,7 @@ namespace BBSL_LOVELETTER
         void Start()
         {
             ToggleDetails(false);
+            targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
         }
 
         void Update()
@@ -112,6 +138,7 @@ namespace BBSL_LOVELETTER
                 ToggleDetails(false);
             }
         }
+        #endregion
 
         #region TweenAnimations
         void DistributeCards()
@@ -147,7 +174,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
-            players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
+            players1stCards[GetPlayerIndex(eTargetPlayer.PLAYER)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
 
             ReduceCards();
@@ -156,7 +183,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset1stCard();
-            players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].gameObject.SetActive(true);
+            players1stCards[GetPlayerIndex(eTargetPlayer.AI1)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
 
             ReduceCards();
@@ -165,7 +192,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
-            players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].gameObject.SetActive(true);
+            players1stCards[GetPlayerIndex(eTargetPlayer.AI2)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
 
             ReduceCards();
@@ -175,7 +202,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset1stCard();
-            players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].gameObject.SetActive(true);
+            players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
 
             ReduceCards();
@@ -184,7 +211,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
-            players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject.SetActive(true);
+            players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
             ShowPlayerCards();
         }
@@ -204,6 +231,7 @@ namespace BBSL_LOVELETTER
         private bool doneShowingCard = true;
         private bool doneDrawingCard = true;
         private bool doneDiscardingCard = true;
+        private bool doneShowdown = true;
 
         void ShowPlayerCards()
         {
@@ -247,7 +275,8 @@ namespace BBSL_LOVELETTER
 
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
-
+            
+            yield return new WaitUntil(() => doneShowdown);
             //flip card
             cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
             yield return new WaitForSeconds(1.0f * speed);
@@ -298,7 +327,8 @@ namespace BBSL_LOVELETTER
             
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
-
+            
+            yield return new WaitUntil(() => doneShowdown);
             //flip card
             cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
             yield return new WaitForSeconds(1.0f * speed);
@@ -334,7 +364,7 @@ namespace BBSL_LOVELETTER
             float speed = 1.0f;
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
             ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
-            players1stCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(false);
+            players1stCards[GetPlayerIndex(targetplayer)].ToggleCard(false);
             yield return new WaitForEndOfFrame();
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
@@ -426,11 +456,11 @@ namespace BBSL_LOVELETTER
             float speed = 1.0f;
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
             ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
-            players1stCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(false);
+            players1stCards[GetPlayerIndex(targetplayer)].ToggleCard(false);
 
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
             ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
-            players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
+            players1stCards[GetPlayerIndex(initialplayer)].ToggleCard(false);
             yield return new WaitForEndOfFrame();
 
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
@@ -442,13 +472,273 @@ namespace BBSL_LOVELETTER
             yield return new WaitForEndOfFrame();
             Reset1stCard();
             Reset2ndCard();
-            players1stCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(true);
-            players1stCards[GetPlayerIndex(targetplayer)].gameObject.SetActive(true);
-            if(initialplayer == eTargetPlayer.PLAYER || targetplayer == eTargetPlayer.PLAYER)
+            players1stCards[GetPlayerIndex(initialplayer)].ToggleCard(true);
+            players1stCards[GetPlayerIndex(targetplayer)].ToggleCard(true);
+            if (initialplayer == eTargetPlayer.PLAYER || targetplayer == eTargetPlayer.PLAYER)
             {
                 players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
             }
             game_Logic.DoneRunning();
+        }
+
+        public void OpenShowdownPanel(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
+        {
+            game_Logic.StartRunning();
+            SetShowdown(false);
+            StartCoroutine(OpenShowdownPanelIE(cardused, initialplayer, targetplayer, result));
+            //guard, ok
+            //priest, just show card
+            //baron, ok
+            //Prince show if princess
+        }
+
+        IEnumerator OpenShowdownPanelIE(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
+        {
+            float speed = 1.0f;
+            yield return new WaitForSeconds(1.0f * speed);
+            initialPlayerPanel.gameObject.SetActive(true);
+            targetPlayerPanel.gameObject.SetActive(true);
+
+            if (cardused != eCardValues.BARON)
+            {
+                targetPlayerHiddenCard.ToggleCard(true);
+                initialPlayerCard.ToggleCard(true);
+                initialPlayerCard.SetCard(cardused);
+                targetPlayerCard.SetCard(game_Logic.instance.GetCard(targetplayer));
+                yield return new WaitForSeconds(1.0f);
+                if (cardused == eCardValues.GUARD || cardused == eCardValues.PRINCE)
+                {
+                    if(cardused == eCardValues.GUARD)
+                    {
+                        if (initialplayer == eTargetPlayer.PLAYER)
+                        {
+                            targetPlayer_GuardText.text = tempguardcard.ToString();
+                        }
+                        else
+                        {
+                            targetPlayer_GuardText.text = game_Logic.instance.GetAIList(initialplayer).GetTargetCardValue().ToString();
+                        }
+
+                        targetPlayer_GuardText.DOFade(1.0f, 0.0f);
+                        targetPlayer_GuardText.transform.DOMoveY(0, 1.0f);
+                        yield return new WaitForSeconds(1.0f);
+                    }
+
+                    result_Text.DOFade(1.0f, 1.0f);
+                    vs_Text.gameObject.SetActive(true);
+                    if (result == eResult.WIN || cardused == eCardValues.PRINCE)
+                    {
+                        ShowPlayerWin(true);
+                        ShowPlayerLose(false);
+                        RotateCard(false);
+                        yield return new WaitForSeconds(0.5f);
+                        ShowTargetPlayerCard();
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                    else
+                    {
+                        ShowPlayerLose(true);
+                        targetPlayer_GuardText.DOFade(0.0f, 1.0f);
+                        targetPlayerPanel.DOColor(GetColor("D4D41E80"), 0);
+                        yield return new WaitForSeconds(1.0f);
+                    }
+                }
+                else
+                {
+                    RotateCard(false);
+                    yield return new WaitForSeconds(0.5f);
+                    ShowTargetPlayerCard();
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+            else
+            {
+                bool hasPlayer = false;
+                if (initialplayer == eTargetPlayer.PLAYER || targetplayer == eTargetPlayer.PLAYER)
+                {
+                    hasPlayer = true;
+                }
+
+                initialPlayerCard.SetCard(game_Logic.instance.GetCard(initialplayer));
+                targetPlayerCard.SetCard(game_Logic.instance.GetCard(targetplayer));
+                if (initialplayer == eTargetPlayer.PLAYER) { initialPlayerCard.ToggleCard(true); }
+                else { initialPlayerHiddenCard.ToggleCard(true); }
+
+                if(targetplayer == eTargetPlayer.PLAYER) { targetPlayerCard.ToggleCard(true); }
+                else { targetPlayerHiddenCard.ToggleCard(true); }
+
+                yield return new WaitForSeconds(1.0f);
+                #region Baron Win
+                if (result == eResult.WIN)
+                {
+                    ShowPlayerLose(false);
+                    ShowPlayerWin(true);
+                    if (targetplayer != eTargetPlayer.PLAYER)
+                    {
+                        RotateCard(false);
+                    }
+
+                    if (initialplayer != eTargetPlayer.PLAYER)
+                    {
+                        if(hasPlayer)
+                        {
+                            RotateCard(true);
+                        }
+                    }
+                    yield return new WaitForSeconds(0.5f);
+
+                    if (targetplayer != eTargetPlayer.PLAYER)
+                    {
+                        ShowTargetPlayerCard();
+                    }
+
+                    if (initialplayer != eTargetPlayer.PLAYER)
+                    {
+                        initialPlayerCard.ToggleCard(true);
+                        initialPlayerHiddenCard.ToggleCard(false);
+                    }
+                    yield return new WaitForSeconds(0.5f);
+                    if (hasPlayer)
+                    {
+                        ShowInitialPlayerCard();
+                    }
+                    ShowTargetPlayerCard();
+                    yield return new WaitForSeconds(0.5f);
+                }
+                #endregion
+                #region Baron Lose
+                else if (result == eResult.LOSE)
+                {
+                    ShowPlayerLose(true);
+                    ShowPlayerWin(false);
+                    if (targetplayer != eTargetPlayer.PLAYER)
+                    {
+                        if (hasPlayer)
+                        {
+                            RotateCard(false);
+                        }
+                    }
+
+                    if (initialplayer != eTargetPlayer.PLAYER)
+                    {
+                        RotateCard(true);
+                    }
+                    yield return new WaitForSeconds(0.5f);
+                    if (hasPlayer)
+                    {
+                        ShowTargetPlayerCard();
+                    }
+                    ShowInitialPlayerCard();
+                    yield return new WaitForSeconds(0.5f);
+                }
+                #endregion
+                #region Baron Draw
+                else if (result == eResult.DRAW)
+                {
+                    if (hasPlayer)
+                    {
+                        if (targetplayer == eTargetPlayer.PLAYER)
+                        {
+                            RotateCard(true);
+                        }
+                        else if (initialplayer == eTargetPlayer.PLAYER)
+                        {
+                            RotateCard(false);
+                        }
+                    }
+                    ShowPlayerDraw();
+                    yield return new WaitForSeconds(0.5f);
+
+                    if (hasPlayer)
+                    {
+                        ShowInitialPlayerCard();
+                    }
+
+                    if (hasPlayer)
+                    {
+                        if (targetplayer == eTargetPlayer.PLAYER)
+                        {
+                            ShowInitialPlayerCard();
+                        }
+                        else if (initialplayer == eTargetPlayer.PLAYER)
+                        {
+                            ShowTargetPlayerCard();
+                        }
+                    }
+                    yield return new WaitForSeconds(0.5f);
+                }
+                #endregion
+            }
+            yield return new WaitForEndOfFrame();
+            SetShowdown(true);
+            game_Logic.DoneRunning();
+            ResetShowDownPanel();
+        }
+
+        void ShowInitialPlayerCard()
+        {
+            initialPlayerCard.ToggleCard(true);
+            initialPlayerHiddenCard.ToggleCard(false);
+        }
+
+        void ShowTargetPlayerCard()
+        {
+            targetPlayerCard.ToggleCard(true);
+            targetPlayerHiddenCard.ToggleCard(false);
+        }
+
+        void ShowPlayerDraw()
+        {
+            initialPlayer_Text.text = "Draw";
+            initialPlayer_Text.DOFade(1.0f, 1.0f);
+            targetPlayer_Text.text = "Draw";
+            targetPlayer_Text.DOFade(1.0f, 1.0f);
+        }
+
+        void ShowPlayerLose(bool initialPlayer = false)
+        {
+            if(initialPlayer)
+            {
+                initialPlayerPanel.DOColor(GetColor("5EFB7380"), 0.5f);
+                initialPlayer_Text.text = "Lose";
+                initialPlayer_Text.DOFade(1.0f, 1.0f);
+            }
+            else
+            {
+                targetPlayerPanel.DOColor(GetColor("5EFB7380"), 0.5f);
+                targetPlayer_Text.text = "Lose";
+                targetPlayer_Text.DOFade(1.0f, 1.0f);
+            }
+        }
+
+        void ShowPlayerWin(bool initialPlayer = false)
+        {
+            if (initialPlayer)
+            {
+                initialPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
+                initialPlayer_Text.text = "Win";
+                initialPlayer_Text.DOFade(1.0f, 1.0f);
+            }
+            else
+            {
+                targetPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
+                targetPlayer_Text.text = "Win";
+                targetPlayer_Text.DOFade(1.0f, 1.0f);
+            }
+        }
+
+        void RotateCard(bool initialPlayers = false)
+        {
+            if(initialPlayers)
+            {
+                initialPlayerCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+                initialPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+            }
+            else
+            {
+                targetPlayerCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+                targetPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+            }
         }
         #endregion
         #endregion
@@ -582,6 +872,7 @@ namespace BBSL_LOVELETTER
                 }
             }
         }
+        
         #endregion
 
         #region Details
@@ -598,11 +889,11 @@ namespace BBSL_LOVELETTER
             deck.SetActive(true);
             for (int i = 0; i < players1stCards.Length; i++)
             {
-                players1stCards[i].gameObject.SetActive(false);
+                players1stCards[i].ToggleCard(false);
             }
             for (int i = 0; i < players2ndCards.Length; i++)
             {
-                players2ndCards[i].gameObject.SetActive(false);
+                players2ndCards[i].ToggleCard(false);
             }
             for (int i = 0; i < tinycardsHolder.Length; i++)
             {
@@ -653,7 +944,32 @@ namespace BBSL_LOVELETTER
             tempcard = eCardValues.INVALID;
             playerChoice = eButtonUsage.INVALID;
             temptarget = eTargetPlayer.INVALID;
-            tempguardcard = eCardValues.INVALID;
+        }
+
+        void ResetShowDownPanel()
+        {
+            initialPlayerPanel.gameObject.SetActive(false);
+            initialPlayerPanel.DOColor(GetColor("D8D8D880"), 0);
+            initialPlayerHiddenCard.ToggleCard(false);
+            initialPlayerCard.ToggleCard(false);
+            initialPlayer_Text.gameObject.SetActive(false);
+            initialPlayer_Text.DOFade(0, 0);
+            initialPlayer_Text.text = string.Empty;
+            targetPlayerPanel.gameObject.SetActive(false);
+            targetPlayerPanel.DOColor(GetColor("D8D8D880"), 0);
+            targetPlayerHiddenCard.ToggleCard(false);
+            targetPlayerCard.ToggleCard(false);
+            targetPlayer_GuardText.gameObject.SetActive(false);
+            targetPlayer_GuardText.text = string.Empty;
+            targetPlayer_Text.gameObject.SetActive(false);
+            targetPlayer_Text.text = string.Empty;
+            targetPlayer_Text.transform.DOMove(targetPlayer_GuardTextPos, 0);
+            targetPlayer_Text.DOFade(0, 0);
+            vs_Text.gameObject.SetActive(false);
+            vs_Text.text = string.Empty;
+            result_Text.gameObject.SetActive(false);
+            result_Text.DOFade(0, 0);
+            vs_Text.text = string.Empty;
         }
         #endregion
 
@@ -698,6 +1014,7 @@ namespace BBSL_LOVELETTER
         }
         #endregion
 
+        #region Sprite & Color
         public Sprite GetCardSprites(eCardValues value)
         {
             return cardSprites[(int)value];
@@ -709,22 +1026,19 @@ namespace BBSL_LOVELETTER
             return cardSpritesSmall[(int)value];
         }
         
-        int GetPlayerIndex(eTargetPlayer player)
+        Color GetColor(string colorCode)
         {
-            switch (player)
+            Color tempColor;
+            Color color = Color.white;
+            if (ColorUtility.TryParseHtmlString("#" + colorCode, out tempColor))
             {
-                case eTargetPlayer.PLAYER:
-                    return 0;
-                case eTargetPlayer.AI1:
-                    return 1;
-                case eTargetPlayer.AI2:
-                    return 2;
-                case eTargetPlayer.AI3:
-                    return 3;
+                color = tempColor;
             }
-            return -1;
+            return color;
         }
+        #endregion
 
+        #region MessageBox
         public void SetMessageBox(string text, float delay = 0.0f)
         {
             Debug.Log("MESSAGE: " + text);
@@ -788,6 +1102,24 @@ namespace BBSL_LOVELETTER
             }
             return "";
         }
+        #endregion
+
+        #region Etc. code
+        int GetPlayerIndex(eTargetPlayer player)
+        {
+            switch (player)
+            {
+                case eTargetPlayer.PLAYER:
+                    return 0;
+                case eTargetPlayer.AI1:
+                    return 1;
+                case eTargetPlayer.AI2:
+                    return 2;
+                case eTargetPlayer.AI3:
+                    return 3;
+            }
+            return -1;
+        }
 
         void SetShowingCard(bool isDone)
         {
@@ -806,5 +1138,11 @@ namespace BBSL_LOVELETTER
             //Debug.Log("SHOWING:" + isDone);
             doneDiscardingCard = isDone;
         }
+
+        void SetShowdown(bool isDone)
+        {
+            doneShowdown = isDone;
+        }
+        #endregion
     }
 }

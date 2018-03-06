@@ -37,5 +37,10 @@ namespace BBSL_LOVELETTER
                 image.sprite = game_UIController.instance.GetCardSprites(cardValue);
             }
         }
+
+        public void ToggleCard(bool unhide)
+        {
+            gameObject.SetActive(unhide);
+        }
     }
 }

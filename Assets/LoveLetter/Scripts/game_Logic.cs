@@ -679,7 +679,7 @@ namespace BBSL_LOVELETTER
         #endregion
 
         #region Player related
-        eCardValues GetCard(eTargetPlayer player)
+        public eCardValues GetCard(eTargetPlayer player)
         {
             eCardValues card = eCardValues.INVALID;
             switch (player)
