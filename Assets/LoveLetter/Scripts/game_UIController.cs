@@ -277,9 +277,10 @@ namespace BBSL_LOVELETTER
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
             
-            yield return new WaitUntil(() => doneShowdown);
             //flip card
             cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+            yield return new WaitUntil(() => doneShowdown);
+            SetShowingCard(true);
             yield return new WaitForSeconds(1.0f * speed);
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
@@ -288,7 +289,6 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
-            SetShowingCard(true);
             game_Logic.DoneRunning();
         }
 
@@ -329,9 +329,10 @@ namespace BBSL_LOVELETTER
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
             
-            yield return new WaitUntil(() => doneShowdown);
             //flip card
             cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+            yield return new WaitUntil(() => doneShowdown);
+            SetShowingCard(true);
             yield return new WaitForSeconds(1.0f * speed);
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
@@ -340,7 +341,6 @@ namespace BBSL_LOVELETTER
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
             Reset1stCard();
-            SetShowingCard(true);
             game_Logic.DoneRunning();
         }
 
@@ -363,17 +363,17 @@ namespace BBSL_LOVELETTER
             Debug.Log("Player discard CARD");
             yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
-            MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
-            ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
+            MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
+            ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
             players1stCards[GetPlayerIndex(targetplayer)].ToggleCard(false);
             yield return new WaitForEndOfFrame();
 
-            MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            MoveCard(cardsToDistribute[1], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(targetplayer, cardused);
-            yield return new WaitForEndOfFrame();
             Reset1stCard();
+            yield return new WaitForEndOfFrame();
             SetDiscardingCard(true);
             game_Logic.DoneRunning();
         }
@@ -386,12 +386,6 @@ namespace BBSL_LOVELETTER
 
         IEnumerator PlayerDrawCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
         {
-            Debug.Log("Player Draw CARD");
-            if (cardused == eCardValues.PRINCE)
-            {
-                yield return new WaitUntil(() => doneShowingCard);
-                yield return new WaitUntil(() => doneDiscardingCard);
-            }
             float speed = 1.0f;
             MoveCard(cardsToDistribute[1], deck, 0.0f);
             ResizeCard(cardsToDistribute[1], deck, 0.0f);
@@ -416,20 +410,29 @@ namespace BBSL_LOVELETTER
             game_Logic.DoneRunning();
         }
 
-        public void PlayerDrawMissingCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
+        public void PlayerDrawForPrinceCard(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID, bool ismissingCard = false)
         {
             SetDrawingDone(false);
-            StartCoroutine(PlayerDrawMissingCardIE(targetplayer, cardused));
+            StartCoroutine(PlayerDrawForPrinceCardIE(targetplayer, cardused, ismissingCard));
         }
 
-        IEnumerator PlayerDrawMissingCardIE(eTargetPlayer targetplayer, eCardValues cardused = eCardValues.INVALID)
+        IEnumerator PlayerDrawForPrinceCardIE(eTargetPlayer targetplayer, eCardValues cardused, bool ismissingCard)
         {
             yield return new WaitUntil(() => doneShowingCard);
             yield return new WaitUntil(() => doneDiscardingCard);
             float speed = 1.0f;
-            MoveCard(cardsToDistribute[1], missingCard, 0.0f);
-            ResizeCard(cardsToDistribute[1], missingCard, 0.0f);
-            missingCard.gameObject.SetActive(false);
+            if(ismissingCard)
+            {
+                MoveCard(cardsToDistribute[1], missingCard, 0.0f);
+                ResizeCard(cardsToDistribute[1], missingCard, 0.0f);
+                missingCard.gameObject.SetActive(false);
+            }
+            else
+            {
+                MoveCard(cardsToDistribute[1], deck, 0.0f);
+                ResizeCard(cardsToDistribute[1], deck, 0.0f);
+                ReduceCards();
+            }
             yield return new WaitForEndOfFrame();
 
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
@@ -446,12 +449,12 @@ namespace BBSL_LOVELETTER
             game_Logic.DoneRunning();
         }
 
-        public void PlayerSwapCard(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused)
+        public void PlayerSwapCard(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused, eCardValues cardget = eCardValues.INVALID)
         {
-            StartCoroutine(PlayerSwapCardIE(initialplayer, targetplayer, cardused));
+            StartCoroutine(PlayerSwapCardIE(initialplayer, targetplayer, cardused, cardget));
         }
 
-        IEnumerator PlayerSwapCardIE(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused)
+        IEnumerator PlayerSwapCardIE(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused, eCardValues cardget)
         {
             yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
@@ -477,23 +480,24 @@ namespace BBSL_LOVELETTER
             players1stCards[GetPlayerIndex(targetplayer)].ToggleCard(true);
             if (initialplayer == eTargetPlayer.PLAYER || targetplayer == eTargetPlayer.PLAYER)
             {
-                players1stCards[0].SetCard(game_Logic.instance.GetPlayer().Get1stCardValue());
+                players1stCards[0].SetCard(cardget);
             }
             game_Logic.DoneRunning();
         }
 
-        public void OpenShowdownPanel(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
+        public void OpenShowdownPanel(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result, float aiWaitTime = 0.0f)
         {
             SetShowdown(false);
-            StartCoroutine(OpenShowdownPanelIE(cardused, initialplayer, targetplayer, result));
+            StartCoroutine(OpenShowdownPanelIE(cardused, initialplayer, targetplayer, result, aiWaitTime));
         }
 
-        IEnumerator OpenShowdownPanelIE(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result)
+        IEnumerator OpenShowdownPanelIE(eCardValues cardused, eTargetPlayer initialplayer, eTargetPlayer targetplayer, eResult result, float aiWaitTime = 0.0f)
         {
             float speed = 1.0f;
             eCardValues initialPlayerCardValue = game_Logic.instance.GetCard(initialplayer);
             eCardValues targetPlayerCardValue = game_Logic.instance.GetCard(targetplayer);
 
+            yield return new WaitForSeconds(aiWaitTime);
             yield return new WaitForSeconds(1.0f * speed);
             initialPlayerPanel.gameObject.SetActive(true);
             targetPlayerPanel.gameObject.SetActive(true);
@@ -512,11 +516,14 @@ namespace BBSL_LOVELETTER
                     {
                         if (initialplayer == eTargetPlayer.PLAYER)
                         {
+                            Debug.Log("PLAYER GUESS");
                             targetPlayer_GuardText.text = tempguardcard.ToString();
                         }
                         else
                         {
+                            Debug.Log("AI GUESS");
                             targetPlayer_GuardText.text = game_Logic.instance.GetAIList(initialplayer).GetTargetCardValue().ToString();
+                            Debug.Log(targetPlayer_GuardText.text);
                         }
 
                         targetPlayer_GuardText.DOFade(1.0f, 0.0f);
@@ -532,13 +539,13 @@ namespace BBSL_LOVELETTER
                         ShowPlayerWin(true);
                         ShowPlayerLose(false);
                         RotateCard(false);
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(0.3f);
                         ShowTargetPlayerCard();
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(0.7f);
                     }
                     else
                     {
-                        ShowPlayerLose(true);
+                        ShowPlayerLose(true, "Wrong");
                         targetPlayer_GuardText.DOFade(0.0f, 1.0f);
                         targetPlayerPanel.DOColor(GetColor("D4D41E80"), 0);
                         yield return new WaitForSeconds(1.0f);
@@ -547,9 +554,9 @@ namespace BBSL_LOVELETTER
                 else
                 {
                     RotateCard(false);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.3f);
                     ShowTargetPlayerCard();
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.7f);
                 }
             }
             #endregion
@@ -590,25 +597,13 @@ namespace BBSL_LOVELETTER
                             RotateCard(true);
                         }
                     }
-                    yield return new WaitForSeconds(0.5f);
-
-                    if (targetplayer != eTargetPlayer.PLAYER)
-                    {
-                        ShowTargetPlayerCard();
-                    }
-
-                    if (initialplayer != eTargetPlayer.PLAYER)
-                    {
-                        initialPlayerCard.ToggleCard(true);
-                        initialPlayerHiddenCard.ToggleCard(false);
-                    }
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.3f);
                     if (hasPlayer)
                     {
                         ShowInitialPlayerCard();
                     }
                     ShowTargetPlayerCard();
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.7f);
                 }
                 #endregion
                 #region Baron Lose
@@ -628,13 +623,13 @@ namespace BBSL_LOVELETTER
                     {
                         RotateCard(true);
                     }
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.3f);
                     if (hasPlayer)
                     {
                         ShowTargetPlayerCard();
                     }
                     ShowInitialPlayerCard();
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.7f);
                 }
                 #endregion
                 #region Baron Draw
@@ -652,7 +647,7 @@ namespace BBSL_LOVELETTER
                         }
                     }
                     ShowPlayerDraw();
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.3f);
 
                     if (hasPlayer)
                     {
@@ -670,7 +665,7 @@ namespace BBSL_LOVELETTER
                             ShowTargetPlayerCard();
                         }
                     }
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.7f);
                 }
                 #endregion
             }
@@ -717,18 +712,18 @@ namespace BBSL_LOVELETTER
             targetPlayer_Text.DOFade(1.0f, 1.0f);
         }
 
-        void ShowPlayerLose(bool initialPlayer = false)
+        void ShowPlayerLose(bool initialPlayer = false, string text = "Lose")
         {
             if(initialPlayer)
             {
                 initialPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
-                initialPlayer_Text.text = "Lose";
+                initialPlayer_Text.text = text;
                 initialPlayer_Text.DOFade(1.0f, 1.0f);
             }
             else
             {
                 targetPlayerPanel.DOColor(GetColor("FB5E5E80"), 0.5f);
-                targetPlayer_Text.text = "Lose";
+                targetPlayer_Text.text = text;
                 targetPlayer_Text.DOFade(1.0f, 1.0f);
             }
         }
@@ -791,7 +786,7 @@ namespace BBSL_LOVELETTER
                 tempcard == eCardValues.HANDMAID)
             {
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, eTargetPlayer.PLAYER, playerChoice);
-                game_Logic.instance.PlayerUseCard(tempcard);
+                game_Logic.instance.PlayerUseCard(playerChoice, tempcard);
                 ResetCardUseValues();
             }
             else
@@ -815,7 +810,7 @@ namespace BBSL_LOVELETTER
             {
                 ToggleTargetPlayerPanel(false);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
-                game_Logic.instance.PlayerUseCard(tempcard, temptarget);
+                game_Logic.instance.PlayerUseCard(playerChoice, tempcard, temptarget);
                 ResetCardUseValues();
             }
         }
@@ -827,7 +822,7 @@ namespace BBSL_LOVELETTER
             if(tempguardcard != eCardValues.INVALID)
             {
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
-                game_Logic.instance.PlayerUseCard(tempcard, temptarget, tempguardcard);
+                game_Logic.instance.PlayerUseCard(playerChoice, tempcard, temptarget, tempguardcard);
             }
             ResetCardUseValues();
         }
@@ -954,8 +949,8 @@ namespace BBSL_LOVELETTER
 
         void ResetCardPostion(GameObject card, GameObject targetObjsPos)
         {
-            card.transform.DOMove(targetObjsPos.transform.position, 0);
             card.SetActive(false);
+            card.transform.DOMove(targetObjsPos.transform.position, 0);
         }
 
         void ResetCardRectTransform(GameObject card, Vector2 sizeDelta)

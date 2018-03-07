@@ -160,7 +160,7 @@ namespace BBSL_LOVELETTER
                     game_Logic.instance.GetAIList(eTargetPlayer.AI3).DrawNewCard(card);
                     Player4AddKhownCards.Add(new Card(card));
                     break;
-                case eTargetPlayer.INVALID:
+                default:
                     missingCard.SetCardValue(card);
                     break;
             }
