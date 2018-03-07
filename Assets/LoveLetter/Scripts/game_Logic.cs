@@ -416,12 +416,27 @@ namespace BBSL_LOVELETTER
             CardController.instance.AIUseCard(card, AIIndex);
             eResult result = eResult.DRAW;
             float aiThinkingTime = 4.0f;
+
+            if(targetPlayer != eTargetPlayer.INVALID || card == eCardValues.PRINCE)
+            {
+                if(card == eCardValues.PRINCE && targetPlayer == eTargetPlayer.INVALID)
+                {
+                    targetPlayer = AIIndex;
+                }
+                StartRunning();
+                game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
+            }
+            else
+            {
+                StartRunning();
+                game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
+                StartCoroutine(GetNextPlayerIE());
+                return;
+            }
             switch (card)
             {
                 case eCardValues.GUARD:
                     result = GuardCardUsed(guardcard, targetPlayer);
-                    StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     StartRunning();
                     game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result, aiThinkingTime);
                     if (result == eResult.WIN)
@@ -442,13 +457,9 @@ namespace BBSL_LOVELETTER
                     PriestCardUsed(AIIndex, targetPlayer);
                     //StartRunning();
                     //game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result);
-                    StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     break;
                 case eCardValues.BARON:
                     result = BaronCardUsed(AIIndex, targetPlayer);
-                    StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     StartRunning();
                     game_UIController.instance.OpenShowdownPanel(card, AIIndex, targetPlayer, result, aiThinkingTime);
                     if (result == eResult.WIN)
@@ -476,15 +487,11 @@ namespace BBSL_LOVELETTER
                 case eCardValues.HANDMAID:
                     HandMaidCardUsed(AIIndex);
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
-                    StartRunning();
                     game_UIController.instance.PlayerShield(AIIndex, 1.0f);
                     break;
                 case eCardValues.PRINCE:
-                    StartRunning();
                     eCardValues targetPlayersCardValue = GetCard(targetPlayer);
                     result = PrinceCardUsed(targetPlayer);
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
                     if (result == eResult.DRAW)
                     {
                         StartRunning();
@@ -518,20 +525,14 @@ namespace BBSL_LOVELETTER
                 case eCardValues.KING:
                     KingCardUsed(AIIndex, targetPlayer);
                     StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, targetPlayer, aiThinkingTime);
-                    StartRunning();
                     game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card);
                     break;
                 case eCardValues.COUNTESS:
                     //do nothing
-                    StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
                     break;
                 case eCardValues.PRINCESS:
                     //lose
                     KillPlayer(AIIndex);
-                    StartRunning();
-                    game_UIController.instance.ShowAICardUse(AIIndex, card, AIIndex, aiThinkingTime);
                     StartRunning();
                     game_UIController.instance.PlayerDiscardCard(AIIndex, GetCard(AIIndex), true);
                     StartRunning();
