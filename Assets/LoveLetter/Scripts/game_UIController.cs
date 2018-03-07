@@ -438,6 +438,7 @@ namespace BBSL_LOVELETTER
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
+            players1stCards[GetPlayerIndex(targetplayer)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
             Reset2ndCard();
             if (targetplayer == eTargetPlayer.PLAYER)
