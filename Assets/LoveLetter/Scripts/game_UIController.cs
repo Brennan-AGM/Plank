@@ -790,6 +790,12 @@ namespace BBSL_LOVELETTER
                 game_Logic.instance.PlayerUseCard(playerChoice, tempcard);
                 ResetCardUseValues();
             }
+            else if(game_Logic.instance.GetValidAIPlayers().Count > 0 && tempcard != eCardValues.PRINCE)
+            {
+                ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, eTargetPlayer.PLAYER, playerChoice);
+                game_Logic.instance.PlayerUseCard(playerChoice, tempcard);
+                ResetCardUseValues();
+            }
             else
             {
                 //target still required

@@ -287,115 +287,119 @@ namespace BBSL_LOVELETTER
         {
             CardController.instance.PlayerUseCard(card);
             eResult result = eResult.DRAW;
-            switch (card)
+            if(card == eCardValues.HANDMAID || card == eCardValues.PRINCESS || card == eCardValues.COUNTESS || targetPlayer != eTargetPlayer.INVALID)
             {
-                case eCardValues.GUARD:
-                    result = GuardCardUsed(guardcard, targetPlayer);
-                    StartRunning();
-                    game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
-                    if (result == eResult.WIN)
-                    {
+                switch (card)
+                {
+                    case eCardValues.GUARD:
+                        result = GuardCardUsed(guardcard, targetPlayer);
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
-                        KillPlayer(targetPlayer);
-                        StartRunning();
-                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
-                    }
-                    else
-                    {
-                        StartRunning();
-                        game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
-                    }
-                    break;
-                case eCardValues.PRIEST:
-                    StartRunning();
-                    game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
-                    PriestCardUsed(eTargetPlayer.PLAYER, targetPlayer);
-                    break;
-                case eCardValues.BARON:
-                    result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
-                    StartRunning();
-                    game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
-                    if (result == eResult.WIN)
-                    {
-                        StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
-                        KillPlayer(targetPlayer);
-                        StartRunning();
-                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
-                    }
-                    else if (result == eResult.LOSE)
-                    {
-                        StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
-                        KillPlayer(eTargetPlayer.PLAYER);
-                        StartRunning();
-                        game_UIController.instance.PlayerElimination(targetPlayer, eTargetPlayer.PLAYER);
-                    }
-                    else
-                    {
-                        StartRunning();
-                        game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
-                        //SHOW DRAW more wait time
-                    }
-                    break;
-                case eCardValues.HANDMAID:
-                    HandMaidCardUsed(eTargetPlayer.PLAYER);
-                    StartRunning();
-                    game_UIController.instance.PlayerShield(eTargetPlayer.PLAYER);
-                    break;
-                case eCardValues.PRINCE:
-                    eCardValues targetPlayersCardValue = GetCard(targetPlayer);
-                    result = PrinceCardUsed(targetPlayer);
-                    if (result == eResult.DRAW)
-                    {
-                        StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue);
-                        if (!CardController.instance.CheckIfDrawPileEmpty())
+                        game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
+                        if (result == eResult.WIN)
                         {
-                            CardController.instance.PlayerDrawCard(targetPlayer);
                             StartRunning();
-                            game_UIController.instance.PlayerDrawForPrinceCard(targetPlayer, card);
+                            game_UIController.instance.PlayerDiscardCard(targetPlayer, guardcard, true);
+                            KillPlayer(targetPlayer);
+                            StartRunning();
+                            game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
                         }
                         else
                         {
-                            CardController.instance.DrawMissingCard(targetPlayer);
                             StartRunning();
-                            game_UIController.instance.PlayerDrawForPrinceCard(targetPlayer, card, true);
+                            game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
                         }
-                    }
-                    else
-                    {
+                        break;
+                    case eCardValues.PRIEST:
                         StartRunning();
                         game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
+                        PriestCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                        break;
+                    case eCardValues.BARON:
+                        result = BaronCardUsed(eTargetPlayer.PLAYER, targetPlayer);
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue, true);
-                        KillPlayer(targetPlayer);
+                        game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
+                        if (result == eResult.WIN)
+                        {
+                            StartRunning();
+                            game_UIController.instance.PlayerDiscardCard(targetPlayer, GetCard(targetPlayer), true);
+                            KillPlayer(targetPlayer);
+                            StartRunning();
+                            game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
+                        }
+                        else if (result == eResult.LOSE)
+                        {
+                            StartRunning();
+                            game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
+                            KillPlayer(eTargetPlayer.PLAYER);
+                            StartRunning();
+                            game_UIController.instance.PlayerElimination(targetPlayer, eTargetPlayer.PLAYER);
+                        }
+                        else
+                        {
+                            StartRunning();
+                            game_UIController.instance.PlayerUnaffected(targetPlayer, 1.0f);
+                            //SHOW DRAW more wait time
+                        }
+                        break;
+                    case eCardValues.HANDMAID:
+                        HandMaidCardUsed(eTargetPlayer.PLAYER);
                         StartRunning();
-                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
-                    }
-                    break;
-                case eCardValues.KING:
-                    eCardValues obtainedCard = GetCard(targetPlayer);
-                    KingCardUsed(eTargetPlayer.PLAYER, targetPlayer);
-                    StartRunning();
-                    game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card, obtainedCard);
-                    break;
-                case eCardValues.COUNTESS:
-                    break;
-                case eCardValues.PRINCESS:
-                    eCardValues unusedCard = GetPlayer().Get2ndCardValue();
-                    if(GetPlayer().Get2ndCardValue() == card)
-                    {
-                        unusedCard = GetPlayer().Get1stCardValue();
-                    }
-                    StartRunning();
-                    game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, unusedCard, true);
-                    KillPlayer(eTargetPlayer.PLAYER);
-                    StartRunning();
-                    game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, eTargetPlayer.INVALID);
-                    break;
+                        game_UIController.instance.PlayerShield(eTargetPlayer.PLAYER);
+                        break;
+                    case eCardValues.PRINCE:
+                        eCardValues targetPlayersCardValue = GetCard(targetPlayer);
+                        result = PrinceCardUsed(targetPlayer);
+                        if (result == eResult.DRAW)
+                        {
+                            StartRunning();
+                            game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue);
+                            if (!CardController.instance.CheckIfDrawPileEmpty())
+                            {
+                                CardController.instance.PlayerDrawCard(targetPlayer);
+                                StartRunning();
+                                game_UIController.instance.PlayerDrawForPrinceCard(targetPlayer, card);
+                            }
+                            else
+                            {
+                                CardController.instance.DrawMissingCard(targetPlayer);
+                                StartRunning();
+                                game_UIController.instance.PlayerDrawForPrinceCard(targetPlayer, card, true);
+                            }
+                        }
+                        else
+                        {
+                            StartRunning();
+                            game_UIController.instance.OpenShowdownPanel(card, eTargetPlayer.PLAYER, targetPlayer, result);
+                            StartRunning();
+                            game_UIController.instance.PlayerDiscardCard(targetPlayer, targetPlayersCardValue, true);
+                            KillPlayer(targetPlayer);
+                            StartRunning();
+                            game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
+                        }
+                        break;
+                    case eCardValues.KING:
+                        eCardValues obtainedCard = GetCard(targetPlayer);
+                        KingCardUsed(eTargetPlayer.PLAYER, targetPlayer);
+                        StartRunning();
+                        game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card, obtainedCard);
+                        break;
+                    case eCardValues.COUNTESS:
+                        break;
+                    case eCardValues.PRINCESS:
+                        eCardValues unusedCard = GetPlayer().Get2ndCardValue();
+                        if (GetPlayer().Get2ndCardValue() == card)
+                        {
+                            unusedCard = GetPlayer().Get1stCardValue();
+                        }
+                        StartRunning();
+                        game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, unusedCard, true);
+                        KillPlayer(eTargetPlayer.PLAYER);
+                        StartRunning();
+                        game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, eTargetPlayer.INVALID);
+                        break;
+                }
             }
+
             if(button == eButtonUsage.FIRSTCARDUSE)
             {
                 GetPlayer().UseCardValue(false);
