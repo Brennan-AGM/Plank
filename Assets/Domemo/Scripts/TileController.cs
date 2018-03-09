@@ -108,7 +108,7 @@ namespace BBSL_DOMEMO
         void DistributeTiles(int value)
         {
             GameObject tile;
-            tile = InstantiateTiles(value, distribNum);
+            tile = InstantiateTiles(value, distribNum, true);
             switch (distribNum)
             {
                 case -2:
@@ -278,17 +278,21 @@ namespace BBSL_DOMEMO
         }
         #endregion
 
-        public GameObject InstantiateTiles(int value, int type)
+        public GameObject InstantiateTiles(int value, int type, bool hide)
         {
             GameObject target;
             if (type == -2 || type == 0)
             {
                 target = Instantiate(hiddentilePrefab);
+                if(hide)
+                {
+                    target.GetComponentInChildren<TileNumber>().ToggleTile(false);
+                }
             }
             else
             {
                 target = Instantiate(tilePrefab);
-                target.GetComponentInChildren<TileNumber>().SetNumber(value);
+                target.GetComponentInChildren<TileNumber>().SetNumber(value, hide);
             }
 
             if (type >= 0 && type <= 3)
@@ -414,6 +418,11 @@ namespace BBSL_DOMEMO
         public GameObject GetTile(int value, int aiID)
         {
             return GetTileReference(value, aiID, false);
+        }
+
+        public GameObject GetTile()
+        {
+            return tilePrefab;
         }
     }
 }

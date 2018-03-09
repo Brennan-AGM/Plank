@@ -23,12 +23,18 @@ namespace BBSL_DOMEMO
 
         void Start()
         {
+        }
+
+        public void StartGame()
+        {
             Reset();
         }
 
         public void Reset()
         {
+            ActivatePlayerButton();
             CurrentAITurn = true;
+            game_UIController.instance.ToggleTitlePanel(false);
             game_UIController.instance.Reset();
             TileController.instance.Reset();
             game_UIController.instance.StartDistribution();
@@ -42,11 +48,17 @@ namespace BBSL_DOMEMO
             }
         }
 
+        public void ReturnToMainMenu()
+        {
+            game_UIController.instance.ToggleTitlePanel(true);
+            game_UIController.instance.ToggleFrontPanel(false);
+            game_UIController.instance.Reset();
+        }
+
         public void StartAITurn()
         {
             if (!HasWinner())
             {
-                game_UIController.instance.pick_btn.interactable = false;
                 currentAITurn = 0;
                 ContinueAI();
             }
@@ -75,8 +87,13 @@ namespace BBSL_DOMEMO
             else
             {
                 game_UIController.instance.SetMessageBox("Player's turn");
-                game_UIController.instance.pick_btn.interactable = true;
+                Invoke("ActivatePlayerButton", 2.0f);
             }
+        }
+
+        void ActivatePlayerButton()
+        {
+            game_UIController.instance.pick_btn.interactable = true;
         }
 
         #region AIList
@@ -220,7 +237,7 @@ namespace BBSL_DOMEMO
             if (AIAnswer)
             {
                 //Delay
-                GameObject newTile = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"), game_UIController.instance.TileHolders.transform);
+                GameObject newTile = Instantiate(TileController.instance.GetTile(), game_UIController.instance.TileHolders.transform);
                 newTile.GetComponentInChildren<TileNumber>().SetNumber(value);
                 newTile.transform.position = TileController.instance.GetTile(value, aiID).transform.position;
                 Transform targetParent = game_UIController.instance.GetTileTargetPos(value);
@@ -266,13 +283,14 @@ namespace BBSL_DOMEMO
 
         IEnumerator SendResponseIE(int value)
         {
+            game_UIController.instance.pick_btn.interactable = false;
             yield return new WaitForSeconds(0.5f);
             if (TileController.instance.CheckList(value, 0))
             {
                 game_UIController.instance.DetermineResult(eTURNRESULT.CORRECT);
                 yield return new WaitForSeconds(0.5f);
                 //Delay
-                GameObject newTile = Instantiate((GameObject)Resources.Load("Prefabs/GameAssets/Tile"), game_UIController.instance.TileHolders.transform);
+                GameObject newTile = Instantiate(TileController.instance.GetTile(), game_UIController.instance.TileHolders.transform);
                 newTile.GetComponentInChildren<TileNumber>().SetNumber(value);
                 newTile.transform.position = TileController.instance.GetTile(value, 0).transform.position;
                 Transform targetParent = game_UIController.instance.GetTileTargetPos(value);

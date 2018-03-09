@@ -40,12 +40,19 @@ namespace BBSL_DOMEMO
         private GameObject ResetBox_gmobj;
         private Vector3 ResetBox_initialpos;
 
-        [Header("Button")]
+        [Header("BUTTON")]
         public Button pick_btn;
+
+        [Header("PANEL")]
+        [SerializeField]
+        private GameObject FrontPanel;
+        [SerializeField]
+        private GameObject TitlePanel;
 
         [Header("Shuffle Tiles")]
         [SerializeField]
         private Image[] tileToShuffle;
+        private Vector3[] tileToShufflePos;
 
         private List<Image> allTiles = new List<Image>();
 
@@ -63,6 +70,11 @@ namespace BBSL_DOMEMO
             MessageBox_initialpos = MessageBox_gmobj.transform.position;
         }
 
+        void Start()
+        {
+            SetupTileToShuffle();
+        }
+
         public void Reset()
         {
             allTiles.Clear();
@@ -72,15 +84,30 @@ namespace BBSL_DOMEMO
             HideResetBox();
         }
 
+        void SetupTileToShuffle()
+        {
+            tileToShufflePos = new Vector3[tileToShuffle.Length];
+            for (int i = 0; i < tileToShuffle.Length; i++)
+            {
+                tileToShufflePos[i] = tileToShuffle[i].transform.position;
+            }
+        }
+
+        void ResetTileToShufflePos()
+        {
+            for (int i = 0; i < tileToShuffle.Length; i++)
+            {
+                tileToShuffle[i].transform.position = tileToShufflePos[i];
+            }
+        }
+
         public Transform GetTileHolder(int id = 0, int type = 0)
         {
             switch (type)
             {
                 case 0:
-                    //id = (id > 6) ? id : 0;
                     return ShownTileHolder[id];
                 case 1:
-                    //id = (id > 3) ? id : 0;
                     return PlayerTileHolder[id];
                 case 2:
                     return HiddenTileHolder;
@@ -119,7 +146,7 @@ namespace BBSL_DOMEMO
 
         public void OpenResetBox()
         {
-            ResetBox_gmobj.transform.DOMoveY(0f, 1.0f);
+            ResetBox_gmobj.transform.DOLocalMoveY(0, 1.0f);
         }
 
         public void HideResetBox()
@@ -206,7 +233,7 @@ namespace BBSL_DOMEMO
 
         public void ShowTiles(int value)
         {
-            TileController.instance.InstantiateTiles(value, -1);
+            TileController.instance.InstantiateTiles(value, -1, false);
         }
 
         public Transform GetTileTargetPos(int value)
@@ -223,6 +250,7 @@ namespace BBSL_DOMEMO
 
         public void StartDistribution()
         {
+            ToggleFrontPanel(false);
             StartCoroutine(DistributionIE());
         }
 
@@ -232,6 +260,7 @@ namespace BBSL_DOMEMO
             for (int i = 0; i < allTiles.Count; i++)
             {
                 tileToShuffle[i].gameObject.SetActive(true);
+                tileToShuffle[i].DOFade(1.0f, 0.0f);
                 tileToShuffle[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(1.0f, 0);
             }
             yield return new WaitForEndOfFrame();
@@ -260,6 +289,23 @@ namespace BBSL_DOMEMO
             {
                 tileToShuffle[i].gameObject.SetActive(false);
             }
+            ResetTileToShufflePos();
+            ToggleFrontPanel(true);
+        }
+
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
+
+        public void ToggleTitlePanel(bool unhide)
+        {
+            TitlePanel.SetActive(unhide);
+        }
+
+        public void ToggleFrontPanel(bool unhide)
+        {
+            FrontPanel.SetActive(unhide);
         }
     }
 }

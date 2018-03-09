@@ -229,3 +229,4 @@ pip-log.txt
 Assets/StreamingAssets/build_info.txt
 Assets/Scripts/Unsorted/all_GameSettings.cs.meta
 Assets/Scripts/Unsorted/all_ConnectionController.cs.meta
+Assembly-CSharp.csproj
