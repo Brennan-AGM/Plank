@@ -15,11 +15,11 @@ Princess, Prince, Guard, Baron, Priest
 
 also need a guide/reminder
 
-Attack
-Spy
-Compare
-Shield
-Change
-Trade
-Sacrifice
-Treasure
+Charge/Attack Guess a player's hand (Target)
+Reveal Look at hand (Target)
+Wager Compare hands; lower hand is out (Target)
+Shield/Safeguard Protected until next turn
+Discard Discard hand (Target)
+Trade Trade hands (Target)
+Sabotage Discarded if caught with King or Prince
+Treasure Lose if discarded

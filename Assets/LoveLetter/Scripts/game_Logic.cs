@@ -58,7 +58,7 @@ namespace BBSL_LOVELETTER
         void Reset(bool hardReset = false)
         {
             game_UIController.instance.SetCardsRemaining(16);
-            CurrentPlayer = eTargetPlayer.INVALID;
+            //CurrentPlayer = eTargetPlayer.INVALID;
             CurrentPlayerIndex = 0;
             for (int i = 0; i < AIList.Length; i++)
             {
