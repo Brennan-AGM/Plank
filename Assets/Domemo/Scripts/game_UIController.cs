@@ -68,6 +68,17 @@ namespace BBSL_DOMEMO
 
             ResetBox_initialpos = ResetBox_gmobj.transform.position;
             MessageBox_initialpos = MessageBox_gmobj.transform.position;
+            ForceResolution();
+        }
+
+        void ForceResolution()
+        {
+            Screen.SetResolution(598, 957, false);
+        }
+
+        void SetResolution()
+        {
+            Screen.SetResolution(598, 957, false);
         }
 
         void Start()
