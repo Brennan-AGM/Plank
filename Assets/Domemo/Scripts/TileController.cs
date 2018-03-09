@@ -6,8 +6,6 @@ namespace BBSL_DOMEMO
 {
     public class TileController : MonoBehaviour
     {
-
-        public static TileController instance { get; private set; }
         private List<Tile> TileList = new List<Tile>();
         private List<Tile> Player1 = new List<Tile>();
         private List<Tile> Player2 = new List<Tile>();
@@ -29,8 +27,9 @@ namespace BBSL_DOMEMO
         private GameObject tilePrefab;
         [SerializeField]
         private GameObject hiddentilePrefab;
-
-
+        
+        public static TileController instance { get; private set; }
+        #region Awake
         void Awake()
         {
             if (instance != null && instance != this)
@@ -42,11 +41,9 @@ namespace BBSL_DOMEMO
 
             DontDestroyOnLoad(gameObject);
         }
+        #endregion
 
-        void Start()
-        {
-        }
-
+        #region Reset
         public void Reset()
         {
             TileList.Clear();
@@ -66,7 +63,9 @@ namespace BBSL_DOMEMO
             distribNum = 0;
             Begin();
         }
+        #endregion
 
+        #region Setup/Begin
         void Begin()
         {
             for (int i = 1; i <= 7; i++)
@@ -104,7 +103,9 @@ namespace BBSL_DOMEMO
                 count++;
             }
         }
+        #endregion
 
+        #region Tile Related
         void DistributeTiles(int value)
         {
             GameObject tile;
@@ -175,6 +176,142 @@ namespace BBSL_DOMEMO
             }
         }
 
+        public GameObject InstantiateTiles(int value, int type, bool hide)
+        {
+            GameObject target;
+            if (type == -2 || type == 0)
+            {
+                target = Instantiate(hiddentilePrefab);
+                if (hide)
+                {
+                    target.GetComponentInChildren<TileNumber>().ToggleTile(false);
+                }
+            }
+            else
+            {
+                target = Instantiate(tilePrefab);
+                target.GetComponentInChildren<TileNumber>().SetNumber(value, hide);
+            }
+
+            if (type >= 0 && type <= 3)
+            {
+                SetTileReference(target, value, type);
+                //AllPlayerTiles[type] = target;
+            }
+            target.transform.SetParent(Getholder(value, type), false);
+            return target;
+        }
+
+        void ReduceTile(GameObject target)
+        {
+            Destroy(target);
+        }
+
+        public int GetTile(List<Tile> TileList_new)
+        {
+            int counter = 0,
+            randomN = Random.Range(0, TileList_new.Count - 1);
+            foreach (Tile T in TileList_new)
+            {
+                if (randomN == counter)
+                    return T.GetTileValue();
+                counter++;
+            }
+            return 0;
+        }
+
+        void SetTileReference(GameObject target, int value, int type)
+        {
+            switch (type)
+            {
+                case 0:
+                    Player1TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
+                    break;
+                case 1:
+                    //Player2KnownTiles.Add(new Tile(value));
+                    Player2TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
+                    break;
+                case 2:
+                    //Player3KnownTiles.Add(new Tile(value));
+                    Player3TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
+                    break;
+                case 3:
+                    //Player4KnownTiles.Add(new Tile(value));
+                    Player4TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
+                    break;
+            }
+        }
+
+        GameObject GetTileReference(int value, int type, bool remove = true)
+        {
+            List<KeyValuePair<int, GameObject>> TempList = new List<KeyValuePair<int, GameObject>>();
+            GameObject Temp_gmobj = null;
+            if (type == 0)
+            {
+                TempList = Player1TilesReference;
+            }
+            else if (type == 1)
+            {
+                TempList = Player2TilesReference;
+            }
+            else if (type == 2)
+            {
+                TempList = Player3TilesReference;
+            }
+            else if (type == 3)
+            {
+                TempList = Player4TilesReference;
+            }
+
+            foreach (KeyValuePair<int, GameObject> tile in TempList)
+            {
+                if (tile.Key == value)
+                {
+                    Temp_gmobj = tile.Value;
+                }
+            }
+            if (remove)
+            {
+                TempList.Remove(new KeyValuePair<int, GameObject>(value, Temp_gmobj));
+            }
+
+            if (type == 0)
+            {
+                Player1TilesReference = TempList;
+            }
+            else if (type == 1)
+            {
+                Player2TilesReference = TempList;
+            }
+            else if (type == 2)
+            {
+                Player3TilesReference = TempList;
+            }
+            else if (type == 3)
+            {
+                Player4TilesReference = TempList;
+            }
+
+            return Temp_gmobj;
+        }
+
+        public void RemoveTile(int value, int aiID)
+        {
+            ReduceTile(GetTileReference(value, aiID));
+        }
+
+        public GameObject GetTile(int value, int aiID)
+        {
+            return GetTileReference(value, aiID, false);
+        }
+
+        public GameObject GetTile()
+        {
+            return tilePrefab;
+        }
+        #endregion
+
+        #region List Related
         public List<Tile> GetList(int value = 0)
         {
             switch (value)
@@ -254,6 +391,21 @@ namespace BBSL_DOMEMO
             }
             return false;
         }
+
+        Transform Getholder(int value, int type)
+        {
+            switch (type)
+            {
+                case -2:
+                    return game_UIController.instance.GetTileHolder(0, 2);
+                case -1:
+                    return game_UIController.instance.GetTileHolder(value - 1, 0);
+                default:
+                    return game_UIController.instance.GetTileHolder(type, 1);
+            }
+        }
+        #endregion
+
         #region SendResponse
         public bool SendResponse(int value, int ai)
         {
@@ -277,152 +429,5 @@ namespace BBSL_DOMEMO
             }
         }
         #endregion
-
-        public GameObject InstantiateTiles(int value, int type, bool hide)
-        {
-            GameObject target;
-            if (type == -2 || type == 0)
-            {
-                target = Instantiate(hiddentilePrefab);
-                if(hide)
-                {
-                    target.GetComponentInChildren<TileNumber>().ToggleTile(false);
-                }
-            }
-            else
-            {
-                target = Instantiate(tilePrefab);
-                target.GetComponentInChildren<TileNumber>().SetNumber(value, hide);
-            }
-
-            if (type >= 0 && type <= 3)
-            {
-                SetTileReference(target, value, type);
-                //AllPlayerTiles[type] = target;
-            }
-            target.transform.SetParent(Getholder(value, type), false);
-            return target;
-        }
-
-        Transform Getholder(int value, int type)
-        {
-            switch (type)
-            {
-                case -2:
-                    return game_UIController.instance.GetTileHolder(0, 2);
-                case -1:
-                    return game_UIController.instance.GetTileHolder(value - 1, 0);
-                default:
-                    return game_UIController.instance.GetTileHolder(type, 1);
-            }
-        }
-
-        void ReduceTile(GameObject target)
-        {
-            Destroy(target);
-        }
-
-        public int GetTile(List<Tile> TileList_new)
-        {
-            int counter = 0,
-            randomN = Random.Range(0, TileList_new.Count - 1);
-            foreach (Tile T in TileList_new)
-            {
-                if (randomN == counter)
-                    return T.GetTileValue();
-                counter++;
-            }
-            return 0;
-        }
-
-        void SetTileReference(GameObject target, int value, int type)
-        {
-            switch (type)
-            {
-                case 0:
-                    Player1TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
-                    break;
-                case 1:
-                    //Player2KnownTiles.Add(new Tile(value));
-                    Player2TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
-                    break;
-                case 2:
-                    //Player3KnownTiles.Add(new Tile(value));
-                    Player3TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
-                    break;
-                case 3:
-                    //Player4KnownTiles.Add(new Tile(value));
-                    Player4TilesReference.Add(new KeyValuePair<int, GameObject>(value, target));
-                    break;
-            }
-        }
-
-        GameObject GetTileReference(int value, int type, bool remove = true)
-        {
-            List<KeyValuePair<int, GameObject>> TempList = new List<KeyValuePair<int, GameObject>>();
-            GameObject Temp_gmobj = null;
-            if (type == 0)
-            {
-                TempList = Player1TilesReference;
-            }
-            else if (type == 1)
-            {
-                TempList = Player2TilesReference;
-            }
-            else if (type == 2)
-            {
-                TempList = Player3TilesReference;
-            }
-            else if (type == 3)
-            {
-                TempList = Player4TilesReference;
-            }
-
-            foreach (KeyValuePair<int, GameObject> tile in TempList)
-            {
-                if (tile.Key == value)
-                {
-                    Temp_gmobj = tile.Value;
-                }
-            }
-            if(remove)
-            {
-                TempList.Remove(new KeyValuePair<int, GameObject>(value, Temp_gmobj));
-            }
-
-            if (type == 0)
-            {
-                Player1TilesReference = TempList;
-            }
-            else if (type == 1)
-            {
-                Player2TilesReference = TempList;
-            }
-            else if (type == 2)
-            {
-                Player3TilesReference = TempList;
-            }
-            else if (type == 3)
-            {
-                Player4TilesReference = TempList;
-            }
-
-            return Temp_gmobj;
-        }
-
-        public void RemoveTile(int value, int aiID)
-        {
-            ReduceTile(GetTileReference(value, aiID));
-        }
-
-        public GameObject GetTile(int value, int aiID)
-        {
-            return GetTileReference(value, aiID, false);
-        }
-
-        public GameObject GetTile()
-        {
-            return tilePrefab;
-        }
     }
 }

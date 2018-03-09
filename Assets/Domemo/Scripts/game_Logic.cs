@@ -21,10 +21,7 @@ namespace BBSL_DOMEMO
         private bool CurrentAITurn;
         private bool AIAnswer;
 
-        void Start()
-        {
-        }
-
+        #region Setup/Reset
         public void StartGame()
         {
             Reset();
@@ -54,7 +51,9 @@ namespace BBSL_DOMEMO
             game_UIController.instance.ToggleFrontPanel(false);
             game_UIController.instance.Reset();
         }
+        #endregion
 
+        #region Turn Setup
         public void StartAITurn()
         {
             if (!HasWinner())
@@ -95,6 +94,19 @@ namespace BBSL_DOMEMO
         {
             game_UIController.instance.pick_btn.interactable = true;
         }
+
+        void TurnOnHighlight(bool response, int aiID)
+        {
+            if (response)
+            {
+                game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.CORRECT);
+            }
+            else
+            {
+                game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.WRONG);
+            }
+        }
+        #endregion
 
         #region AIList
         IEnumerator EasyAI(int value)
@@ -203,22 +215,6 @@ namespace BBSL_DOMEMO
             game_UIController.instance.SetMessageBox(value);
         }
         #endregion
-
-        void TurnOnHighlight(bool response, int aiID)
-        {
-            if (response)
-            {
-                game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.CORRECT);
-            }
-            else
-            {
-                game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.WRONG);
-            }
-            //if(callback != null)
-            //{
-            //    callback(AiID);
-            //}
-        }
 
         #region AIResponse
         void EndAITurn(int AiID)

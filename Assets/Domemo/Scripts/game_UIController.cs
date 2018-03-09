@@ -57,6 +57,7 @@ namespace BBSL_DOMEMO
         private List<Image> allTiles = new List<Image>();
 
         public static game_UIController instance = null;
+        #region Awake, Start
         private void Awake()
         {
             if (instance != null && instance != this)
@@ -71,6 +72,13 @@ namespace BBSL_DOMEMO
             ForceResolution();
         }
 
+        void Start()
+        {
+            SetupTileToShuffle();
+        }
+        #endregion
+
+        #region Resolutions
         void ForceResolution()
         {
             Screen.SetResolution(598, 957, false);
@@ -80,12 +88,9 @@ namespace BBSL_DOMEMO
         {
             Screen.SetResolution(598, 957, false);
         }
+        #endregion
 
-        void Start()
-        {
-            SetupTileToShuffle();
-        }
-
+        #region Reset
         public void Reset()
         {
             allTiles.Clear();
@@ -95,36 +100,45 @@ namespace BBSL_DOMEMO
             HideResetBox();
         }
 
-        void SetupTileToShuffle()
+        void ClearChildren(Transform[] List)
         {
-            tileToShufflePos = new Vector3[tileToShuffle.Length];
-            for (int i = 0; i < tileToShuffle.Length; i++)
+            for (int i = 0; i < List.Length; i++)
             {
-                tileToShufflePos[i] = tileToShuffle[i].transform.position;
+                for (int j = 0; j < List[i].childCount; j++)
+                {
+                    Destroy(List[i].GetChild(j).gameObject);
+                }
             }
         }
 
-        void ResetTileToShufflePos()
+        void ClearChildren(Transform List)
         {
-            for (int i = 0; i < tileToShuffle.Length; i++)
+            for (int i = 0; i < List.childCount; i++)
             {
-                tileToShuffle[i].transform.position = tileToShufflePos[i];
+                Destroy(List.GetChild(i).gameObject);
             }
         }
+        #endregion
 
-        public Transform GetTileHolder(int id = 0, int type = 0)
+        #region UI Boxes/Panels
+        public void OpenResetBox()
         {
-            switch (type)
-            {
-                case 0:
-                    return ShownTileHolder[id];
-                case 1:
-                    return PlayerTileHolder[id];
-                case 2:
-                    return HiddenTileHolder;
-                default:
-                    return ShownTileHolder[0];
-            }
+            ResetBox_gmobj.transform.DOLocalMoveY(0, 1.0f);
+        }
+
+        public void HideResetBox()
+        {
+            ResetBox_gmobj.transform.DOMoveY(ResetBox_initialpos.y, 0.0f);
+        }
+        
+        public void ToggleTitlePanel(bool unhide)
+        {
+            TitlePanel.SetActive(unhide);
+        }
+
+        public void ToggleFrontPanel(bool unhide)
+        {
+            FrontPanel.SetActive(unhide);
         }
 
         public void DetermineResult(eTURNRESULT result)
@@ -154,104 +168,25 @@ namespace BBSL_DOMEMO
             yield return new WaitForSeconds(2.0f);
             messagebox.DOMoveY(MessageBox_initialpos.y, 1.0f);
         }
+        #endregion
 
-        public void OpenResetBox()
+        #region Shuffle Related
+        void SetupTileToShuffle()
         {
-            ResetBox_gmobj.transform.DOLocalMoveY(0, 1.0f);
-        }
-
-        public void HideResetBox()
-        {
-            ResetBox_gmobj.transform.DOMoveY(ResetBox_initialpos.y, 0.0f);
-        }
-
-        public Image GetPlayerGlow(int value)
-        {
-            return PlayerGlow[value];
-        }
-
-        public void TogglePlayerGlow(int value, bool unhide, float duration)
-        {
-            if(unhide == true)
+            tileToShufflePos = new Vector3[tileToShuffle.Length];
+            for (int i = 0; i < tileToShuffle.Length; i++)
             {
-                PlayerGlow[value].DOFade(1.0f, duration);
-            }
-            else
-            {
-                PlayerGlow[value].DOFade(0.0f, duration);
-            }
-            TogglePlayerChatBubble(value, unhide, duration);
-        }
-
-        void TogglePlayerChatBubble(int value, bool unhide, float duration)
-        {
-            if (unhide == true)
-            {
-                PlayerChatBubble[value].DOFillAmount(1.0f, duration);
-            }
-            else
-            {
-                PlayerChatBubble[value].DOFillAmount(0.0f, duration);
+                tileToShufflePos[i] = tileToShuffle[i].transform.position;
             }
         }
 
-        public void SetPlayerTurn(int value, eTURNRESULT result)
+        void ResetTileToShufflePos()
         {
-            switch (result)
+            for (int i = 0; i < tileToShuffle.Length; i++)
             {
-                case eTURNRESULT.CORRECT:
-                    PlayerGlow[value].DOColor(Color.green, 0.5f);
-                    break;
-                case eTURNRESULT.WRONG:
-                    PlayerGlow[value].DOColor(Color.red, 0.5f);
-                    break;
-                case eTURNRESULT.TURN:
-                    PlayerGlow[value].DOColor(Color.white, 0.0f);
-                    break;
+                tileToShuffle[i].transform.position = tileToShufflePos[i];
             }
         }
-
-        public void GetPlayerAnswer(int value, int AiID)
-        {
-            PlayerAnswer[AiID].SetNumber(value);
-            PlayerAnswer[AiID].ToggleFade(false, 0.0f);
-            PlayerAnswer[AiID].ToggleFade(true, 1.0f);
-        }
-
-        public void RemovePlayerAnswer(int AiID)
-        {
-            PlayerAnswer[AiID].ToggleFade(false, 1.0f);
-        }
-
-        void ClearChildren(Transform[] List)
-        {
-            for (int i = 0; i < List.Length; i++)
-            {
-                for (int j = 0; j < List[i].childCount; j++)
-                {
-                    Destroy(List[i].GetChild(j).gameObject);
-                }
-            }
-        }
-
-        void ClearChildren(Transform List)
-        {
-            for (int i = 0; i < List.childCount; i++)
-            {
-                Destroy(List.GetChild(i).gameObject);
-            }
-        }
-
-        public void ShowTiles(int value)
-        {
-            TileController.instance.InstantiateTiles(value, -1, false);
-        }
-
-        public Transform GetTileTargetPos(int value)
-        {
-            return GetTileHolder(value - 1, 0).transform;
-        }
-
         public void AddTileToPool(GameObject tile)
         {
             allTiles.Add(tile.GetComponent<Image>());
@@ -303,20 +238,100 @@ namespace BBSL_DOMEMO
             ResetTileToShufflePos();
             ToggleFrontPanel(true);
         }
+        #endregion
+
+        #region Player Glow
+        public Image GetPlayerGlow(int value)
+        {
+            return PlayerGlow[value];
+        }
+
+        public void TogglePlayerGlow(int value, bool unhide, float duration)
+        {
+            if(unhide == true)
+            {
+                PlayerGlow[value].DOFade(1.0f, duration);
+            }
+            else
+            {
+                PlayerGlow[value].DOFade(0.0f, duration);
+            }
+            TogglePlayerChatBubble(value, unhide, duration);
+        }
+
+        public void SetPlayerTurn(int value, eTURNRESULT result)
+        {
+            switch (result)
+            {
+                case eTURNRESULT.CORRECT:
+                    PlayerGlow[value].DOColor(Color.green, 0.5f);
+                    break;
+                case eTURNRESULT.WRONG:
+                    PlayerGlow[value].DOColor(Color.red, 0.5f);
+                    break;
+                case eTURNRESULT.TURN:
+                    PlayerGlow[value].DOColor(Color.white, 0.0f);
+                    break;
+            }
+        }
+        #endregion
+
+        #region AI Answer Related
+        void TogglePlayerChatBubble(int value, bool unhide, float duration)
+        {
+            if (unhide == true)
+            {
+                PlayerChatBubble[value].DOFillAmount(1.0f, duration);
+            }
+            else
+            {
+                PlayerChatBubble[value].DOFillAmount(0.0f, duration);
+            }
+        }
+
+        public void GetPlayerAnswer(int value, int AiID)
+        {
+            PlayerAnswer[AiID].SetNumber(value);
+            PlayerAnswer[AiID].ToggleFade(false, 0.0f);
+            PlayerAnswer[AiID].ToggleFade(true, 1.0f);
+        }
+
+        public void RemovePlayerAnswer(int AiID)
+        {
+            PlayerAnswer[AiID].ToggleFade(false, 1.0f);
+        }
+        #endregion
+
+        #region Tile Related
+        public Transform GetTileHolder(int id = 0, int type = 0)
+        {
+            switch (type)
+            {
+                case 0:
+                    return ShownTileHolder[id];
+                case 1:
+                    return PlayerTileHolder[id];
+                case 2:
+                    return HiddenTileHolder;
+                default:
+                    return ShownTileHolder[0];
+            }
+        }
+
+        public void ShowTiles(int value)
+        {
+            TileController.instance.InstantiateTiles(value, -1, false);
+        }
+
+        public Transform GetTileTargetPos(int value)
+        {
+            return GetTileHolder(value - 1, 0).transform;
+        }
+        #endregion
 
         public void QuitGame()
         {
             Application.Quit();
-        }
-
-        public void ToggleTitlePanel(bool unhide)
-        {
-            TitlePanel.SetActive(unhide);
-        }
-
-        public void ToggleFrontPanel(bool unhide)
-        {
-            FrontPanel.SetActive(unhide);
         }
     }
 }

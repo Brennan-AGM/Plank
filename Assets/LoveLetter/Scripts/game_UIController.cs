@@ -119,6 +119,7 @@ namespace BBSL_LOVELETTER
             }
 
             instance = this;
+            ForceResolution();
         }
 
         void Start()
@@ -138,6 +139,18 @@ namespace BBSL_LOVELETTER
             {
                 ToggleDetails(false);
             }
+        }
+        #endregion
+
+        #region Resolution
+        void ForceResolution()
+        {
+            Screen.SetResolution(598, 957, false);
+        }
+
+        void SetResolution()
+        {
+            Screen.SetResolution(598, 957, false);
         }
         #endregion
 
@@ -205,10 +218,6 @@ namespace BBSL_LOVELETTER
             Reset1stCard();
             players1stCards[GetPlayerIndex(eTargetPlayer.AI3)].ToggleCard(true);
             yield return new WaitForEndOfFrame();
-
-            ReduceCards();
-            MoveCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
-            ResizeCard(cardsToDistribute[1], players2ndCards[GetPlayerIndex(eTargetPlayer.PLAYER)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.25f * speed);
 
             Reset2ndCard();
@@ -265,7 +274,6 @@ namespace BBSL_LOVELETTER
 
         IEnumerator ShowAICardUseIE(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay = 1.0f)
         {
-            Debug.Log("AI USE CARD");
             float speed = 1.0f;
             yield return new WaitUntil(() => doneDrawingCard);
             yield return new WaitForSeconds(delay * speed);
@@ -372,7 +380,7 @@ namespace BBSL_LOVELETTER
             ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(targetplayer, cardused);
-            Reset1stCard();
+            Reset2ndCard();
             yield return new WaitForEndOfFrame();
             SetDiscardingCard(true);
             game_Logic.DoneRunning();
@@ -497,6 +505,10 @@ namespace BBSL_LOVELETTER
             float speed = 1.0f;
             eCardValues initialPlayerCardValue = game_Logic.instance.GetCard(initialplayer);
             eCardValues targetPlayerCardValue = game_Logic.instance.GetCard(targetplayer);
+            if(cardused == eCardValues.PRINCE && result == eResult.WIN)
+            {
+                targetPlayerCardValue = eCardValues.PRINCESS;
+            }
 
             yield return new WaitForSeconds(aiWaitTime);
             yield return new WaitForSeconds(1.0f * speed);
@@ -517,14 +529,11 @@ namespace BBSL_LOVELETTER
                     {
                         if (initialplayer == eTargetPlayer.PLAYER)
                         {
-                            Debug.Log("PLAYER GUESS");
                             targetPlayer_GuardText.text = tempguardcard.ToString();
                         }
                         else
                         {
-                            Debug.Log("AI GUESS");
                             targetPlayer_GuardText.text = game_Logic.instance.GetAIList(initialplayer).GetTargetCardValue().ToString();
-                            Debug.Log(targetPlayer_GuardText.text);
                         }
 
                         targetPlayer_GuardText.DOFade(1.0f, 0.0f);
@@ -760,6 +769,11 @@ namespace BBSL_LOVELETTER
                 targetPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
             }
         }
+
+        public void FlipCard(eTargetPlayer player, eCardValues card)
+        {
+            players1stCards[GetPlayerIndex(player)].SetCard(card);
+        }
         #endregion
         #endregion
 
@@ -790,7 +804,7 @@ namespace BBSL_LOVELETTER
                 game_Logic.instance.PlayerUseCard(playerChoice, tempcard);
                 ResetCardUseValues();
             }
-            else if(game_Logic.instance.GetValidAIPlayers().Count > 0 && tempcard != eCardValues.PRINCE)
+            else if(game_Logic.instance.GetValidAIPlayers().Count == 0 && tempcard != eCardValues.PRINCE)
             {
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, eTargetPlayer.PLAYER, playerChoice);
                 game_Logic.instance.PlayerUseCard(playerChoice, tempcard);
@@ -815,6 +829,10 @@ namespace BBSL_LOVELETTER
             }
             else
             {
+                if(playerChoice == eButtonUsage.FIRSTCARDUSE)
+                {
+                    game_Logic.instance.PlayerUse1stCard();
+                }
                 ToggleTargetPlayerPanel(false);
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
                 game_Logic.instance.PlayerUseCard(playerChoice, tempcard, temptarget);
@@ -1049,7 +1067,6 @@ namespace BBSL_LOVELETTER
 
         public Sprite GetCardSpritesSmall(eCardValues value)
         {
-            Debug.Log((int)value);
             return cardSpritesSmall[(int)value];
         }
         
@@ -1111,6 +1128,20 @@ namespace BBSL_LOVELETTER
             {
                 text.Append(GetPlayerText(initialPlayer)).Append(" commits seppuku!");
             }
+            SetMessageBox(text.ToString(), delay);
+        }
+
+        public void PlayerWinning(eTargetPlayer targetPlayer, float delay = 0.0f)
+        {
+            text.Length = 0;
+            text.Append(GetPlayerText(targetPlayer)).Append(" WINS!");
+            SetMessageBox(text.ToString(), delay);
+        }
+
+        public void PlayerWinning(eTargetPlayer targetPlayer, eCardValues winningCard, float delay = 0.0f)
+        {
+            text.Length = 0;
+            text.Append(GetPlayerText(targetPlayer)).Append(" WINS with ").Append(winningCard.ToString()).Append("!");
             SetMessageBox(text.ToString(), delay);
         }
 

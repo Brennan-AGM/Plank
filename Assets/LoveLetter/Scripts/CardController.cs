@@ -12,7 +12,6 @@ namespace BBSL_LOVELETTER
         private List<Card> Player2AddKhownCards = new List<Card>();
         private List<Card> Player3AddKhownCards = new List<Card>();
         private List<Card> Player4AddKhownCards = new List<Card>();
-        private int totalCards = 16;
         private List<Card> MaxCardsList = new List<Card>();
         private List<Card> GameCardsList = new List<Card>();
         private List<Card> CurrentDrawPileList = new List<Card>();

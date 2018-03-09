@@ -36,13 +36,6 @@ namespace BBSL_DOMEMO
         private List<KeyValuePair<int, float>> Choice = new List<KeyValuePair<int, float>>();
         private int[] RemovedTiles = new int[7];
 
-
-        // Use this for initialization
-        void Start()
-        {
-            GetChoices();
-        }
-
         public void Reset()
         {
             for (int i = 0; i < 7; i++)

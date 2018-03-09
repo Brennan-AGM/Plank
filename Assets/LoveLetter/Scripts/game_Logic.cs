@@ -28,8 +28,8 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private game_Player Player;
 
-        private eTargetPlayer CurrentPlayer = eTargetPlayer.INVALID;
-        private int CurrentPlayerIndex = -1;
+        private eTargetPlayer CurrentPlayer = eTargetPlayer.PLAYER;
+        private int CurrentPlayerIndex = 0;
         private List<eTargetPlayer> ListOfPlayers = new List<eTargetPlayer>();
 
         public int running = 0;
@@ -59,7 +59,7 @@ namespace BBSL_LOVELETTER
         {
             game_UIController.instance.SetCardsRemaining(16);
             CurrentPlayer = eTargetPlayer.INVALID;
-            CurrentPlayerIndex = -1;
+            CurrentPlayerIndex = 0;
             for (int i = 0; i < AIList.Length; i++)
             {
                 AIList[i].Reset(hardReset);
@@ -102,7 +102,7 @@ namespace BBSL_LOVELETTER
                     players++;
                 }
             }
-            if (players > 0)
+            if (players > 1)
             {
                 return true;
             }
@@ -112,17 +112,15 @@ namespace BBSL_LOVELETTER
         #region TurnController
         IEnumerator GetNextPlayerIE()
         {
-            Debug.Log("START NEXT PLAYER");
             yield return new WaitUntil(() => IsDoneRunning());
-            Debug.Log("BEGIN");
-            if (CurrentPlayerIndex == -1)
-            {
-                CurrentPlayerIndex = 0;
-                CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
-                CheckNextPlayer();
-            }
-            else
-            {
+            //if (CurrentPlayerIndex == -1)
+            //{
+            //    CurrentPlayerIndex = 0;
+            //    CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
+            //    CheckNextPlayer();
+            //}
+            //else
+            //{
                 if(CardController.instance.CardsLeftInDrawPile() > 0 && HasPlayers())
                 {
                     CheckNextPlayer();
@@ -131,21 +129,34 @@ namespace BBSL_LOVELETTER
                 {
                     CheckWinner();
                     CheckForTies();
-                    AnnouncementOfWinner();
+                    ShowAllRemainingCards();
+                    OneRoundWinner();
+                    //AnnouncementOfWinner();
                 }
-            }
+            //}
         }
 
         void CheckNextPlayer()
         {
-            if(CurrentPlayerIndex < ListOfPlayers.Count - 1)
+            if(CurrentPlayerIndex < ListOfPlayers.Count)
             {
-                CurrentPlayerIndex++;
+                if (CurrentPlayer == ListOfPlayers[CurrentPlayerIndex])
+                {
+                    if (CurrentPlayerIndex < ListOfPlayers.Count - 1)
+                    {
+                        CurrentPlayerIndex++;
+                    }
+                    else
+                    {
+                        CurrentPlayerIndex = 0;
+                    }
+                }
             }
             else
             {
                 CurrentPlayerIndex = 0;
             }
+            
             CurrentPlayer = ListOfPlayers[CurrentPlayerIndex];
             ResetProtection(CurrentPlayer);
             Debug.Log(CurrentPlayer);
@@ -183,8 +194,7 @@ namespace BBSL_LOVELETTER
                     if(Player.IsWinnerYet())
                     {
                         //finish game
-                        Debug.Log("GAME FINISH WINNER IS: " + WinningPlayer);
-                        StartCoroutine(StartNextGameIE());
+                        game_UIController.instance.PlayerWinning(WinningPlayer, 1.0f);
                     }
                     else
                     {
@@ -196,9 +206,7 @@ namespace BBSL_LOVELETTER
                 {
                     if (GetAIList(WinningPlayer).IsWinnerYet())
                     {
-                        StartCoroutine(StartNextGameIE());
-                        //finish game
-                        Debug.Log("GAME FINISH WINNER IS: " + WinningPlayer);
+                        game_UIController.instance.PlayerWinning(WinningPlayer, 1.0f);
                     }
                     else
                     {
@@ -209,7 +217,34 @@ namespace BBSL_LOVELETTER
             }
             else
             {
+                Debug.Log("SUPER TIE: " + WinningPlayer);
                 //Super Tie has occured
+                StartCoroutine(StartNextRoundIE());
+            }
+        }
+
+        void OneRoundWinner()
+        {
+            if (WinningPlayer != eTargetPlayer.INVALID)
+            {
+                game_UIController.instance.PlayerWinning(WinningPlayer, WinningPlayerCard, 1.0f);
+            }
+            else
+            {
+                Debug.Log("SUPER TIE: " + WinningPlayer);
+                //Super Tie has occured
+                StartCoroutine(StartNextRoundIE());
+            }
+        }
+
+        void ShowAllRemainingCards()
+        {
+            for (int i = 0; i < ListOfPlayers.Count; i++)
+            {
+                if (IsPlayerAlive(ListOfPlayers[i]))
+                {
+                    game_UIController.instance.FlipCard(ListOfPlayers[i], GetCard(ListOfPlayers[i]));
+                }
             }
         }
 
@@ -235,9 +270,18 @@ namespace BBSL_LOVELETTER
             WinningPlayerCard = eCardValues.INVALID;
             TiePlayer = eTargetPlayer.INVALID;
             TiePlayerCard = eCardValues.INVALID;
-            WinningPlayer = ListOfPlayers[0];
-            WinningPlayerCard = GetCard(ListOfPlayers[0]);
-            for (int i = 1; i < ListOfPlayers.Count; i++)
+            int firstPlayer = 0;
+            for (int i = 0; i < ListOfPlayers.Count; i++)
+            {
+                if(IsPlayerAlive(ListOfPlayers[i]))
+                {
+                    WinningPlayer = ListOfPlayers[i];
+                    WinningPlayerCard = GetCard(ListOfPlayers[i]);
+                    firstPlayer = i;
+                    break;
+                }
+            }
+            for (int i = firstPlayer + 1; i < ListOfPlayers.Count; i++)
             {
                 if(GetCard(ListOfPlayers[i]) > WinningPlayerCard)
                 {
@@ -282,6 +326,11 @@ namespace BBSL_LOVELETTER
             }
         }
         #endregion
+
+        public void PlayerUse1stCard()
+        {
+            Player.ForceSetValue(Player.Get2ndCardValue());
+        }
 
         public void PlayerUseCard(eButtonUsage button, eCardValues card, eTargetPlayer targetPlayer = eTargetPlayer.INVALID, eCardValues guardcard = eCardValues.INVALID)
         {
@@ -329,10 +378,13 @@ namespace BBSL_LOVELETTER
                         else if (result == eResult.LOSE)
                         {
                             StartRunning();
-                            game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, card, true);
+                            game_UIController.instance.PlayerDiscardCard(eTargetPlayer.PLAYER, GetCard(eTargetPlayer.PLAYER), true);
                             KillPlayer(eTargetPlayer.PLAYER);
                             StartRunning();
                             game_UIController.instance.PlayerElimination(targetPlayer, eTargetPlayer.PLAYER);
+
+                            StartCoroutine(GetNextPlayerIE());
+                            return;
                         }
                         else
                         {
@@ -375,6 +427,9 @@ namespace BBSL_LOVELETTER
                             KillPlayer(targetPlayer);
                             StartRunning();
                             game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, targetPlayer);
+                            
+                            StartCoroutine(GetNextPlayerIE());
+                            return;
                         }
                         break;
                     case eCardValues.KING:
@@ -396,7 +451,9 @@ namespace BBSL_LOVELETTER
                         KillPlayer(eTargetPlayer.PLAYER);
                         StartRunning();
                         game_UIController.instance.PlayerElimination(eTargetPlayer.PLAYER, eTargetPlayer.INVALID);
-                        break;
+
+                        StartCoroutine(GetNextPlayerIE());
+                        return;
                 }
             }
 
@@ -421,7 +478,7 @@ namespace BBSL_LOVELETTER
             eResult result = eResult.DRAW;
             float aiThinkingTime = 4.0f;
 
-            if(targetPlayer != eTargetPlayer.INVALID || card == eCardValues.PRINCE)
+            if(targetPlayer != eTargetPlayer.INVALID || (card == eCardValues.PRINCE))
             {
                 if(card == eCardValues.PRINCE && targetPlayer == eTargetPlayer.INVALID)
                 {
@@ -477,7 +534,7 @@ namespace BBSL_LOVELETTER
                     else if(result == eResult.LOSE)
                     {
                         StartRunning();
-                        game_UIController.instance.PlayerDiscardCard(AIIndex, card, true);
+                        game_UIController.instance.PlayerDiscardCard(AIIndex, GetCard(AIIndex), true);
                         KillPlayer(AIIndex);
                         StartRunning();
                         game_UIController.instance.PlayerElimination(targetPlayer, AIIndex);
@@ -529,7 +586,7 @@ namespace BBSL_LOVELETTER
                 case eCardValues.KING:
                     KingCardUsed(AIIndex, targetPlayer);
                     StartRunning();
-                    game_UIController.instance.PlayerSwapCard(eTargetPlayer.PLAYER, targetPlayer, card);
+                    game_UIController.instance.PlayerSwapCard(AIIndex, targetPlayer, card);
                     break;
                 case eCardValues.COUNTESS:
                     //do nothing
@@ -626,6 +683,7 @@ namespace BBSL_LOVELETTER
 
         void ResetProtection(eTargetPlayer player)
         {
+            Debug.Log("RESET PROTECTION: " + player);
             switch (player)
             {
                 case eTargetPlayer.PLAYER:
@@ -732,7 +790,7 @@ namespace BBSL_LOVELETTER
             switch (player)
             {
                 case eTargetPlayer.PLAYER:
-                    Player.SetNewCard(newCard);
+                    Player.ForceSetValue(newCard);
                     break;
                 case eTargetPlayer.AI1:
                     AIList[0].SetNewCard(newCard);
@@ -834,7 +892,6 @@ namespace BBSL_LOVELETTER
         public static void StartRunning()
         {
             stillRunning.Push(0);
-            Debug.Log("START Number of running: " + stillRunning.Count);
         }
 
         public bool IsDoneRunning()
@@ -852,7 +909,6 @@ namespace BBSL_LOVELETTER
             {
                 stillRunning.Pop();
             }
-            Debug.Log("END Number of running: " + stillRunning.Count);
         }
     }
     #endregion

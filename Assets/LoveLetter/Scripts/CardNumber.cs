@@ -23,7 +23,11 @@ namespace BBSL_LOVELETTER
 
         public void SetCard(eCardValues cardValue)
         {
-            if(textnum != null)
+            if (cardValue == eCardValues.INVALID)
+            {
+                return;
+            }
+            if (textnum != null)
             {
                 int value = (int)cardValue + 1;
                 image.sprite = game_UIController.instance.GetCardSpritesSmall(cardValue);

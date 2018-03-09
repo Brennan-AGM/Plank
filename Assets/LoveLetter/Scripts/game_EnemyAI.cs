@@ -50,6 +50,14 @@ namespace BBSL_LOVELETTER
 
         public void SetTargetable(bool isTargetable)
         {
+            if(isTargetable)
+            {
+                Debug.Log(currentPlayer + " is now targetable");
+            }
+            else
+            {
+                Debug.Log(currentPlayer + " is now protected");
+            }
             targetable = isTargetable;
         }
 
@@ -332,10 +340,10 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRIEST:
                 case eCardValues.BARON:
+                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     break;
                 case eCardValues.PRINCE:
-                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     if(targetPlayer == eTargetPlayer.INVALID)
                     {
@@ -344,6 +352,9 @@ namespace BBSL_LOVELETTER
                             targetPlayer = currentPlayer;
                         }
                     }
+                    break;
+                default:
+                    targetPlayer = currentPlayer;
                     break;
             }
         }
@@ -358,10 +369,10 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRIEST:
                 case eCardValues.BARON:
+                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     break;
                 case eCardValues.PRINCE:
-                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     if (targetPlayer == eTargetPlayer.INVALID)
                     {
@@ -370,6 +381,9 @@ namespace BBSL_LOVELETTER
                             targetPlayer = currentPlayer;
                         }
                     }
+                    break;
+                default:
+                    targetPlayer = currentPlayer;
                     break;
             }
         }
@@ -384,10 +398,10 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRIEST:
                 case eCardValues.BARON:
+                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     break;
                 case eCardValues.PRINCE:
-                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     if (targetPlayer == eTargetPlayer.INVALID)
                     {
@@ -396,6 +410,9 @@ namespace BBSL_LOVELETTER
                             targetPlayer = currentPlayer;
                         }
                     }
+                    break;
+                default:
+                    targetPlayer = currentPlayer;
                     break;
             }
         }
@@ -410,10 +427,10 @@ namespace BBSL_LOVELETTER
                     break;
                 case eCardValues.PRIEST:
                 case eCardValues.BARON:
+                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     break;
                 case eCardValues.PRINCE:
-                case eCardValues.KING:
                     targetPlayer = GetValidTargetPlayer();
                     if (targetPlayer == eTargetPlayer.INVALID)
                     {
@@ -422,6 +439,9 @@ namespace BBSL_LOVELETTER
                             targetPlayer = currentPlayer;
                         }
                     }
+                    break;
+                default:
+                    targetPlayer = currentPlayer;
                     break;
             }
         }
@@ -475,6 +495,12 @@ namespace BBSL_LOVELETTER
             else
             {
                 target = Random.Range(0, listOfValidTargets.Count);
+            }
+
+            Debug.Log("VALID TARGETs: " + listOfValidTargets.Count);
+            for (int i = 0; i < listOfValidTargets.Count; i++)
+            {
+                Debug.Log("VALID TARGET: " + listOfValidTargets[i]);
             }
 
             if(!canTargetPlayer && listOfValidTargets.Count == 0)
