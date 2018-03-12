@@ -92,7 +92,8 @@ namespace BBSL_DOMEMO
         #region Resolutions
         void ForceResolution()
         {
-            Screen.SetResolution(598, 957, false);
+            Screen.SetResolution(450, 721, false);
+            //Screen.SetResolution(598, 957, false);
         }
 
         void SetResolution()
