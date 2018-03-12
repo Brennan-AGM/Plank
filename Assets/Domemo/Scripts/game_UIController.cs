@@ -9,7 +9,6 @@ namespace BBSL_DOMEMO
 {
     public class game_UIController : MonoBehaviour
     {
-
         [Header("TILEREFERENCE")]
         [SerializeField]
         private Transform[] ShownTileHolder;
@@ -145,10 +144,12 @@ namespace BBSL_DOMEMO
         {
             if (result == eTURNRESULT.CORRECT)
             {
+                SoundController.instance.PlaySE(eSoundFX.CorrectSound);
                 SetMessageBox("Player is <#1A742DFF>correct!</color>");
             }
             else if (result == eTURNRESULT.WRONG)
             {
+                SoundController.instance.PlaySE(eSoundFX.WrongSound);
                 SetMessageBox("Player is <#E51919FF>wrong!</color>");
             }
         }
@@ -212,6 +213,7 @@ namespace BBSL_DOMEMO
             yield return new WaitForEndOfFrame();
             for (int i = 0; i < tileToShuffle.Length / 2; i++)
             {
+                SoundController.instance.PlaySE(eSoundFX.TileFlipSound);
                 tileToShuffle[i].transform.DOMove(allTiles[i].transform.position, 0.5f);
                 tileToShuffle[tileToShuffle.Length - 1 - i].transform.DOMove(allTiles[tileToShuffle.Length - 1 - i].transform.position, 0.5f);
                 yield return new WaitForSeconds(0.25f);
@@ -230,6 +232,7 @@ namespace BBSL_DOMEMO
                 tileToShuffle[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(0.0f, 1.0f);
             }
             yield return new WaitForSeconds(1.0f);
+            SoundController.instance.PlaySE(eSoundFX.PlayerTurnSound);
             yield return new WaitForEndOfFrame();
             for (int i = 0; i < allTiles.Count; i++)
             {

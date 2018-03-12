@@ -92,6 +92,7 @@ namespace BBSL_DOMEMO
 
         void ActivatePlayerButton()
         {
+            SoundController.instance.PlaySE(eSoundFX.PlayerTurnSound);
             game_UIController.instance.pick_btn.interactable = true;
         }
 
@@ -99,10 +100,12 @@ namespace BBSL_DOMEMO
         {
             if (response)
             {
+                SoundController.instance.PlaySE(eSoundFX.CorrectSound);
                 game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.CORRECT);
             }
             else
             {
+                SoundController.instance.PlaySE(eSoundFX.WrongSound);
                 game_UIController.instance.SetPlayerTurn(aiID, eTURNRESULT.WRONG);
             }
         }
@@ -212,6 +215,7 @@ namespace BBSL_DOMEMO
 
         void ShowWinner(string value)
         {
+            SoundController.instance.PlaySE(eSoundFX.CorrectSound);
             game_UIController.instance.SetMessageBox(value);
         }
         #endregion
