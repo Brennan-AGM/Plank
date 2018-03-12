@@ -48,10 +48,22 @@ namespace BBSL_DOMEMO
         [SerializeField]
         private GameObject TitlePanel;
 
-        [Header("Shuffle Tiles")]
+        [Header("SHUFFLE TILES")]
         [SerializeField]
         private Image[] tileToShuffle;
         private Vector3[] tileToShufflePos;
+
+        [Header("INSTRUCTION")]
+        [SerializeField]
+        private Button NextPagebtn;
+        [SerializeField]
+        private Button PrevPagebtn;
+        [SerializeField]
+        private Image TutorialImage;
+        [SerializeField]
+        private Sprite[] TutorialSprites;
+
+        private int currentTutorialImage = 0;
 
         private List<Image> allTiles = new List<Image>();
 
@@ -168,6 +180,46 @@ namespace BBSL_DOMEMO
             messagebox.DOMoveY(MessageBox_targetpos.position.y, 1.0f);
             yield return new WaitForSeconds(2.0f);
             messagebox.DOMoveY(MessageBox_initialpos.y, 1.0f);
+        }
+        
+        public void NextPage()
+        {
+            currentTutorialImage++;
+            SetTutorialImage();
+            if (currentTutorialImage == TutorialSprites.Length - 1)
+            {
+                NextPagebtn.interactable = false;
+            }
+            else
+            {
+                PrevPagebtn.interactable = true;
+            }
+        }
+
+        public void PrevPage()
+        {
+            currentTutorialImage--;
+            SetTutorialImage();
+            if (currentTutorialImage == 0)
+            {
+                PrevPagebtn.interactable = false;
+            }
+            else
+            {
+                NextPagebtn.interactable = true;
+            }
+        }
+
+        public void ResetTutorialPanel()
+        {
+            PrevPagebtn.interactable = false;
+            currentTutorialImage = 0;
+            SetTutorialImage();
+        }
+
+        void SetTutorialImage()
+        {
+            TutorialImage.sprite = TutorialSprites[currentTutorialImage];
         }
         #endregion
 

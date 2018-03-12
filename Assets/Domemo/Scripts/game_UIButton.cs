@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace BBSL_DOMEMO
@@ -23,6 +24,13 @@ namespace BBSL_DOMEMO
     {
         [SerializeField]
         eButton target = eButton.INVALID;
+
+        Button button;
+
+        void Start()
+        {
+            button = GetComponent<Button>();
+        }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -46,11 +54,21 @@ namespace BBSL_DOMEMO
                 case eButton.QUITGAME:
                 case eButton.INSTRUCTION:
                 case eButton.STARTGAME:
-                case eButton.OPENNUMBERPANEL:
                 case eButton.NUMBERSELECTION:
                 case eButton.RESETCONFIRM:
                 case eButton.RESETCANCEL:
                     SoundController.instance.PlaySE(eSoundFX.ConfirmSound);
+                    break;
+
+                case eButton.OPENNUMBERPANEL:
+                    if(button.interactable)
+                    {
+                        SoundController.instance.PlaySE(eSoundFX.ConfirmSound);
+                    }
+                    else
+                    {
+                        SoundController.instance.PlaySE(eSoundFX.WrongSound);
+                    }
                     break;
                 case eButton.CLOSENUMBERPANEL:
                     SoundController.instance.PlaySE(eSoundFX.WrongSound);
