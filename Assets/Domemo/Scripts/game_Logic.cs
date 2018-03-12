@@ -24,6 +24,7 @@ namespace BBSL_DOMEMO
         #region Setup/Reset
         public void StartGame()
         {
+            //SoundController.instance.PlayBGM(false);
             Reset();
         }
 
@@ -47,6 +48,7 @@ namespace BBSL_DOMEMO
 
         public void ReturnToMainMenu()
         {
+            //SoundController.instance.PlayBGM(true);
             game_UIController.instance.ToggleTitlePanel(true);
             game_UIController.instance.ToggleFrontPanel(false);
             game_UIController.instance.Reset();

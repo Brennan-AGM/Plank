@@ -28,9 +28,16 @@ namespace BBSL_DOMEMO
         [SerializeField]
         private AudioClip playerTurnSound;
         [SerializeField]
-        private AudioClip[] tileFlip;
+        private AudioClip tileFlip;
 
-        private AudioSource audioSource;
+
+        [SerializeField]
+        private AudioClip gameBGM;
+        [SerializeField]
+        private AudioClip menuBGM;
+
+        private AudioSource audioSourceSFX;
+        private AudioSource audioSourceBGM;
         List<AudioSource> tempAudioSourceList = new List<AudioSource>();
 
         public static SoundController instance = null;
@@ -43,20 +50,40 @@ namespace BBSL_DOMEMO
 
             instance = this;
 
-            audioSource = GetComponent<AudioSource>();
+            audioSourceSFX = GetComponent<AudioSource>();
+            audioSourceBGM = gameObject.AddComponent<AudioSource>();
+            audioSourceBGM.volume = 0.75f;
+            audioSourceBGM.loop = true;
+            PlayBGM(true);
+        }
+
+        public void PlayBGM(bool menu)
+        {
+            if(menu)
+            {
+                audioSourceBGM.Stop();
+                audioSourceBGM.clip = menuBGM;
+                audioSourceBGM.Play();
+            }
+            else
+            {
+                audioSourceBGM.Stop();
+                audioSourceBGM.clip = gameBGM;
+                audioSourceBGM.Play();
+            }
         }
 
         public void PlaySE(eSoundFX fxType, float volume = 1.0f)
         {
             if(GetAudioClip(fxType) != null)
             {
-                if(audioSource.isPlaying)
+                if(audioSourceSFX.isPlaying)
                 {
                     PlayNewAudioSource(GetAudioClip(fxType), volume);
                 }
                 else
                 {
-                    audioSource.PlayOneShot(GetAudioClip(fxType), volume);
+                    audioSourceSFX.PlayOneShot(GetAudioClip(fxType), volume);
                 }
             }
         }
@@ -94,7 +121,7 @@ namespace BBSL_DOMEMO
                 case eSoundFX.PlayerTurnSound:
                     return playerTurnSound;
                 case eSoundFX.TileFlipSound:
-                    return tileFlip[0];
+                    return tileFlip;
             }
             return clip;
         }
