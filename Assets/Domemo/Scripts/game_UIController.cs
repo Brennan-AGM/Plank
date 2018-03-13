@@ -31,12 +31,14 @@ namespace BBSL_DOMEMO
         [SerializeField]
         private GameObject MessageBox_gmobj;
         [SerializeField]
-        private TMPro.TextMeshProUGUI Message_Text;
+        private TextMeshProUGUI Message_Text;
         [SerializeField]
         private Transform MessageBox_targetpos;
         private Vector3 MessageBox_initialpos;
         [SerializeField]
         private GameObject ResetBox_gmobj;
+        [SerializeField]
+        private TextMeshProUGUI ResetBoxMessage_Text;
         private Vector3 ResetBox_initialpos;
 
         [Header("BUTTON")]
@@ -133,8 +135,16 @@ namespace BBSL_DOMEMO
         #endregion
 
         #region UI Boxes/Panels
-        public void OpenResetBox()
+        public void OpenResetBox(bool player1Winner)
         {
+            if(player1Winner)
+            {
+                ResetBoxMessage_Text.text = "Congratulations!\nReset Game?";
+            }
+            else
+            {
+                ResetBoxMessage_Text.text = "Better luck next time!\nReset Game?";
+            }
             ResetBox_gmobj.transform.DOLocalMoveY(0, 1.0f);
         }
 

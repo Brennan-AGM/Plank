@@ -184,10 +184,12 @@ namespace BBSL_DOMEMO
         bool HasWinner()
         {
             bool winner = true;
+            bool player1Winner = false;
             string chosenWinner = "";
             if (TileController.instance.GetList(1).Count == 0)
             {
-                chosenWinner = "<#00FF02FF>Player</color> Wins!!!";
+                chosenWinner = "Player <#00FF02FF>Wins</color>!!!";
+                player1Winner = true;
             }
             else if (TileController.instance.GetList(2).Count == 0)
             {
@@ -209,7 +211,7 @@ namespace BBSL_DOMEMO
             if (chosenWinner != "")
             {
                 ShowWinner(chosenWinner);
-                game_UIController.instance.OpenResetBox();
+                game_UIController.instance.OpenResetBox(player1Winner);
             }
 
             return winner;

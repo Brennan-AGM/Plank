@@ -482,7 +482,7 @@ namespace BBSL_LOVELETTER
             bool canTargetPlayer = false;
 
             //Used to remove AI self from target pool
-            if (listOfValidTargets.Count > 1 && targetable)
+            if (listOfValidTargets.Count > 0 && targetable)
             {
                 listOfValidTargets.Remove(this);
             }
