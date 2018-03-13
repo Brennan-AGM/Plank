@@ -17,13 +17,16 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private Image cardimage;
         [SerializeField]
+        private GameObject cardtextBack;
+        [SerializeField]
         private TextMeshProUGUI cardtext;
 
         public void SetCard(eCardValues cardValue)
         {
             if (cardValue == eCardValues.INVALID)
             {
-                cardtext.gameObject.SetActive(false);
+                cardimage.sprite = game_UIController.instance.GetCardSprites(cardValue);
+                cardtextBack.SetActive(false);
                 return;
             }
             if (textnum != null)
@@ -34,10 +37,15 @@ namespace BBSL_LOVELETTER
             }
             else
             {
-                cardtext.gameObject.SetActive(true);
+                cardtextBack.SetActive(true);
                 cardimage.sprite = game_UIController.instance.GetCardSprites(cardValue);
                 cardtext.text = GetCardText(cardValue);
             }
+        }
+
+        public void HideText()
+        {
+            cardtextBack.SetActive(false);
         }
 
         public void ToggleCard(bool unhide)

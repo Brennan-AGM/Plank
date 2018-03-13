@@ -30,6 +30,10 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private GameObject[] cardsToDistribute;
         [SerializeField]
+        private CardNumber cardsToDistribute1;
+        [SerializeField]
+        private CardNumber cardsToDistribute2;
+        [SerializeField]
         private GameObject deck;
         [SerializeField]
         private GameObject missingCard;
@@ -234,6 +238,17 @@ namespace BBSL_LOVELETTER
 
         void ResizeCard(GameObject card, GameObject targetObjsSizeDelta, float duration)
         {
+            if(targetObjsSizeDelta.GetComponent<RectTransform>().sizeDelta != card.GetComponent<RectTransform>().sizeDelta)
+            {
+                if (card == cardsToDistribute1.gameObject)
+                {
+                    cardsToDistribute1.HideText();
+                }
+                else if (card == cardsToDistribute2.gameObject)
+                {
+                    cardsToDistribute2.HideText();
+                }
+            }
             card.GetComponent<RectTransform>().DOSizeDelta(targetObjsSizeDelta.GetComponent<RectTransform>().sizeDelta, duration);
         }
 
@@ -284,9 +299,9 @@ namespace BBSL_LOVELETTER
 
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
-            
+
             //flip card
-            cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+            cardsToDistribute1.SetCard(cardused);
             yield return new WaitUntil(() => doneShowdown);
             SetShowingCard(true);
             yield return new WaitForSeconds(1.0f * speed);
@@ -314,10 +329,10 @@ namespace BBSL_LOVELETTER
             {
                 MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
-                cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+                cardsToDistribute1.SetCard(cardused);
 
                 MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
-                players1stCards[GetPlayerIndex(initialplayer)].GetComponent<Image>().sprite = players2ndCards[GetPlayerIndex(initialplayer)].GetComponent<Image>().sprite;
+                players1stCards[GetPlayerIndex(initialplayer)].SetCard(game_Logic.instance.GetPlayer().Get2ndCardValue());
                 players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
                 yield return new WaitForEndOfFrame();
 
@@ -328,7 +343,7 @@ namespace BBSL_LOVELETTER
                 MoveCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 ResizeCard(cardsToDistribute[0], players2ndCards[GetPlayerIndex(initialplayer)].gameObject, 0.0f);
                 players2ndCards[GetPlayerIndex(initialplayer)].gameObject.SetActive(false);
-                cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+                cardsToDistribute1.SetCard(cardused);
                 yield return new WaitForEndOfFrame();
 
                 MoveCard(players1stCards[GetPlayerIndex(initialplayer)].gameObject, player1SingleCardPos, 0.5f * speed);
@@ -336,9 +351,9 @@ namespace BBSL_LOVELETTER
             
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
-            
+
             //flip card
-            cardsToDistribute[0].GetComponent<Image>().sprite = GetCardSprites(cardused);
+            cardsToDistribute1.SetCard(cardused);
             yield return new WaitUntil(() => doneShowdown);
             SetShowingCard(true);
             yield return new WaitForSeconds(1.0f * speed);
@@ -960,14 +975,14 @@ namespace BBSL_LOVELETTER
 
         void Reset1stCard()
         {
-            cardsToDistribute[0].GetComponent<Image>().sprite = cardbackSprite;
+            cardsToDistribute1.SetCard(eCardValues.INVALID);
             ResetCardPostion(cardsToDistribute[0], deck);
             ResetCardRectTransform(cardsToDistribute[0], new Vector2(75, 100));
         }
 
         void Reset2ndCard()
         {
-            cardsToDistribute[1].GetComponent<Image>().sprite = cardbackSprite;
+            cardsToDistribute2.SetCard(eCardValues.INVALID);
             ResetCardPostion(cardsToDistribute[1], deck);
             ResetCardRectTransform(cardsToDistribute[1], new Vector2(75, 100));
         }
@@ -1062,6 +1077,10 @@ namespace BBSL_LOVELETTER
         #region Sprite & Color
         public Sprite GetCardSprites(eCardValues value)
         {
+            if(value == eCardValues.INVALID)
+            {
+                return cardbackSprite;
+            }
             return cardSprites[(int)value];
         }
 
