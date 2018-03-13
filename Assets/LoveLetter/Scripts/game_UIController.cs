@@ -257,6 +257,7 @@ namespace BBSL_LOVELETTER
         private bool doneDrawingCard = true;
         private bool doneDiscardingCard = true;
         private bool doneShowdown = true;
+        private bool readyTradeCards = false;
 
         void ShowPlayerCards()
         {
@@ -319,6 +320,7 @@ namespace BBSL_LOVELETTER
         {
             game_Logic.StartRunning();
             SetShowingCard(false);
+            SetReadyTradeCards(false);
             StartCoroutine(ShowPlayerCardUseIE(initialplayer, cardused, targetplayer, button));
         }
 
@@ -355,14 +357,15 @@ namespace BBSL_LOVELETTER
             //flip card
             cardsToDistribute1.SetCard(cardused);
             yield return new WaitUntil(() => doneShowdown);
-            SetShowingCard(true);
-            yield return new WaitForSeconds(1.0f * speed);
+            SetShowingCard(true); 
+             yield return new WaitForSeconds(1.0f * speed);
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
+            SetReadyTradeCards(true);
             Reset1stCard();
             game_Logic.DoneRunning();
         }
@@ -480,7 +483,7 @@ namespace BBSL_LOVELETTER
 
         IEnumerator PlayerSwapCardIE(eTargetPlayer initialplayer, eTargetPlayer targetplayer, eCardValues cardused, eCardValues cardget)
         {
-            yield return new WaitUntil(() => doneShowingCard);
+            yield return new WaitUntil(() => readyTradeCards);
             float speed = 1.0f;
             MoveCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
             ResizeCard(cardsToDistribute[0], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
@@ -1219,6 +1222,11 @@ namespace BBSL_LOVELETTER
         void SetShowdown(bool isDone)
         {
             doneShowdown = isDone;
+        }
+
+        void SetReadyTradeCards(bool isReady)
+        {
+            readyTradeCards = isReady;
         }
         #endregion
     }
