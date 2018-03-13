@@ -8,9 +8,7 @@ namespace BBSL_LOVELETTER
 {
     public class CardNumber : MonoBehaviour
     {
-        private LayoutElement layoutelement;
-        private float width;
-        private float height;
+        protected eCardValues currentCardValue = eCardValues.INVALID;
 
         [SerializeField]
         private TextMeshProUGUI textnum;
@@ -23,6 +21,7 @@ namespace BBSL_LOVELETTER
 
         public void SetCard(eCardValues cardValue)
         {
+            currentCardValue = cardValue;
             if (cardValue == eCardValues.INVALID)
             {
                 cardimage.sprite = game_UIController.instance.GetCardSprites(cardValue);
@@ -86,9 +85,36 @@ namespace BBSL_LOVELETTER
             return text;
         }
 
-        string GetCardDesc()
+        protected string GetCardDesc(eCardValues cardValue)
         {
             string text = "";
+            switch (cardValue)
+            {
+                case eCardValues.GUARD:
+                    text = "Guess a player's hand";
+                    break;
+                case eCardValues.PRIEST:
+                    text = "Look at hand (Target)";
+                    break;
+                case eCardValues.BARON:
+                    text = "Compare hands; lower hand is out";
+                    break;
+                case eCardValues.HANDMAID:
+                    text = "Protected until next turn";
+                    break;
+                case eCardValues.PRINCE:
+                    text = "Discard hands";
+                    break;
+                case eCardValues.KING:
+                    text = "Trade hands";
+                    break;
+                case eCardValues.COUNTESS:
+                    text = "Discarded if hand with King/Prince";
+                    break;
+                case eCardValues.PRINCESS:
+                    text = "Lose if discarded";
+                    break;
+            }
             return text;
         }
 

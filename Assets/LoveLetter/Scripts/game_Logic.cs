@@ -46,7 +46,7 @@ namespace BBSL_LOVELETTER
             instance = this;
         }
 
-        void Start()
+        public void StartGame()
         {
             Reset();
         }

@@ -224,6 +224,7 @@ namespace BBSL_DOMEMO
         public void ResetTutorialPanel()
         {
             PrevPagebtn.interactable = false;
+            NextPagebtn.interactable = true;
             currentTutorialImage = 0;
             SetTutorialImage();
         }

@@ -30,9 +30,9 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private GameObject[] cardsToDistribute;
         [SerializeField]
-        private CardNumber cardsToDistribute1;
+        private CardNumberDistribute cardsToDistribute1;
         [SerializeField]
-        private CardNumber cardsToDistribute2;
+        private CardNumberDistribute cardsToDistribute2;
         [SerializeField]
         private GameObject deck;
         [SerializeField]
@@ -109,6 +109,20 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private TextMeshProUGUI cardsRemaining;
         private int storedcardsRemaining;
+
+        [Header("")][Header("INSTRUCTION")]
+        [SerializeField]
+        private Button NextPagebtn;
+        [SerializeField]
+        private Button PrevPagebtn;
+        [SerializeField]
+        private Image TutorialImage;
+        [SerializeField]
+        private TextMeshProUGUI cardSpecialText;
+        [SerializeField]
+        private TextMeshProUGUI cardDescText;
+
+        private eCardValues currentTutorialImage = 0;
 
         private bool hideDetails = false;
         StringBuilder text = new StringBuilder();
@@ -303,9 +317,11 @@ namespace BBSL_LOVELETTER
 
             //flip card
             cardsToDistribute1.SetCard(cardused);
+            SetCardDistributeInfo(cardused, GetPlayerIndex(targetplayer));
             yield return new WaitUntil(() => doneShowdown);
             SetShowingCard(true);
-            yield return new WaitForSeconds(1.0f * speed);
+            yield return new WaitForSeconds(2.0f * speed);
+            cardsToDistribute1.ResetDescription();
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
@@ -353,12 +369,15 @@ namespace BBSL_LOVELETTER
             
             MoveCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
+            SetCardDistributeInfo(cardused, GetPlayerIndex(targetplayer));
 
             //flip card
             cardsToDistribute1.SetCard(cardused);
+            SetCardDistributeInfo(cardused, GetPlayerIndex(targetplayer));
             yield return new WaitUntil(() => doneShowdown);
             SetShowingCard(true); 
-             yield return new WaitForSeconds(1.0f * speed);
+             yield return new WaitForSeconds(2.0f * speed);
+            cardsToDistribute1.ResetDescription();
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
@@ -368,6 +387,16 @@ namespace BBSL_LOVELETTER
             SetReadyTradeCards(true);
             Reset1stCard();
             game_Logic.DoneRunning();
+        }
+
+        void SetCardDistributeInfo(eCardValues cardused, int player)
+        {
+            bool top = true;
+            if (player == 0 || player == 3)
+            {
+                top = false;
+            }
+            cardsToDistribute1.SetDescription(cardused, top);
         }
 
         void UpdateCardHolder(eTargetPlayer targetplayer, eCardValues cardused)
@@ -529,7 +558,7 @@ namespace BBSL_LOVELETTER
             }
 
             yield return new WaitForSeconds(aiWaitTime);
-            yield return new WaitForSeconds(1.0f * speed);
+            yield return new WaitForSeconds(2.0f * speed);
             initialPlayerPanel.gameObject.SetActive(true);
             targetPlayerPanel.gameObject.SetActive(true);
 
@@ -985,6 +1014,7 @@ namespace BBSL_LOVELETTER
 
         void Reset2ndCard()
         {
+            cardsToDistribute2.ResetDescription();
             cardsToDistribute2.SetCard(eCardValues.INVALID);
             ResetCardPostion(cardsToDistribute[1], deck);
             ResetCardRectTransform(cardsToDistribute[1], new Vector2(75, 100));
@@ -1229,5 +1259,135 @@ namespace BBSL_LOVELETTER
             readyTradeCards = isReady;
         }
         #endregion
+
+        #region Tutorial
+        public void NextPage()
+        {
+            currentTutorialImage++;
+            SetTutorialImage();
+            SetSpecialText();
+            SetDescriptionText();
+            if ((int)currentTutorialImage == cardSprites.Length - 1)
+            {
+                NextPagebtn.interactable = false;
+            }
+            else
+            {
+                PrevPagebtn.interactable = true;
+            }
+        }
+
+        public void PrevPage()
+        {
+            currentTutorialImage--;
+            SetTutorialImage();
+            SetSpecialText();
+            SetDescriptionText();
+            if (currentTutorialImage == 0)
+            {
+                PrevPagebtn.interactable = false;
+            }
+            else
+            {
+                NextPagebtn.interactable = true;
+            }
+        }
+
+        public void ResetTutorialPanel()
+        {
+            PrevPagebtn.interactable = false;
+            NextPagebtn.interactable = true;
+            currentTutorialImage = 0;
+            SetTutorialImage();
+            SetSpecialText();
+            SetDescriptionText();
+        }
+
+        void SetTutorialImage()
+        {
+            TutorialImage.sprite = GetCardSprites(currentTutorialImage);
+        }
+
+        void SetSpecialText()
+        {
+            cardSpecialText.text = GetCardText(currentTutorialImage);
+        }
+
+        void SetDescriptionText()
+        {
+            cardDescText.text = GetCardDesc(currentTutorialImage);
+        }
+
+        string GetCardText(eCardValues cardValue)
+        {
+            string text = "";
+            switch (cardValue)
+            {
+                case eCardValues.GUARD:
+                    text = "<b>Attack</b>";
+                    break;
+                case eCardValues.PRIEST:
+                    text = "<b>Reveal</b>";
+                    break;
+                case eCardValues.BARON:
+                    text = "<b>Wager</b>";
+                    break;
+                case eCardValues.HANDMAID:
+                    text = "<b>Shield</b>";
+                    break;
+                case eCardValues.PRINCE:
+                    text = "<b>Discard</b>";
+                    break;
+                case eCardValues.KING:
+                    text = "<b>Trade</b>";
+                    break;
+                case eCardValues.COUNTESS:
+                    text = "<b>Sabotage</b>";
+                    break;
+                case eCardValues.PRINCESS:
+                    text = "<b>Treasure</b>";
+                    break;
+            }
+            return text;
+        }
+
+        string GetCardDesc(eCardValues cardValue)
+        {
+            string text = "";
+            switch (cardValue)
+            {
+                case eCardValues.GUARD:
+                    text = "<b>Attack:</b> Guess a player's hand";
+                    break;
+                case eCardValues.PRIEST:
+                    text = "<b>Reveal:</b> Look at hand (Target)";
+                    break;
+                case eCardValues.BARON:
+                    text = "<b>Wager:</b> Compare hands; lower hand is out";
+                    break;
+                case eCardValues.HANDMAID:
+                    text = "<b>Shield:</b> Protected until next turn";
+                    break;
+                case eCardValues.PRINCE:
+                    text = "<b>Discard:</b> Discard hands";
+                    break;
+                case eCardValues.KING:
+                    text = "<b>Trade:</b> Trade hands";
+                    break;
+                case eCardValues.COUNTESS:
+                    text = "<b>Sabotage:</b> Discarded if hand with King/Prince";
+                    break;
+                case eCardValues.PRINCESS:
+                    text = "<b>Treasure:</b> Lose if discarded";
+                    break;
+            }
+            return text;
+        }
+        #endregion
+
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
     }
 }
