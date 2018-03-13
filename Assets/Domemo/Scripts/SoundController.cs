@@ -79,11 +79,11 @@ namespace BBSL_DOMEMO
             {
                 if(audioSourceSFX.isPlaying)
                 {
-                    PlayNewAudioSource(GetAudioClip(fxType), volume);
+                    PlayNewAudioSource(GetAudioClip(fxType), volume / 2);
                 }
                 else
                 {
-                    audioSourceSFX.PlayOneShot(GetAudioClip(fxType), volume);
+                    audioSourceSFX.PlayOneShot(GetAudioClip(fxType), volume / 2);
                 }
             }
         }

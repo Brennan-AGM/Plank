@@ -42,7 +42,7 @@ namespace BBSL_DOMEMO
                 case eButton.OPENNUMBERPANEL:
                 case eButton.RESETCONFIRM:
                 case eButton.RESETCANCEL:
-                    SoundController.instance.PlaySE(eSoundFX.ToggleSound);
+                    SoundController.instance.PlaySE(eSoundFX.ToggleSound, 0.5f);
                     break;
             }
         }
@@ -57,21 +57,21 @@ namespace BBSL_DOMEMO
                 case eButton.NUMBERSELECTION:
                 case eButton.RESETCONFIRM:
                 case eButton.RESETCANCEL:
-                    SoundController.instance.PlaySE(eSoundFX.ConfirmSound);
+                    SoundController.instance.PlaySE(eSoundFX.ConfirmSound, 0.5f);
                     break;
 
                 case eButton.OPENNUMBERPANEL:
                     if(button.interactable)
                     {
-                        SoundController.instance.PlaySE(eSoundFX.ConfirmSound);
+                        SoundController.instance.PlaySE(eSoundFX.ConfirmSound, 0.5f);
                     }
                     else
                     {
-                        SoundController.instance.PlaySE(eSoundFX.WrongSound);
+                        SoundController.instance.PlaySE(eSoundFX.WrongSound, 0.5f);
                     }
                     break;
                 case eButton.CLOSENUMBERPANEL:
-                    SoundController.instance.PlaySE(eSoundFX.WrongSound);
+                    SoundController.instance.PlaySE(eSoundFX.WrongSound, 0.5f);
                     break;
 
             }
