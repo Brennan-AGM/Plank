@@ -163,7 +163,7 @@ namespace BBSL_LOVELETTER
         #region Resolution
         void ForceResolution()
         {
-            Screen.SetResolution(598, 957, false);
+            Screen.SetResolution(475, 760, false);
         }
 
         void SetResolution()
@@ -392,7 +392,7 @@ namespace BBSL_LOVELETTER
         void SetCardDistributeInfo(eCardValues cardused, int player)
         {
             bool top = true;
-            if (player == 0 || player == 3)
+            if (player == 1 || player == 2)
             {
                 top = false;
             }
@@ -896,6 +896,10 @@ namespace BBSL_LOVELETTER
                 ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
                 game_Logic.instance.PlayerUseCard(playerChoice, tempcard, temptarget, tempguardcard);
             }
+            else
+            {
+                ShowPlayerCards();
+            }
             ResetCardUseValues();
         }
 
@@ -1146,11 +1150,11 @@ namespace BBSL_LOVELETTER
         {
             yield return new WaitUntil(() => doneShowingCard);
             yield return new WaitForSeconds(delay);
-            MessageBox_gmobj.transform.DOLocalMoveY(360f, 0.0f);
+            MessageBox_gmobj.transform.DOLocalMoveY(420.2f, 0.0f);
             yield return new WaitForEndOfFrame();
-            MessageBox_gmobj.transform.DOLocalMoveY(275f, 1.0f);
+            MessageBox_gmobj.transform.DOLocalMoveY(330f, 1.0f);
             yield return new WaitForSeconds(2.0f);
-            MessageBox_gmobj.transform.DOLocalMoveY(360f, 1.0f);
+            MessageBox_gmobj.transform.DOLocalMoveY(420.2f, 1.0f);
             yield return new WaitForSeconds(1.0f);
             game_Logic.DoneRunning();
         }
