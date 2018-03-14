@@ -299,6 +299,7 @@ namespace BBSL_LOVELETTER
         public void ShowAICardUse(eTargetPlayer initialplayer, eCardValues cardused, eTargetPlayer targetplayer, float delay)
         {
             SetShowingCard(false);
+            SetReadyTradeCards(false);
             StartCoroutine(ShowAICardUseIE(initialplayer, cardused, targetplayer, delay));
         }
 
@@ -328,6 +329,7 @@ namespace BBSL_LOVELETTER
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
+            SetReadyTradeCards(true);
             Reset1stCard();
             game_Logic.DoneRunning();
         }

@@ -893,7 +893,7 @@ namespace BBSL_LOVELETTER
         public static void StartRunning()
         {
             stillRunning.Push(0);
-            Debug.Log("Start Running: " + stillRunning.Count);
+            //Debug.Log("Start Running: " + stillRunning.Count);
         }
 
         public bool IsDoneRunning()
@@ -911,7 +911,7 @@ namespace BBSL_LOVELETTER
             {
                 stillRunning.Pop();
             }
-            Debug.Log("Done Running, Remaining: " + stillRunning.Count);
+            //Debug.Log("Done Running, Remaining: " + stillRunning.Count);
         }
     }
     #endregion
