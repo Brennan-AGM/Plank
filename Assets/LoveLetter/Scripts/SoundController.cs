@@ -36,6 +36,8 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private AudioClip menuBGM;
 
+        private bool canPlaySFX = true;
+
         private AudioSource audioSourceSFX;
         private AudioSource audioSourceBGM;
         List<AudioSource> tempAudioSourceList = new List<AudioSource>();
@@ -75,15 +77,18 @@ namespace BBSL_LOVELETTER
 
         public void PlaySE(eSoundFX fxType, float volume = 1.0f)
         {
-            if (GetAudioClip(fxType) != null)
+            if(canPlaySFX)
             {
-                if (audioSourceSFX.isPlaying)
+                if (GetAudioClip(fxType) != null)
                 {
-                    PlayNewAudioSource(GetAudioClip(fxType), volume / 2);
-                }
-                else
-                {
-                    audioSourceSFX.PlayOneShot(GetAudioClip(fxType), volume / 2);
+                    if (audioSourceSFX.isPlaying)
+                    {
+                        PlayNewAudioSource(GetAudioClip(fxType), volume / 2);
+                    }
+                    else
+                    {
+                        audioSourceSFX.PlayOneShot(GetAudioClip(fxType), volume / 2);
+                    }
                 }
             }
         }
@@ -124,6 +129,23 @@ namespace BBSL_LOVELETTER
                     return cardFlip;
             }
             return clip;
+        }
+
+        public void ToggleMusic(bool stop)
+        {
+            if(stop)
+            {
+                audioSourceBGM.Pause();
+            }
+            else
+            {
+                audioSourceBGM.UnPause();
+            }
+        }
+
+        public void ToggleSFX(bool toggle)
+        {
+            canPlaySFX = toggle;
         }
     }
 }
