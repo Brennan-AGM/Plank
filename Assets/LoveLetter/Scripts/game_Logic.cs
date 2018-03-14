@@ -113,6 +113,7 @@ namespace BBSL_LOVELETTER
         IEnumerator GetNextPlayerIE()
         {
             yield return new WaitUntil(() => IsDoneRunning());
+            Debug.Log("STARTING NEXT TURN");
             //if (CurrentPlayerIndex == -1)
             //{
             //    CurrentPlayerIndex = 0;
@@ -683,7 +684,7 @@ namespace BBSL_LOVELETTER
 
         void ResetProtection(eTargetPlayer player)
         {
-            Debug.Log("RESET PROTECTION: " + player);
+            //Debug.Log("RESET PROTECTION: " + player);
             switch (player)
             {
                 case eTargetPlayer.PLAYER:
@@ -892,6 +893,7 @@ namespace BBSL_LOVELETTER
         public static void StartRunning()
         {
             stillRunning.Push(0);
+            Debug.Log("Start Running: " + stillRunning.Count);
         }
 
         public bool IsDoneRunning()
@@ -909,6 +911,7 @@ namespace BBSL_LOVELETTER
             {
                 stillRunning.Pop();
             }
+            Debug.Log("Done Running, Remaining: " + stillRunning.Count);
         }
     }
     #endregion

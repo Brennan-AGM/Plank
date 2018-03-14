@@ -415,7 +415,7 @@ namespace BBSL_LOVELETTER
 
         IEnumerator PlayerDiscardCardIE(eTargetPlayer targetplayer, eCardValues cardused, bool killplayer = false)
         {
-            Debug.Log("Player discard CARD");
+            //Debug.Log("Player discard CARD");
             yield return new WaitUntil(() => doneShowingCard);
             float speed = 1.0f;
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.0f);
@@ -1141,7 +1141,7 @@ namespace BBSL_LOVELETTER
         #region MessageBox
         public void SetMessageBox(string text, float delay = 0.0f)
         {
-            Debug.Log("MESSAGE: " + text);
+            //Debug.Log("MESSAGE: " + text);
             Message_Text.text = text;
             StartCoroutine(MoveMessageBoxIE(delay));
         }

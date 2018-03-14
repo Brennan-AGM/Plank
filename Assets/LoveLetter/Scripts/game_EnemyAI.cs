@@ -497,11 +497,11 @@ namespace BBSL_LOVELETTER
                 target = Random.Range(0, listOfValidTargets.Count);
             }
 
-            Debug.Log("VALID TARGETs: " + listOfValidTargets.Count);
-            for (int i = 0; i < listOfValidTargets.Count; i++)
-            {
-                Debug.Log("VALID TARGET: " + listOfValidTargets[i]);
-            }
+            //Debug.Log("VALID TARGETs: " + listOfValidTargets.Count);
+            //for (int i = 0; i < listOfValidTargets.Count; i++)
+            //{
+            //    Debug.Log("VALID TARGET: " + listOfValidTargets[i]);
+            //}
 
             if(!canTargetPlayer && listOfValidTargets.Count == 0)
             {
