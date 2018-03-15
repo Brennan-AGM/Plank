@@ -109,6 +109,11 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private TextMeshProUGUI cardsRemaining;
         private int storedcardsRemaining;
+        [SerializeField]
+        private GameObject ResetBox_gmobj;
+        [SerializeField]
+        private TextMeshProUGUI ResetBoxMessage_Text;
+        private Vector3 ResetBox_initialpos;
 
         [Header("")][Header("INSTRUCTION")]
         [SerializeField]
@@ -142,13 +147,7 @@ namespace BBSL_LOVELETTER
 
             instance = this;
             ForceResolution();
-        }
-
-        void Start()
-        {
-            ToggleDetails(false);
-            targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
-            ResetShowdownPanel();
+            ResetBox_initialpos = ResetBox_gmobj.transform.position;
         }
 
         void Update()
@@ -1009,12 +1008,17 @@ namespace BBSL_LOVELETTER
         #region Resets
         public void ResetGame()
         {
+            ToggleDetails(false);
+            targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
+            ResetShowdownPanel();
+            HideResetBox();
             ResetRound();
             ResetAllPlayerScore();
         }
 
         public void ResetRound()
         {
+            SetCardsRemaining(16);
             missingCard.SetActive(false);
             deck.SetActive(true);
             for (int i = 0; i < players1stCards.Length; i++)
@@ -1251,6 +1255,24 @@ namespace BBSL_LOVELETTER
                     return "<#ff8000>Player 4</color>";
             }
             return "";
+        }
+
+        public void OpenResetBox(bool player1Winner)
+        {
+            if (player1Winner)
+            {
+                ResetBoxMessage_Text.text = "Congratulations!\nReset Game?";
+            }
+            else
+            {
+                ResetBoxMessage_Text.text = "Better luck next time!\nReset Game?";
+            }
+            ResetBox_gmobj.transform.DOLocalMoveY(0, 1.0f);
+        }
+
+        public void HideResetBox()
+        {
+            ResetBox_gmobj.transform.DOMoveY(ResetBox_initialpos.y, 0.0f);
         }
         #endregion
 

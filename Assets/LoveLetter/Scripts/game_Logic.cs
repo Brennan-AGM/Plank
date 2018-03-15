@@ -57,7 +57,6 @@ namespace BBSL_LOVELETTER
         /// <param name="hardReset">Refers if we will reset the game</param>
         void Reset(bool hardReset = false)
         {
-            game_UIController.instance.SetCardsRemaining(16);
             //CurrentPlayer = eTargetPlayer.INVALID;
             CurrentPlayerIndex = 0;
             for (int i = 0; i < AIList.Length; i++)
@@ -66,8 +65,7 @@ namespace BBSL_LOVELETTER
             }
             Player.Reset(hardReset);
             ResetListOfPlayers();
-
-            if(hardReset)
+            if (hardReset)
             {
                 CardController.instance.ResetGame();
                 game_UIController.instance.ResetGame();
