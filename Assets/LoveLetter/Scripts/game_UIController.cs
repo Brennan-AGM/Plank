@@ -116,13 +116,17 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private Button PrevPagebtn;
         [SerializeField]
+        private GameObject TutorialGuide;
+        [SerializeField]
+        private GameObject CardRefGuide;
+        [SerializeField]
         private Image TutorialImage;
         [SerializeField]
         private TextMeshProUGUI cardSpecialText;
         [SerializeField]
         private TextMeshProUGUI cardDescText;
 
-        private eCardValues currentTutorialImage = 0;
+        private eCardValues currentTutorialImage = eCardValues.INVALID;
 
         private bool hideDetails = false;
         StringBuilder text = new StringBuilder();
@@ -554,7 +558,7 @@ namespace BBSL_LOVELETTER
             float speed = 1.0f;
             eCardValues initialPlayerCardValue = game_Logic.instance.GetCard(initialplayer);
             eCardValues targetPlayerCardValue = game_Logic.instance.GetCard(targetplayer);
-            if(cardused == eCardValues.PRINCE && result == eResult.WIN)
+            if(cardused == eCardValues.PRINCE && result == eResult.LOSE)
             {
                 targetPlayerCardValue = eCardValues.PRINCESS;
             }
@@ -1273,6 +1277,11 @@ namespace BBSL_LOVELETTER
             SetTutorialImage();
             SetSpecialText();
             SetDescriptionText();
+            if(currentTutorialImage > eCardValues.INVALID)
+            {
+                CardRefGuide.SetActive(true);
+                TutorialGuide.SetActive(false);
+            }
             if ((int)currentTutorialImage == cardSprites.Length - 1)
             {
                 NextPagebtn.interactable = false;
@@ -1289,7 +1298,12 @@ namespace BBSL_LOVELETTER
             SetTutorialImage();
             SetSpecialText();
             SetDescriptionText();
-            if (currentTutorialImage == 0)
+            if (currentTutorialImage == eCardValues.INVALID)
+            {
+                CardRefGuide.SetActive(false);
+                TutorialGuide.SetActive(true);
+            }
+            if (currentTutorialImage == eCardValues.INVALID)
             {
                 PrevPagebtn.interactable = false;
             }
@@ -1303,7 +1317,9 @@ namespace BBSL_LOVELETTER
         {
             PrevPagebtn.interactable = false;
             NextPagebtn.interactable = true;
-            currentTutorialImage = 0;
+            TutorialGuide.SetActive(true);
+            CardRefGuide.SetActive(false);
+            currentTutorialImage = eCardValues.INVALID;
             SetTutorialImage();
             SetSpecialText();
             SetDescriptionText();
@@ -1366,7 +1382,7 @@ namespace BBSL_LOVELETTER
                     text = "<b>Attack:</b> Guess a player's hand";
                     break;
                 case eCardValues.PRIEST:
-                    text = "<b>Reveal:</b> Look at hand (Target)";
+                    text = "<b>Reveal:</b> Look at hand";
                     break;
                 case eCardValues.BARON:
                     text = "<b>Wager:</b> Compare hands; lower hand is out";
