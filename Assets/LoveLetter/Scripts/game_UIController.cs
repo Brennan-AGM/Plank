@@ -330,6 +330,7 @@ namespace BBSL_LOVELETTER
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            SoundController.instance.PlaySE(eSoundFX.CardFlipSound);
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
@@ -387,6 +388,7 @@ namespace BBSL_LOVELETTER
 
             MoveCard(cardsToDistribute[0], tinycardsHolder[GetPlayerIndex(initialplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[0], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            SoundController.instance.PlaySE(eSoundFX.CardFlipSound);
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(initialplayer, cardused);
             yield return new WaitForEndOfFrame();
@@ -431,6 +433,7 @@ namespace BBSL_LOVELETTER
 
             MoveCard(cardsToDistribute[1], tinycardsHolder[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], playerTargetPosition[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
+            SoundController.instance.PlaySE(eSoundFX.CardFlipSound);
             yield return new WaitForSeconds(0.5f * speed);
             UpdateCardHolder(targetplayer, cardused);
             Reset2ndCard();
@@ -495,7 +498,6 @@ namespace BBSL_LOVELETTER
                 ReduceCards();
             }
             yield return new WaitForEndOfFrame();
-
             MoveCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             ResizeCard(cardsToDistribute[1], players1stCards[GetPlayerIndex(targetplayer)].gameObject, 0.5f * speed);
             yield return new WaitForSeconds(0.5f * speed);
@@ -604,6 +606,14 @@ namespace BBSL_LOVELETTER
                         RotateCard(false);
                         yield return new WaitForSeconds(0.3f);
                         ShowTargetPlayerCard();
+                        if(initialplayer == eTargetPlayer.PLAYER)
+                        {
+                            SoundController.instance.PlaySE(eSoundFX.CorrectSound);
+                        }
+                        else if(targetplayer == eTargetPlayer.PLAYER)
+                        {
+                            SoundController.instance.PlaySE(eSoundFX.WrongSound);
+                        }
                         yield return new WaitForSeconds(0.7f);
                     }
                     else
@@ -665,6 +675,15 @@ namespace BBSL_LOVELETTER
                     {
                         ShowInitialPlayerCard();
                     }
+
+                    if (initialplayer == eTargetPlayer.PLAYER)
+                    {
+                        SoundController.instance.PlaySE(eSoundFX.CorrectSound);
+                    }
+                    else if (targetplayer == eTargetPlayer.PLAYER)
+                    {
+                        SoundController.instance.PlaySE(eSoundFX.WrongSound);
+                    }
                     ShowTargetPlayerCard();
                     yield return new WaitForSeconds(0.7f);
                 }
@@ -690,6 +709,14 @@ namespace BBSL_LOVELETTER
                     if (hasPlayer)
                     {
                         ShowTargetPlayerCard();
+                    }
+                    if (initialplayer == eTargetPlayer.PLAYER)
+                    {
+                        SoundController.instance.PlaySE(eSoundFX.WrongSound);
+                    }
+                    else if (targetplayer == eTargetPlayer.PLAYER)
+                    {
+                        SoundController.instance.PlaySE(eSoundFX.CorrectSound);
                     }
                     ShowInitialPlayerCard();
                     yield return new WaitForSeconds(0.7f);
@@ -814,12 +841,14 @@ namespace BBSL_LOVELETTER
                 initialPlayerCard.transform.DORotate(new Vector3(0, 180), 0, RotateMode.Fast);
                 initialPlayerCard.transform.DORotate(new Vector3(0, 0), 1.0f, RotateMode.Fast);
                 initialPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+                SoundController.instance.PlaySE(eSoundFX.CardFlipSound);
             }
             else
             {
                 targetPlayerCard.transform.DORotate(new Vector3(0, 180), 0, RotateMode.Fast);
                 targetPlayerCard.transform.DORotate(new Vector3(0, 0), 1.0f, RotateMode.Fast);
                 targetPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
+                SoundController.instance.PlaySE(eSoundFX.CardFlipSound);
             }
         }
 
@@ -1090,6 +1119,7 @@ namespace BBSL_LOVELETTER
 
         void ReduceCards()
         {
+            SoundController.instance.PlaySE(eSoundFX.CardDrawSound);
             storedcardsRemaining--;
             cardsRemaining.text = storedcardsRemaining.ToString();
             if(storedcardsRemaining == 0)

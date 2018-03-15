@@ -12,6 +12,7 @@ namespace BBSL_LOVELETTER
         CorrectSound,
         WrongSound,
         PlayerTurnSound,
+        CardDrawSound,
         CardFlipSound,
     }
 
@@ -28,7 +29,9 @@ namespace BBSL_LOVELETTER
         [SerializeField]
         private AudioClip playerTurnSound;
         [SerializeField]
-        private AudioClip cardFlip;
+        private AudioClip[] cardDrawSound;
+        [SerializeField]
+        private AudioClip cardFlipSound;
 
 
         [SerializeField]
@@ -126,7 +129,9 @@ namespace BBSL_LOVELETTER
                 case eSoundFX.PlayerTurnSound:
                     return playerTurnSound;
                 case eSoundFX.CardFlipSound:
-                    return cardFlip;
+                    return cardFlipSound;
+                case eSoundFX.CardDrawSound:
+                    return cardDrawSound[Random.Range(0, cardDrawSound.Length)];
             }
             return clip;
         }
