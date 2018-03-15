@@ -81,11 +81,10 @@ namespace BBSL_LOVELETTER
 
         public void PlayerDrawCard(eTargetPlayer player)
         {
-            Debug.Log("Cards Remaining: " + CurrentDrawPileList.Count);
             int value = Random.Range(0, CurrentDrawPileList.Count);
-            Debug.Log("Card Drawn: " + value);
-            SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), player);
+            eCardValues cardDrawnValue = CurrentDrawPileList[value].GetCardValue();
             CurrentDrawPileList.RemoveAt(value);
+            SetPlayerCardValues(cardDrawnValue, player);
         }
 
         public void DrawMissingCard(eTargetPlayer player)

@@ -728,7 +728,7 @@ namespace BBSL_LOVELETTER
                 }
                 #endregion
             }
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(2.0f);
             FadeShowdownPanel();
             yield return new WaitForSeconds(1.0f);
             SetShowdown(true);
