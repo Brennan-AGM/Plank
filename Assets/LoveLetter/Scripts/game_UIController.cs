@@ -148,6 +148,7 @@ namespace BBSL_LOVELETTER
             instance = this;
             ForceResolution();
             ResetBox_initialpos = ResetBox_gmobj.transform.position;
+            targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
         }
 
         void Update()
@@ -1008,16 +1009,15 @@ namespace BBSL_LOVELETTER
         #region Resets
         public void ResetGame()
         {
-            ToggleDetails(false);
-            targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
-            ResetShowdownPanel();
-            HideResetBox();
             ResetRound();
             ResetAllPlayerScore();
         }
 
         public void ResetRound()
         {
+            ToggleDetails(false);
+            ResetShowdownPanel();
+            HideResetBox();
             SetCardsRemaining(16);
             missingCard.SetActive(false);
             deck.SetActive(true);
