@@ -146,9 +146,9 @@ namespace BBSL_LOVELETTER
             }
 
             instance = this;
-            ForceResolution();
             ResetBox_initialpos = ResetBox_gmobj.transform.position;
             targetPlayer_GuardTextPos = targetPlayer_GuardText.transform.position;
+            ForceResolution();
         }
 
         void Update()
@@ -848,7 +848,6 @@ namespace BBSL_LOVELETTER
                 targetPlayerCard.transform.DORotate(new Vector3(0, 180), 0, RotateMode.Fast);
                 targetPlayerCard.transform.DORotate(new Vector3(0, 0), 1.0f, RotateMode.Fast);
                 targetPlayerHiddenCard.transform.DORotate(new Vector3(0, 180), 1.0f, RotateMode.Fast);
-                SoundController.instance.PlaySE(eSoundFX.CardFlipSound);
             }
         }
 
@@ -902,23 +901,31 @@ namespace BBSL_LOVELETTER
 
         public void FinishTargetPlayerPanel(eTargetPlayer targetPlayer)
         {
-            temptarget = targetPlayer;
-            if (tempcard == eCardValues.GUARD)
+            if(targetPlayer != eTargetPlayer.INVALID)
             {
-                //need to select which card
-                ToggleTargetPlayerPanel(false, tempcard);
-                ToggleGuardSelectionPanel(true);
+                temptarget = targetPlayer;
+                if (tempcard == eCardValues.GUARD)
+                {
+                    //need to select which card
+                    ToggleTargetPlayerPanel(false, tempcard);
+                    ToggleGuardSelectionPanel(true);
+                }
+                else
+                {
+                    if (playerChoice == eButtonUsage.FIRSTCARDUSE)
+                    {
+                        game_Logic.instance.PlayerUse1stCard();
+                    }
+                    ToggleTargetPlayerPanel(false);
+                    ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
+                    game_Logic.instance.PlayerUseCard(playerChoice, tempcard, temptarget);
+                    ResetCardUseValues();
+                }
             }
             else
             {
-                if(playerChoice == eButtonUsage.FIRSTCARDUSE)
-                {
-                    game_Logic.instance.PlayerUse1stCard();
-                }
+                ShowPlayerCards();
                 ToggleTargetPlayerPanel(false);
-                ShowPlayerCardUse(eTargetPlayer.PLAYER, tempcard, temptarget, playerChoice);
-                game_Logic.instance.PlayerUseCard(playerChoice, tempcard, temptarget);
-                ResetCardUseValues();
             }
         }
 
