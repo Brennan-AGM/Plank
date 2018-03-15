@@ -1034,7 +1034,7 @@ namespace BBSL_LOVELETTER
                 int childCount = tinycardsHolder[i].childCount;
                 for (int j = 0; j < childCount; j++)
                 {
-                    Destroy(tinycardsHolder[i].GetChild(0).gameObject);
+                    Destroy(tinycardsHolder[i].GetChild(j).gameObject);
                 }
             }
             DistributeCards();
@@ -1236,6 +1236,7 @@ namespace BBSL_LOVELETTER
 
         public void PlayerWinning(eTargetPlayer targetPlayer, eCardValues winningCard, float delay = 0.0f)
         {
+            OpenResetBox(targetPlayer);
             text.Length = 0;
             text.Append(GetPlayerText(targetPlayer)).Append(" WINS with ").Append(winningCard.ToString()).Append("!");
             SetMessageBox(text.ToString(), delay);
@@ -1257,9 +1258,9 @@ namespace BBSL_LOVELETTER
             return "";
         }
 
-        public void OpenResetBox(bool player1Winner)
+        void OpenResetBox(eTargetPlayer player1Winner)
         {
-            if (player1Winner)
+            if (player1Winner == eTargetPlayer.PLAYER)
             {
                 ResetBoxMessage_Text.text = "Congratulations!\nReset Game?";
             }
