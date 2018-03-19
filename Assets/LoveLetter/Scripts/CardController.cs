@@ -58,7 +58,8 @@ namespace BBSL_LOVELETTER
 
         void SetupGameCards()
         {
-            for (int i = 0; i < MaxCardsList.Count; i++)
+            int maxCardsLength = MaxCardsList.Count;
+            for (int i = 0; i < maxCardsLength; i++)
             {
                 for (int j = 0; j < MaxCardsList[i].GetMaxCard(); j++)
                 {
@@ -68,13 +69,15 @@ namespace BBSL_LOVELETTER
             CurrentDrawPileList.Clear();
             CurrentDrawPileList = new List<Card>(GameCardsList);
             int value = 0;
+            int drawPileLength = CurrentDrawPileList.Count;
             for (int i = 0; i < 5; i++)
             {
-                value = Random.Range(0, CurrentDrawPileList.Count);
+                value = Random.Range(0, drawPileLength);
                 SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), (eTargetPlayer) i);
                 CurrentDrawPileList.RemoveAt(value);
+                drawPileLength--;
             }
-            value = Random.Range(0, CurrentDrawPileList.Count);
+            value = Random.Range(0, drawPileLength);
             SetPlayerCardValues(CurrentDrawPileList[value].GetCardValue(), eTargetPlayer.PLAYER);
             CurrentDrawPileList.RemoveAt(value);
         }
@@ -206,10 +209,13 @@ namespace BBSL_LOVELETTER
         {
             List<eCardValues> cardList = new List<eCardValues>();
             bool found = false;
-            for (int i = 0; i < CurrentDrawPileList.Count; i++)
+            int drawPileLength = CurrentDrawPileList.Count;
+            int cardListLength = 0;
+            for (int i = 0; i < drawPileLength; i++)
             {
                 found = false;
-                for (int j = 0; j < cardList.Count; j++)
+                cardListLength = cardList.Count;
+                for (int j = 0; j < cardListLength; j++)
                 {
                     if(CurrentDrawPileList[i].GetCardValue() == cardList[j])
                     {
@@ -223,7 +229,8 @@ namespace BBSL_LOVELETTER
                 }
             }
             found = false;
-            for (int i = 0; i < cardList.Count; i++)
+            cardListLength = cardList.Count;
+            for (int i = 0; i < cardListLength; i++)
             {
                 if (missingCard.GetCardValue() == cardList[i])
                 {

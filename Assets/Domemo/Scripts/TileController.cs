@@ -78,9 +78,11 @@ namespace BBSL_DOMEMO
 
             distribNum = 0;
             int count = 0;
-            while (TileList.Count > 0)
+
+            int tileListLength = TileList.Count;
+            while (tileListLength > 0)
             {
-                int randomnum = Random.Range(0, TileList.Count);
+                int randomnum = Random.Range(0, tileListLength);
 
                 if (count < 4)
                 {
@@ -97,6 +99,7 @@ namespace BBSL_DOMEMO
 
                 DistributeTiles(TileList[randomnum].GetTileValue());
                 TileList.RemoveAt(randomnum);
+                tileListLength--;
 
                 distribNum = (distribNum > 2) ? 0 : ++distribNum;
 

@@ -268,14 +268,16 @@ namespace BBSL_DOMEMO
         IEnumerator DistributionIE()
         {
             yield return new WaitForEndOfFrame();
-            for (int i = 0; i < allTiles.Count; i++)
+            int tilesLength = allTiles.Count;
+            for (int i = 0; i < tilesLength; i++)
             {
                 tileToShuffle[i].gameObject.SetActive(true);
                 tileToShuffle[i].DOFade(1.0f, 0.0f);
                 tileToShuffle[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(1.0f, 0);
             }
             yield return new WaitForEndOfFrame();
-            for (int i = 0; i < tileToShuffle.Length / 2; i++)
+            tilesLength = tileToShuffle.Length / 2;
+            for (int i = 0; i < tilesLength; i++)
             {
                 SoundController.instance.PlaySE(eSoundFX.TileFlipSound);
                 tileToShuffle[i].transform.DOMove(allTiles[i].transform.position, 0.5f);
@@ -288,7 +290,8 @@ namespace BBSL_DOMEMO
             //    yield return new WaitForSeconds(0.25f);
             //}
             yield return new WaitForEndOfFrame();
-            for (int i = 0; i < allTiles.Count; i++)
+            tilesLength = allTiles.Count;
+            for (int i = 0; i < tilesLength; i++)
             {
                 allTiles[i].DOFade(1.0f, 0.0f);
                 allTiles[i].GetComponentInChildren<TextMeshProUGUI>().DOFade(1.0f, 0);
@@ -298,7 +301,8 @@ namespace BBSL_DOMEMO
             yield return new WaitForSeconds(1.0f);
             SoundController.instance.PlaySE(eSoundFX.PlayerTurnSound);
             yield return new WaitForEndOfFrame();
-            for (int i = 0; i < allTiles.Count; i++)
+            tilesLength = allTiles.Count;
+            for (int i = 0; i < tilesLength; i++)
             {
                 tileToShuffle[i].gameObject.SetActive(false);
             }

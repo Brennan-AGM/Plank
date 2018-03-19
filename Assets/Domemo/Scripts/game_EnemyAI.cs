@@ -115,7 +115,8 @@ namespace BBSL_DOMEMO
         {
             int counter = 0, index = 0;
             bool found = false;
-            for (int i = 0; i < Choice.Count; i++)
+            int choiceLength = Choice.Count;
+            for (int i = 0; i < choiceLength; i++)
             {
                 counter = 0;
                 foreach (KeyValuePair<int, float> tile in Choice)
